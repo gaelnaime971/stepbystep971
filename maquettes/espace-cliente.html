@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mon compte — Step by Step</title>
+<style>
+/* ---- tokens.css (intégré) ---- */
+@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;1,600;1,700&family=Karla:wght@400;500;600&display=swap');
+
+:root {
+  --framboise: #D81840;
+  --framboise-deep: #A80F30;
+  --framboise-wash: #FBE7EC;
+  --encre: #1B1B1D;
+  --encre-soft: #3A3A3E;
+  --ivoire: #FAF6F4;
+  --sable: #EFE7E4;
+  --sable-deep: #D9CCC7;
+  --plume: #7C7076;
+
+  --menthe: #1F8F63;
+  --menthe-wash: #E4F2EB;
+  --ambre: #B9741A;
+  --ambre-wash: #FBEEDC;
+
+  --display: 'Archivo', system-ui, sans-serif;
+  --texte: 'Karla', system-ui, sans-serif;
+
+  --r-sm: 6px;
+  --r-md: 12px;
+  --r-lg: 18px;
+
+  --shell: 1120px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--texte);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--encre);
+  background: var(--ivoire);
+  -webkit-font-smoothing: antialiased;
+}
+
+.shell { max-width: var(--shell); margin: 0 auto; padding: 0 24px; }
+
+h1, h2, h3 {
+  font-family: var(--display);
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.02;
+  margin: 0;
+}
+h1 { font-size: clamp(34px, 6vw, 60px); }
+h2 { font-size: clamp(26px, 3.6vw, 38px); }
+h3 { font-size: 20px; font-weight: 600; }
+
+p { margin: 0; }
+a { color: inherit; }
+
+.chiffre {
+  font-family: var(--display);
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--texte);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 13px 22px;
+  border-radius: var(--r-sm);
+  border: 1px solid transparent;
+  background: var(--framboise);
+  color: #fff;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background .15s ease;
+}
+.btn:hover { background: var(--framboise-deep); }
+.btn:focus-visible { outline: 2px solid var(--encre); outline-offset: 2px; }
+
+.btn-ligne { background: transparent; color: var(--framboise); border-color: var(--framboise); }
+.btn-ligne:hover { background: var(--framboise-wash); }
+
+.btn-clair { background: transparent; color: #fff; border-color: rgba(255,255,255,.4); }
+.btn-clair:hover { background: rgba(255,255,255,.1); }
+
+.btn-neutre { background: #fff; color: var(--encre); border-color: var(--sable-deep); }
+.btn-neutre:hover { background: var(--sable); }
+
+.btn-sm { padding: 8px 14px; font-size: 14px; }
+
+.carte {
+  background: #fff;
+  border: 1px solid var(--sable);
+  border-radius: var(--r-md);
+  padding: 22px;
+}
+
+.pastille {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 11px;
+  border-radius: 999px;
+}
+.p-dispo { background: var(--menthe-wash); color: var(--menthe); }
+.p-bientot { background: var(--ambre-wash); color: var(--ambre); }
+.p-complet { background: var(--sable); color: var(--plume); }
+.p-rose { background: var(--framboise-wash); color: var(--framboise-deep); }
+
+.champ {
+  width: 100%;
+  font-family: var(--texte);
+  font-size: 15px;
+  padding: 11px 13px;
+  border: 1px solid var(--sable-deep);
+  border-radius: var(--r-sm);
+  background: #fff;
+  color: var(--encre);
+}
+.champ:focus { outline: 2px solid var(--framboise); outline-offset: -1px; border-color: transparent; }
+
+.libelle { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.aide { font-size: 13px; color: var(--plume); }
+
+table { width: 100%; border-collapse: collapse; }
+th {
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--plume);
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--sable);
+}
+td { padding: 14px 12px; border-bottom: 1px solid var(--sable); font-size: 15px; }
+tr:last-child td { border-bottom: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+</style>
+<style>
+.nav { background: var(--encre); padding: 13px 0; }
+.nav-in { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.marque { font-family: var(--display); font-style: italic; font-weight: 700; font-size: 18px; color: #fff; text-decoration: none; }
+.marque em { color: var(--framboise); }
+.moi { display: flex; align-items: center; gap: 10px; color: #D6D2D4; font-size: 14px; }
+.rond { width: 32px; height: 32px; border-radius: 50%; background: var(--framboise); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; }
+
+.onglets { background: #fff; border-bottom: 1px solid var(--sable); }
+.onglets-in { display: flex; gap: 4px; overflow-x: auto; }
+.onglet { padding: 15px 16px; font-size: 15px; font-weight: 500; color: var(--plume); text-decoration: none; border-bottom: 2px solid transparent; white-space: nowrap; }
+.onglet.actif { color: var(--framboise); border-bottom-color: var(--framboise); font-weight: 600; }
+
+.page { padding: 36px 0 70px; }
+
+.solde { background: var(--encre); border-radius: var(--r-lg); padding: 28px; color: #fff; display: grid; grid-template-columns: auto 1fr auto; gap: 28px; align-items: center; }
+.solde .gros { font-size: 66px; line-height: 1; color: var(--framboise); }
+.solde .quoi { font-size: 15px; color: #C4BEC1; }
+.solde .titre { font-family: var(--display); font-style: italic; font-weight: 700; font-size: 22px; }
+.solde .btn { white-space: nowrap; }
+
+.rappel { display: flex; gap: 12px; align-items: flex-start; background: var(--ambre-wash); border-radius: var(--r-md); padding: 14px 16px; margin-top: 14px; font-size: 15px; color: #7A4A0F; }
+
+.grille { display: grid; grid-template-columns: 1.65fr 1fr; gap: 22px; margin-top: 32px; align-items: start; }
+.bloc-tete { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; margin-bottom: 16px; }
+
+.jour-groupe { margin-bottom: 22px; }
+.jour-titre { font-family: var(--display); font-style: italic; font-weight: 600; font-size: 17px; margin-bottom: 10px; }
+.creneau { display: flex; align-items: center; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--sable); }
+.creneau:last-child { border-bottom: none; }
+.creneau .heure { font-family: var(--display); font-style: italic; font-weight: 600; font-size: 17px; min-width: 62px; }
+.creneau .infos { flex: 1; }
+.creneau .lieu { font-size: 15px; font-weight: 500; }
+.creneau .places { font-size: 14px; color: var(--plume); }
+.creneau .btn { flex-shrink: 0; }
+.creneau.pris { background: var(--menthe-wash); border-radius: var(--r-sm); padding: 14px 12px; border-bottom: none; margin-bottom: 8px; }
+
+.resa { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--sable); }
+.resa:last-child { border-bottom: none; }
+.resa .quand { font-size: 15px; font-weight: 500; }
+.resa .ou { font-size: 14px; color: var(--plume); }
+.lien-annuler { background: none; border: none; color: var(--plume); font-family: var(--texte); font-size: 14px; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; padding: 0; }
+.lien-annuler:hover { color: var(--framboise-deep); }
+
+.ligne-abo { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; font-size: 15px; }
+.ligne-abo span:first-child { color: var(--plume); }
+
+.vide { text-align: center; padding: 30px 16px; color: var(--plume); font-size: 15px; }
+
+@media (max-width: 900px) {
+  .grille { grid-template-columns: 1fr; }
+  .solde { grid-template-columns: auto 1fr; row-gap: 18px; }
+  .solde .btn { grid-column: 1 / -1; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="shell nav-in">
+    <a class="marque" href="vitrine.html">Step <em>by</em> Step</a>
+    <div class="moi">
+      <span class="rond">JL</span>
+      <span>Julie Lambert</span>
+    </div>
+  </div>
+</nav>
+
+<div class="onglets">
+  <div class="shell onglets-in">
+    <a class="onglet actif" href="#">Mes séances</a>
+    <a class="onglet" href="#">Réserver</a>
+    <a class="onglet" href="#">Mes réservations</a>
+    <a class="onglet" href="#">Ma formule</a>
+    <a class="onglet" href="#">Mon profil</a>
+  </div>
+</div>
+
+<main class="page">
+  <div class="shell">
+
+    <section class="solde">
+      <span class="gros chiffre">6</span>
+      <div>
+        <p class="titre">séances à placer</p>
+        <p class="quoi">Abonnement 8 séances — à utiliser avant le 27 septembre</p>
+      </div>
+      <a class="btn" href="#">Réserver une séance</a>
+    </section>
+
+    <div class="rappel">
+      <span aria-hidden="true">●</span>
+      <p>Il te reste 6 séances et 12 jours. Pense à les placer : les séances non utilisées ne sont pas reportées au cycle suivant.</p>
+    </div>
+
+    <div class="grille">
+
+      <section class="carte">
+        <div class="bloc-tete">
+          <h3>Les cours à venir</h3>
+          <span class="aide">Semaine du 1<sup>er</sup> septembre</span>
+        </div>
+
+        <div class="jour-groupe">
+          <p class="jour-titre">Mardi 2 septembre</p>
+          <div class="creneau">
+            <span class="heure">18h30</span>
+            <div class="infos">
+              <p class="lieu">Jarry</p>
+              <p class="places">7 places sur 15</p>
+            </div>
+            <button class="btn btn-sm">Je réserve</button>
+          </div>
+        </div>
+
+        <div class="jour-groupe">
+          <p class="jour-titre">Mercredi 3 septembre</p>
+          <div class="creneau pris">
+            <span class="heure">19h00</span>
+            <div class="infos">
+              <p class="lieu">Les Abymes</p>
+              <p class="places" style="color:var(--menthe);font-weight:600">Tu es inscrite</p>
+            </div>
+            <button class="lien-annuler">Annuler</button>
+          </div>
+        </div>
+
+        <div class="jour-groupe">
+          <p class="jour-titre">Jeudi 4 septembre</p>
+          <div class="creneau">
+            <span class="heure">18h00</span>
+            <div class="infos">
+              <p class="lieu">Le Moule</p>
+              <p class="places">10 places sur 15</p>
+            </div>
+            <button class="btn btn-sm">Je réserve</button>
+          </div>
+        </div>
+
+        <div class="jour-groupe" style="margin-bottom:0">
+          <p class="jour-titre">Samedi 6 septembre</p>
+          <div class="creneau">
+            <span class="heure">9h00</span>
+            <div class="infos">
+              <p class="lieu">Jarry</p>
+              <p class="places">Complet</p>
+            </div>
+            <span class="pastille p-complet">Complet</span>
+          </div>
+        </div>
+      </section>
+
+      <div>
+        <section class="carte" style="margin-bottom:18px">
+          <div class="bloc-tete"><h3>Mes réservations</h3></div>
+          <div class="resa">
+            <div>
+              <p class="quand">Mercredi 3, 19h00</p>
+              <p class="ou">Les Abymes</p>
+            </div>
+            <button class="lien-annuler">Annuler</button>
+          </div>
+          <div class="resa">
+            <div>
+              <p class="quand">Mardi 9, 18h30</p>
+              <p class="ou">Jarry</p>
+            </div>
+            <button class="lien-annuler">Annuler</button>
+          </div>
+          <p class="aide" style="margin-top:14px">Annulation possible jusqu'à 24 heures avant le cours. La séance revient sur ton solde.</p>
+        </section>
+
+        <section class="carte">
+          <div class="bloc-tete"><h3>Ma formule</h3></div>
+          <div class="ligne-abo"><span>Formule</span><span>Abonnement 8 séances</span></div>
+          <div class="ligne-abo"><span>Montant</span><span>70 € toutes les 4 semaines</span></div>
+          <div class="ligne-abo"><span>Prochain paiement</span><span>27 septembre</span></div>
+          <div class="ligne-abo"><span>Carte</span><span>Visa •••• 4417</span></div>
+          <a class="btn btn-neutre btn-sm" href="#" style="width:100%;margin-top:14px">Gérer mon abonnement</a>
+          <p class="aide" style="margin-top:10px">Changer de carte, télécharger tes factures ou résilier.</p>
+        </section>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+</body>
+</html>
