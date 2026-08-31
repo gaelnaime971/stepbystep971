@@ -6,6 +6,7 @@ import { profilCourant } from "@/lib/auth/session";
 import { clientServeur } from "@/lib/supabase/server";
 import { clientService } from "@/lib/supabase/service";
 import { stripe } from "@/lib/stripe/client";
+import { urlDuSite } from "@/lib/site";
 import { envoyer } from "@/lib/emails/envoyer";
 import { confirmationReservation } from "@/lib/emails/modeles";
 import { messageReservation } from "./messages";
@@ -110,7 +111,7 @@ export async function ouvrirPortail(): Promise<void> {
   try {
     const session = await stripe().billingPortal.sessions.create({
       customer: profil.stripe_customer_id,
-      return_url: `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/compte/formule`,
+      return_url: `${urlDuSite()}/compte/formule`,
     });
     url = session.url;
   } catch {

@@ -5,16 +5,13 @@ import { profilCourant } from "@/lib/auth/session";
 import { clientServeur } from "@/lib/supabase/server";
 import { clientService } from "@/lib/supabase/service";
 import { stripe } from "@/lib/stripe/client";
+import { urlDuSite } from "@/lib/site";
 import { COLONNES_FORMULE, type Formule } from "@/lib/formules/types";
 import { estAchetable } from "@/lib/formules/types";
 
 function texte(d: FormData, champ: string): string {
   const v = d.get(champ);
   return typeof v === "string" ? v.trim() : "";
-}
-
-function origine(): string {
-  return (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
 }
 
 function versFormule(message: string): never {
@@ -87,8 +84,8 @@ export async function demarrerPaiement(donnees: FormData): Promise<void> {
     allow_promotion_codes: true,
     locale: "fr",
     client_reference_id: profil.id,
-    success_url: `${origine()}/compte/merci?session={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${origine()}/compte/formule?message=${encodeURIComponent("Paiement abandonné. Rien ne t'a été débité.")}&ton=erreur`,
+    success_url: `${urlDuSite()}/compte/merci?session={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${urlDuSite()}/compte/formule?message=${encodeURIComponent("Paiement abandonné. Rien ne t'a été débité.")}&ton=erreur`,
     // Ces metadonnees sont ce que le webhook lira : elles evitent de deviner
     // la formule a partir du prix, et survivent a un archivage de celui-ci.
     metadata: { user_id: profil.id, plan_id: formule.id, plan_slug: formule.slug },

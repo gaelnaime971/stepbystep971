@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { urlDuSite } from "@/lib/site";
 
 export function resend(): Resend {
   const cle = process.env.RESEND_API_KEY;
@@ -20,6 +21,4 @@ export function repondreA(): string {
   return process.env.EMAIL_REPLY_TO ?? "sbscoaching28@gmail.com";
 }
 
-export function siteUrl(): string {
-  return (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
-}
+export const siteUrl = urlDuSite;

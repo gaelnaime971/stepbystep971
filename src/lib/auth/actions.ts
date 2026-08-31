@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { clientServeur } from "@/lib/supabase/server";
+import { urlDuSite } from "@/lib/site";
 import type { EtatFormulaire } from "./formulaire";
 import { messageErreur } from "./messages";
 import { accueilSelonRole, COLONNES_PROFIL, type Role } from "./session";
@@ -31,10 +32,15 @@ function suiteSure(brut: string): string | null {
   return brut;
 }
 
-/** URL publique du site, pour les liens envoyes par email. */
+/**
+ * URL publique, pour les liens de confirmation et de reinitialisation.
+ *
+ * Repli sur les en-tetes de la requete quand la variable est absente : utile
+ * sur un deploiement de previsualisation, ou l'URL change a chaque commit. En
+ * production la variable est obligatoire et urlDuSite() echoue sans elle.
+ */
 async function origine(): Promise<string> {
-  const configuree = process.env.NEXT_PUBLIC_SITE_URL;
-  if (configuree) return configuree.replace(/\/$/, "");
+  if (process.env.NEXT_PUBLIC_SITE_URL?.trim()) return urlDuSite();
 
   const entetes = await headers();
   const hote = entetes.get("x-forwarded-host") ?? entetes.get("host");
