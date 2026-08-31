@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { EnteteConnectee } from "@/components/EnteteConnectee";
+import { OngletsCompte } from "@/components/OngletsCompte";
 import { profilCourant } from "@/lib/auth/session";
 
 export default async function LayoutCompte({
@@ -16,7 +17,8 @@ export default async function LayoutCompte({
   return (
     <div className="min-h-screen bg-ivoire">
       <EnteteConnectee profil={profil} />
-      <main className="mx-auto max-w-shell px-6 py-10">{children}</main>
+      <OngletsCompte />
+      <main className="mx-auto max-w-shell px-6 pt-9 pb-[70px]">{children}</main>
     </div>
   );
 }

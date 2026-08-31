@@ -1,6 +1,7 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { EnteteConnectee } from "@/components/EnteteConnectee";
+import { BoutonDeconnexion } from "@/components/BoutonDeconnexion";
+import { Marque } from "@/components/Marque";
+import { MenuAdmin } from "@/components/MenuAdmin";
 import { profilCourant } from "@/lib/auth/session";
 
 export default async function LayoutAdmin({
@@ -17,25 +18,25 @@ export default async function LayoutAdmin({
   if (profil.role !== "admin") redirect("/compte");
 
   return (
-    <div className="min-h-screen bg-ivoire">
-      <EnteteConnectee profil={profil} />
-      <div className="border-b border-sable bg-white">
-        <nav className="mx-auto flex max-w-shell gap-6 px-6">
-          {[
-            ["/admin", "Vue d'ensemble"],
-            ["/admin/formules", "Formules et tarifs"],
-          ].map(([href, libelle]) => (
-            <Link
-              key={href}
-              href={href}
-              className="border-b-2 border-transparent py-3.5 text-[15px] hover:border-framboise"
-            >
-              {libelle}
-            </Link>
-          ))}
-        </nav>
-      </div>
-      <main className="mx-auto max-w-shell px-6 py-10">{children}</main>
+    <div className="min-h-screen md:grid md:grid-cols-[236px_1fr]">
+      <aside className="flex flex-col bg-encre px-4 py-5">
+        <div className="mx-2 mb-6">
+          <Marque clair />
+        </div>
+
+        <MenuAdmin />
+
+        <div className="mt-auto flex flex-col gap-3 px-3 pt-8">
+          <p className="text-[13px] text-[#6E666A]">
+            {profil.first_name} {profil.last_name}
+          </p>
+          <BoutonDeconnexion />
+        </div>
+      </aside>
+
+      <main className="max-w-[1180px] px-6 py-8 md:px-[34px] md:pt-[30px] md:pb-[70px]">
+        {children}
+      </main>
     </div>
   );
 }

@@ -10,6 +10,7 @@ export type Profil = {
   last_name: string;
   phone: string | null;
   role: Role;
+  stripe_customer_id: string | null;
 };
 
 /**
@@ -20,7 +21,8 @@ export type Profil = {
  * hors de portee — y compris de la cliente concernee. Une etoile ici produirait
  * un « permission denied for column admin_notes ».
  */
-export const COLONNES_PROFIL = "id, email, first_name, last_name, phone, role";
+export const COLONNES_PROFIL =
+  "id, email, first_name, last_name, phone, role, stripe_customer_id";
 
 /**
  * L'utilisatrice connectee, ou null.
