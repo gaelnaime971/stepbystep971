@@ -99,6 +99,14 @@ Confirmation d'achat, confirmation de réservation, annulation d'un cours par Or
 - Stripe en mode test pendant tout le développement. Les clés sont lues depuis les variables d'environnement — passer en production ne doit jamais demander de toucher au code.
 - Ne modifie jamais le dossier `maquettes/`.
 
+## Contraintes de base de données à ne jamais oublier
+
+**`select('*')` est interdit sur `profiles` et sur `courses`.** Ces deux tables portent une colonne `admin_notes` qui ne doit être lisible ni par une visiteuse, ni par la cliente concernée. La RLS ne sait pas raisonner par colonne : la protection vient d'un `GRANT` colonne par colonne, et le `SELECT` de table a été révoqué. Une requête qui demande `*` échoue. Énumère toujours les colonnes. Oriane lit et écrit ces notes par les RPC `admin_client_notes` / `admin_course_notes`.
+
+**Toute nouvelle table dans `public` doit activer la RLS et révoquer les privilèges par défaut.** Supabase accorde automatiquement tous les verbes à `anon` et `authenticated` sur les tables du schéma `public`, et une table sans RLS y est immédiatement exposée par PostgREST. Deux gestes obligatoires dans la migration qui la crée : `alter table … enable row level security`, puis `revoke insert, update, delete … from anon, authenticated`. Ensuite seulement, on ouvre policy par policy.
+
+**Ne jamais activer `FORCE ROW LEVEL SECURITY`.** `is_admin()` et tous les RPC sont en `SECURITY DEFINER` et reposent sur le fait que le propriétaire des tables contourne la RLS. `FORCE` le soumettrait à son tour : `is_admin()` ne verrait plus rien et toute l'administration se fermerait d'un coup.
+
 ## Hors périmètre (devis complémentaire)
 
 Liste d'attente, SMS, application mobile native, comptabilité, gestion de plusieurs intervenantes, maintenance. Si le besoin surgit, signale-le, ne l'implémente pas.
