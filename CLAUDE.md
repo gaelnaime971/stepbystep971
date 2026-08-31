@@ -107,6 +107,10 @@ Confirmation d'achat, confirmation de réservation, annulation d'un cours par Or
 
 **Ne jamais activer `FORCE ROW LEVEL SECURITY`.** `is_admin()` et tous les RPC sont en `SECURITY DEFINER` et reposent sur le fait que le propriétaire des tables contourne la RLS. `FORCE` le soumettrait à son tour : `is_admin()` ne verrait plus rien et toute l'administration se fermerait d'un coup.
 
+**Une anonymisation RGPD n'est pas finie tant que `auth.users` n'a pas été traité.** `anonymize_profile()` ne touche que la table `profiles` : elle y remplace nom, prénom, téléphone, notes et email, et conserve l'`id` parce qu'une commande payée ne s'efface pas. L'email d'origine reste dans `auth.users`, hors de portée d'une fonction Postgres sans rendre le schéma fragile à chaque montée de version Supabase. La route serveur **doit** enchaîner sur l'Admin API : substitution de l'email et bannissement du compte. Une anonymisation à moitié faite est pire que pas d'anonymisation — elle donne la conviction d'avoir effacé ce qui est toujours là.
+
+**Toute nouvelle fonction doit révoquer `EXECUTE` à quatre rôles, puis le réaccorder nommément.** Deux mécanismes se cumulent. Postgres accorde `EXECUTE` à `PUBLIC` par défaut, et Supabase configure en plus le schéma `public` avec un `alter default privileges … grant all on functions to postgres, anon, authenticated, service_role` : chaque fonction créée reçoit donc un `GRANT` **nominatif** à ces trois rôles, qui survit à la révocation faite à `PUBLIC`. Révoquer à `PUBLIC` seul ne suffit pas. Le geste obligatoire est `revoke execute on all functions in schema public from public, anon, authenticated, service_role`, puis un `grant execute` explicite au seul rôle concerné. Une fonction `SECURITY DEFINER` oubliée est appelable avec les droits du propriétaire : c'est ainsi qu'on se fait créditer des séances sans payer. Les fonctions Stripe et cron ne vont jamais à `authenticated`.
+
 ## Hors périmètre (devis complémentaire)
 
 Liste d'attente, SMS, application mobile native, comptabilité, gestion de plusieurs intervenantes, maintenance. Si le besoin surgit, signale-le, ne l'implémente pas.
