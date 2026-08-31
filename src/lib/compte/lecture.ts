@@ -5,7 +5,8 @@ import type {
 
 const COLONNES_LOT = "id, quantity_remaining, expires_at, plan_id";
 const COLONNES_COURS = "id, starts_at, ends_at, capacity, seats_taken, status, location_id";
-const COLONNES_FORMULE_LISIBLE = "id, name, price_cents, cancellation_deadline_hours, kind";
+const COLONNES_FORMULE_LISIBLE =
+  "id, slug, name, price_cents, cancellation_deadline_hours, kind";
 
 /**
  * Les lots ACTIFS, du plus proche au plus lointain.

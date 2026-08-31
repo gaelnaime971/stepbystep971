@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Bandeau } from "@/components/Bandeau";
+import { BoutonAchat } from "@/components/BoutonAchat";
 import { Pastille } from "@/components/Pastille";
 import { ouvrirPortail } from "@/lib/compte/actions";
 import {
@@ -213,19 +214,24 @@ export default async function PageMaFormule({
             </p>
           ) : (
             enVente.map((f) => (
-              <div
-                key={f.id}
-                className="flex items-center justify-between gap-3 border-b border-sable py-3 last:border-b-0"
-              >
-                <span className="text-[15px] font-medium">{f.name}</span>
-                <span className="chiffre text-lg text-framboise">
-                  {prixLisible(f.price_cents)}
-                </span>
+              <div key={f.id} className="border-b border-sable py-4 last:border-b-0">
+                <div className="mb-3 flex items-baseline justify-between gap-3">
+                  <span className="text-[15px] font-medium">{f.name}</span>
+                  <span className="chiffre text-lg text-framboise">
+                    {prixLisible(f.price_cents)}
+                  </span>
+                </div>
+                <BoutonAchat
+                  slug={f.slug}
+                  variante="ligne"
+                  libelle={f.kind === "subscription" ? "Je m'abonne" : "Je prends"}
+                />
               </div>
             ))
           )}
           <p className="mt-4 text-[13px] text-plume">
-            Le paiement en ligne arrive bientôt.
+            Paiement par carte, sécurisé par Stripe. Tu pourras entrer un code
+            promo à l&apos;étape suivante.
           </p>
         </section>
       </div>

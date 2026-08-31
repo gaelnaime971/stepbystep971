@@ -99,6 +99,45 @@ La synchronisation du seed vers Stripe passe par le bouton « Publier sur Stripe
 
 `is_active = false` retire de la vitrine et se défait. `archived_at` est définitif. Dans les deux cas le produit Stripe suit, et dans les deux cas les clientes qui ont acheté gardent leurs séances. La base est écrite **en premier** : c'est elle qui décide ce que la vitrine affiche. Si Stripe ne suit pas, la formule est déjà retirée de la vente et le message le dit.
 
+## Paiement Stripe
+
+### Le webhook
+
+**La signature se vérifie sur le corps BRUT.** Un corps déjà parsé ne produit pas le même condensat. `api/stripe/webhook` est pour cette raison **exclu du matcher du middleware** : rien ne doit toucher au corps avant `constructEvent`. Sans cette vérification, n'importe qui pourrait se créditer des séances en postant un faux `invoice.paid`.
+
+**L'insertion dans `stripe_events` EST le verrou d'idempotence.** L'événement est enregistré avant tout traitement ; un conflit sur la clé primaire signifie que Stripe rejoue, et on répond 200 sans rien recréditer. Stripe rejoue vraiment, et un double `invoice.paid` créditerait deux fois un cycle. Deuxième filet en base : `orders.stripe_invoice_id` et `orders.stripe_checkout_session_id` sont uniques.
+
+**Un échec de traitement rend un 500, jamais un 200.** Stripe réessaie sur 500 ; répondre 200 sur un échec ferait disparaître l'événement pour toujours. `processed_at` reste à `NULL` et `stripe_events_unprocessed_idx` sert à les retrouver.
+
+### Deux pièges de version d'API
+
+L'API `2026-08-26.dahlia` a déplacé deux champs, et les deux comptent :
+
+- `invoice.subscription` → **`invoice.parent.subscription_details.subscription`**
+- `subscription.current_period_end` → **`subscription.items.data[0].current_period_end`**
+
+Le second est le plus grave : c'est cette date qui devient l'`expires_at` du lot. S'y tromper ferait expirer les séances au mauvais moment. `src/lib/paiement/webhook.ts` lit les deux formes, pour survivre à un changement de version épinglée.
+
+### Qui traite quoi
+
+**Un abonnement est traité par `invoice.paid`, jamais par `checkout.session.completed`.** Les deux événements arrivent dans un ordre non garanti, et seule la facture porte la période. Le handler de session ignore donc `mode: "subscription"` — un seul chemin, pas deux qui se marchent dessus.
+
+`credit_order()` applique la règle 2 : au renouvellement, le reliquat est annulé et tracé (`subscription_reset`), le solde repart à N. Il ne s'additionne jamais.
+
+### Les relances
+
+`invoice.payment_failed` arrive à **chaque** tentative. `next_payment_attempt` non nul signifie que Stripe réessaiera tout seul : on note l'échec pour que la cliente voie « paiement en attente », et **rien de plus** — pas d'email, aucune séance retirée. Le lot en cours vit jusqu'à son expiration ; c'est l'absence de nouveau lot au cycle suivant qui fait effet.
+
+Seul `next_payment_attempt === null` déclenche l'email, et `apply_subscription_payment_failed()` ne rend `true` **qu'une seule fois** — les tentatives suivantes ne renvoient rien.
+
+### Remboursements
+
+Un remboursement **total** révoque le solde encore disponible du lot (`close_reason = 'revoked'`). Les séances déjà consommées le restent : un cours suivi ne se défait pas parce qu'un paiement est remboursé. Un remboursement **partiel** n'entraîne aucune révocation automatique — la moitié d'un pack n'a pas de traduction évidente en nombre de séances, Oriane arbitre avec `admin_revoke_credits`.
+
+### service_role
+
+`clientService()` contourne la RLS. Deux usages, et aucun autre : les webhooks Stripe, qui n'ont pas de session, et les jobs planifiés. Une exception : la pose de `profiles.stripe_customer_id` au premier paiement, car `authenticated` n'a pas le droit d'écrire cette colonne. Ne jamais l'utiliser par commodité dans une action qui agit au nom d'une cliente : la RLS est la protection.
+
 ## Les lieux
 
 Les Abymes, Le Moule, Jarry. Gérés en table, pas en enum figé — elle en ouvrira d'autres.

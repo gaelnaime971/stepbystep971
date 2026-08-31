@@ -46,6 +46,7 @@ export type Achat = {
 
 export type FormuleLisible = {
   id: string;
+  slug: string;
   name: string;
   price_cents: number;
   cancellation_deadline_hours: number;
