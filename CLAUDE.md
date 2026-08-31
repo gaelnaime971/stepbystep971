@@ -138,6 +138,37 @@ Un remboursement **total** révoque le solde encore disponible du lot (`close_re
 
 `clientService()` contourne la RLS. Deux usages, et aucun autre : les webhooks Stripe, qui n'ont pas de session, et les jobs planifiés. Une exception : la pose de `profiles.stripe_customer_id` au premier paiement, car `authenticated` n'a pas le droit d'écrire cette colonne. Ne jamais l'utiliser par commodité dans une action qui agit au nom d'une cliente : la RLS est la protection.
 
+## Emails et jobs planifiés
+
+### Une seule structure, deux rendus
+
+Chaque modèle rend un objet **et un contenu structuré** — jamais du HTML en dur. `rendre()` en tire la version HTML et la version texte à partir de la **même** source. Une cliente qui lit en texte brut — messagerie professionnelle, images coupées, lecteur d'écran — reçoit la même information, pas un résumé. Deux gabarits séparés divergeraient à la première modification.
+
+L'expéditeur envoie depuis `contact@stepbystep-guadeloupe.fr`, mais le **reply-to est `sbscoaching28@gmail.com`** : l'adresse d'envoi n'a pas de boîte, une réponse y partirait dans le vide.
+
+Les lieux portent leur article dans leur nom. `auLieu()` produit « aux Abymes », « au Moule », « à Jarry » — coller « à » devant donnerait « à Les Abymes », qui ne se dit pas.
+
+### L'idempotence est en base, pas dans le code
+
+La ligne d'`email_log` est écrite **avant** l'envoi : c'est elle qui réserve la place. Les index uniques partiels de 0002 font le reste — une alerte de fin de validité par lot, un échec de paiement par facture, une fin d'abonnement par abonnement. Deux crons qui se chevauchent, ou un webhook rejoué, butent sur la contrainte au lieu d'écrire deux fois à la même cliente.
+
+Sur échec d'envoi, deux comportements selon l'appelant :
+
+- **`reessayable: true`** (crons) — la réservation est effacée, l'exécution du lendemain reprendra le lot. Perdre l'alerte serait pire qu'un doublon improbable : la cliente perdrait ses séances sans avoir été prévenue.
+- **`reessayable: false`** (webhooks, actions) — la ligne reste avec son erreur. Au plus une fois, et la trace du problème est conservée.
+
+**Un échec d'envoi ne fait jamais échouer l'appelant.** Le paiement est encaissé, la séance est réservée, le cours est annulé : rejouer l'événement ne changerait rien à cela. L'erreur se lit dans `email_log`.
+
+Une exception à signaler : quand un mail d'annulation de cours ne part pas, l'admin le dit à Oriane — « 2 mails n'ont pas pu partir : préviens-les toi-même ». Un cours annulé dont l'inscrite n'apprend rien est le pire cas possible.
+
+### Les crons
+
+`Authorization: Bearer <CRON_SECRET>`, comparé **à temps constant** : une comparaison naïve laisse fuir la longueur du préfixe correct, ce qui suffit à retrouver un secret à force d'essais. `/api/cron` est exclu du matcher du middleware — l'authentification est un en-tête, pas un cookie.
+
+L'ordre compte : **les alertes à 9 h, l'expiration à 9 h 30**. Prévenir d'abord, solder ensuite.
+
+Rappel : `expire_credit_lots` est de la **pure comptabilité**. L'expiration est déjà appliquée par le `WHERE` de toute requête de solde et de réservation. Même si le cron ne tourne jamais, une séance échue est inutilisable — le balayage sert à équilibrer le grand livre et à alimenter l'historique.
+
 ## Les lieux
 
 Les Abymes, Le Moule, Jarry. Gérés en table, pas en enum figé — elle en ouvrira d'autres.

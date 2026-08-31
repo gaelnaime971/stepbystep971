@@ -1,6 +1,8 @@
 import type Stripe from "stripe";
 import { clientService } from "@/lib/supabase/service";
 import { stripe } from "@/lib/stripe/client";
+import { envoyer } from "@/lib/emails/envoyer";
+import { confirmationAchat, paiementEchoue } from "@/lib/emails/modeles";
 
 type Base = ReturnType<typeof clientService>;
 
@@ -70,6 +72,51 @@ async function utilisatriceDuClient(base: Base, customerId: string | null): Prom
 const idDe = (v: string | { id: string } | null | undefined): string | null =>
   !v ? null : typeof v === "string" ? v : v.id;
 
+/**
+ * Previent la cliente qu'elle a ete creditee.
+ *
+ * Un echec d'envoi ne doit JAMAIS faire echouer le webhook : le paiement est
+ * encaisse, les seances sont creditees, et rejouer l'evenement ne changerait
+ * rien a cela. L'erreur est journalisee dans email_log et le webhook rend 200.
+ */
+async function notifierAchat(
+  base: Base,
+  a: { userId: string; planId: string; orderId: string; montant: number; recurrent: boolean },
+): Promise<void> {
+  try {
+    const [{ data: profil }, { data: formule }, { data: lot }] = await Promise.all([
+      base.from("profiles").select("email, first_name").eq("id", a.userId)
+        .maybeSingle<{ email: string; first_name: string }>(),
+      base.from("plans").select("name, sessions_count").eq("id", a.planId)
+        .maybeSingle<{ name: string; sessions_count: number }>(),
+      base.from("credit_lots").select("quantity_remaining, expires_at").eq("order_id", a.orderId)
+        .maybeSingle<{ quantity_remaining: number; expires_at: string }>(),
+    ]);
+
+    if (!profil || !formule || !lot) return;
+
+    const { objet, contenu } = confirmationAchat({
+      prenom: profil.first_name,
+      formule: formule.name,
+      seances: lot.quantity_remaining,
+      expire: lot.expires_at,
+      montantCents: a.montant,
+      recurrent: a.recurrent,
+    });
+
+    await envoyer({
+      modele: "purchase_confirmation",
+      userId: a.userId,
+      destinataire: profil.email,
+      objet,
+      contenu,
+      liens: { order_id: a.orderId },
+    });
+  } catch (erreur) {
+    console.error("confirmation d'achat non envoyée :", erreur);
+  }
+}
+
 // ---------------------------------------------------------------------------
 // checkout.session.completed — achat unique
 // ---------------------------------------------------------------------------
@@ -115,6 +162,11 @@ export async function traiterSessionTerminee(session: Stripe.Checkout.Session): 
 
   const { error: erreurCredit } = await base.rpc("credit_order", { p_order_id: commande.id });
   if (erreurCredit) throw new Error(`crédit refusé : ${erreurCredit.message}`);
+
+  await notifierAchat(base, {
+    userId, planId, orderId: commande.id,
+    montant: session.amount_total ?? 0, recurrent: false,
+  });
 
   return `commande ${commande.id} créditée`;
 }
@@ -201,6 +253,11 @@ export async function traiterFacturePayee(facture: Stripe.Invoice): Promise<stri
   const { error: erreurCredit } = await base.rpc("credit_order", { p_order_id: commande.id });
   if (erreurCredit) throw new Error(`crédit refusé : ${erreurCredit.message}`);
 
+  await notifierAchat(base, {
+    userId, planId, orderId: commande.id,
+    montant: facture.amount_paid, recurrent: true,
+  });
+
   return `cycle ${commande.id} crédité, solde remis à neuf`;
 }
 
@@ -236,10 +293,39 @@ export async function traiterEchecPaiement(facture: Stripe.Invoice): Promise<str
   if (error) throw new Error(`échec non enregistré : ${error.message}`);
 
   if (doitNotifier === true) {
-    // Vrai une seule fois, au passage a l'echec definitif. C'est le signal
-    // d'envoi de l'email payment_failed — Resend n'est pas encore branche,
-    // et rien ne doit faire croire qu'il l'est.
-    return "échec définitif enregistré — email à envoyer (Resend non branché)";
+    // Vrai une SEULE fois, au passage a l'echec definitif. Les tentatives
+    // suivantes ne repassent pas ici.
+    const { data: details } = await base
+      .from("subscriptions")
+      .select("user_id, plan_id, current_period_end")
+      .eq("id", ligne.id)
+      .maybeSingle<{ user_id: string; plan_id: string; current_period_end: string | null }>();
+
+    if (details) {
+      const [{ data: profil }, { data: formule }] = await Promise.all([
+        base.from("profiles").select("email, first_name").eq("id", details.user_id)
+          .maybeSingle<{ email: string; first_name: string }>(),
+        base.from("plans").select("name").eq("id", details.plan_id)
+          .maybeSingle<{ name: string }>(),
+      ]);
+
+      if (profil) {
+        const { objet, contenu } = paiementEchoue({
+          prenom: profil.first_name,
+          formule: formule?.name ?? "abonnement",
+          finValidite: details.current_period_end,
+        });
+        await envoyer({
+          modele: "payment_failed",
+          userId: details.user_id,
+          destinataire: profil.email,
+          objet,
+          contenu,
+          liens: { subscription_id: ligne.id, stripe_invoice_id: facture.id ?? undefined },
+        });
+      }
+    }
+    return "échec définitif : cliente prévenue";
   }
 
   return definitif

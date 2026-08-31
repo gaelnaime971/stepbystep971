@@ -4,7 +4,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { profilCourant } from "@/lib/auth/session";
 import { clientServeur } from "@/lib/supabase/server";
+import { clientService } from "@/lib/supabase/service";
 import { stripe } from "@/lib/stripe/client";
+import { envoyer } from "@/lib/emails/envoyer";
+import { confirmationReservation } from "@/lib/emails/modeles";
 import { messageReservation } from "./messages";
 
 function texte(d: FormData, champ: string): string {
@@ -35,11 +38,21 @@ export async function reserver(donnees: FormData): Promise<void> {
   if (!profil) redirect("/connexion?suite=/compte");
 
   const supabase = await clientServeur();
-  const { error } = await supabase.rpc("book_course", {
-    p_course_id: texte(donnees, "coursId"),
+  const coursId = texte(donnees, "coursId");
+  const { data: reservationId, error } = await supabase.rpc("book_course", {
+    p_course_id: coursId,
   });
 
   if (error) retour(messageReservation(error.code), "erreur");
+
+  // L'email est un a-cote : la seance est reservee, une panne de Resend ne doit
+  // pas faire croire le contraire ni annuler quoi que ce soit.
+  try {
+    await notifierReservation(profil.id, coursId, String(reservationId));
+  } catch (erreur) {
+    console.error("confirmation de réservation non envoyée :", erreur);
+  }
+
   retour("Réservé. On se voit là-bas.", "succes");
 }
 
@@ -144,4 +157,67 @@ export async function modifierProfil(donnees: FormData): Promise<void> {
   redirect(
     `/compte/profil?message=${encodeURIComponent("C'est enregistré.")}&ton=succes`,
   );
+}
+
+/**
+ * Confirme la reservation par email.
+ *
+ * Le delai d'annulation vient de la formule qui a finance la seance (regle 6),
+ * lu via le lot debite — jamais un 24 h en dur.
+ */
+async function notifierReservation(
+  userId: string,
+  coursId: string,
+  bookingId: string,
+): Promise<void> {
+  const base = clientService();
+
+  const [{ data: profil }, { data: cours }, { data: reservation }] = await Promise.all([
+    base.from("profiles").select("email, first_name").eq("id", userId)
+      .maybeSingle<{ email: string; first_name: string }>(),
+    base.from("courses").select("starts_at, ends_at, location_id").eq("id", coursId)
+      .maybeSingle<{ starts_at: string; ends_at: string; location_id: string }>(),
+    base.from("bookings").select("credit_lot_id").eq("id", bookingId)
+      .maybeSingle<{ credit_lot_id: string }>(),
+  ]);
+  if (!profil || !cours) return;
+
+  const { data: lieu } = await base.from("locations").select("name")
+    .eq("id", cours.location_id).maybeSingle<{ name: string }>();
+
+  let delai = 24;
+  if (reservation) {
+    const { data: lot } = await base.from("credit_lots").select("plan_id")
+      .eq("id", reservation.credit_lot_id).maybeSingle<{ plan_id: string | null }>();
+    if (lot?.plan_id) {
+      const { data: formule } = await base.from("plans")
+        .select("cancellation_deadline_hours").eq("id", lot.plan_id)
+        .maybeSingle<{ cancellation_deadline_hours: number }>();
+      delai = formule?.cancellation_deadline_hours ?? 24;
+    }
+  }
+
+  const { data: restants } = await base
+    .from("credit_lots").select("quantity_remaining")
+    .eq("user_id", userId).is("closed_at", null)
+    .gt("quantity_remaining", 0).gt("expires_at", new Date().toISOString())
+    .returns<{ quantity_remaining: number }[]>();
+
+  const { objet, contenu } = confirmationReservation({
+    prenom: profil.first_name,
+    debut: cours.starts_at,
+    fin: cours.ends_at,
+    lieu: lieu?.name ?? "le lieu habituel",
+    delaiHeures: delai,
+    soldeRestant: (restants ?? []).reduce((n, l) => n + l.quantity_remaining, 0),
+  });
+
+  await envoyer({
+    modele: "booking_confirmation",
+    userId,
+    destinataire: profil.email,
+    objet,
+    contenu,
+    liens: { booking_id: bookingId, course_id: coursId },
+  });
 }

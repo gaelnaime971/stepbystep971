@@ -5,6 +5,9 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { profilCourant } from "@/lib/auth/session";
 import { clientServeur } from "@/lib/supabase/server";
+import { clientService } from "@/lib/supabase/service";
+import { envoyer } from "@/lib/emails/envoyer";
+import { coursAnnule } from "@/lib/emails/modeles";
 import { enDate, enHeure } from "@/lib/dates";
 import { ajouterJours, instantGuadeloupe } from "./dates";
 import { messagePlanning } from "./erreurs";
@@ -216,16 +219,31 @@ export async function annulerCours(donnees: FormData): Promise<void> {
   const touchees = lignes.length;
   const recreditees = lignes.filter((l) => l.refunded).length;
 
+  // Regle 7 : recredit ET email. Le recredit est deja fait par le RPC, en
+  // transaction. Les emails partent apres, un par inscrite, et un echec
+  // d'envoi ne defait rien — il se lit dans email_log.
+  const envois = await prevenirDesAnnulations(id, lignes);
+
   // Le decompte est explicite : une seance non recreditee (lot expire ou
   // ferme entre-temps) doit se voir, pas se deviner.
+  const prevenues = envois.filter((e) => e).length;
   const message =
     touchees === 0
       ? "Cours annulé. Personne n'était inscrite."
       : recreditees === touchees
-        ? `Cours annulé. ${touchees} inscrite${touchees > 1 ? "s" : ""} recréditée${touchees > 1 ? "s" : ""}. Préviens-les.`
-        : `Cours annulé. ${recreditees} recréditée${recreditees > 1 ? "s" : ""} sur ${touchees} — pour les autres, le solde qui avait financé la séance n'est plus valable. Préviens-les.`;
+        ? `Cours annulé. ${touchees} inscrite${touchees > 1 ? "s" : ""} recréditée${touchees > 1 ? "s" : ""} et prévenue${touchees > 1 ? "s" : ""} par mail.`
+        : `Cours annulé. ${recreditees} recréditée${recreditees > 1 ? "s" : ""} sur ${touchees} — pour les autres, le solde qui avait financé la séance n'est plus valable. Toutes ont reçu un mail.`;
 
-  retour("/admin/planning", message, touchees === recreditees ? "succes" : "erreur");
+  const alerte =
+    prevenues < touchees
+      ? ` ${touchees - prevenues} mail${touchees - prevenues > 1 ? "s" : ""} n'${touchees - prevenues > 1 ? "ont" : "a"} pas pu partir : préviens-les toi-même.`
+      : "";
+
+  retour(
+    "/admin/planning",
+    message + alerte,
+    touchees === recreditees && !alerte ? "succes" : "erreur",
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -335,5 +353,61 @@ export async function basculerLieu(donnees: FormData): Promise<void> {
       ? `« ${nom} » est de nouveau utilisable.`
       : `« ${nom} » est fermé. Les cours déjà programmés là-bas ne bougent pas.`,
     "succes",
+  );
+}
+
+/**
+ * Previent chaque inscrite qu'un cours est annule.
+ *
+ * Rend un booleen par inscrite : l'admin doit savoir si un mail n'est pas
+ * parti, pour prevenir a la main. Un cours annule dont l'inscrite n'apprend
+ * rien est le pire cas possible.
+ */
+async function prevenirDesAnnulations(
+  coursId: string,
+  lignes: { user_id: string; refunded: boolean }[],
+): Promise<boolean[]> {
+  if (lignes.length === 0) return [];
+
+  const base = clientService();
+  const { data: cours } = await base
+    .from("courses")
+    .select("starts_at, location_id, cancellation_reason")
+    .eq("id", coursId)
+    .maybeSingle<{ starts_at: string; location_id: string; cancellation_reason: string | null }>();
+  if (!cours) return lignes.map(() => false);
+
+  const { data: lieu } = await base
+    .from("locations").select("name").eq("id", cours.location_id)
+    .maybeSingle<{ name: string }>();
+
+  const { data: profils } = await base
+    .from("profiles").select("id, email, first_name")
+    .in("id", lignes.map((l) => l.user_id))
+    .returns<{ id: string; email: string; first_name: string }[]>();
+
+  const parId = new Map((profils ?? []).map((p) => [p.id, p]));
+
+  return Promise.all(
+    lignes.map(async (l) => {
+      const p = parId.get(l.user_id);
+      if (!p) return false;
+      const { objet, contenu } = coursAnnule({
+        prenom: p.first_name,
+        debut: cours.starts_at,
+        lieu: lieu?.name ?? "le lieu habituel",
+        motif: cours.cancellation_reason,
+        recreditee: l.refunded,
+      });
+      const r = await envoyer({
+        modele: "course_canceled",
+        userId: l.user_id,
+        destinataire: p.email,
+        objet,
+        contenu,
+        liens: { course_id: coursId },
+      });
+      return r.etat === "envoye" || r.etat === "deja_envoye";
+    }),
   );
 }

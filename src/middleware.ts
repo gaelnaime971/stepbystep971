@@ -15,7 +15,10 @@ export const config = {
      * /api/stripe/webhook est EXCLU : Stripe n'a pas de session, et le
      * middleware n'a rien a y rafraichir. Surtout, il ne doit rien pouvoir
      * faire au corps de la requete — la signature se verifie sur le corps brut.
+     *
+     * /api/cron aussi : Vercel Cron s'authentifie par un en-tete Bearer, pas
+     * par un cookie de session.
      */
-    "/((?!_next/static|_next/image|favicon.ico|api/stripe/webhook|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|api/stripe/webhook|api/cron|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico)$).*)",
   ],
 };
