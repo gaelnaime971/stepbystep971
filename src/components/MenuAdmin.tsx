@@ -6,22 +6,18 @@ import { usePathname } from "next/navigation";
 type Entree = { href?: string; libelle: string; groupe?: never };
 type Groupe = { groupe: string; href?: never; libelle?: never };
 
-/**
- * Les entrees sans `href` correspondent aux ecrans pas encore construits. Elles
- * figurent quand meme : Oriane doit voir ou va le produit, et un lien mort
- * serait pire qu'un libelle grise.
- */
+/** Tous les ecrans existent. Le type garde la porte ouverte pour la suite. */
 const ENTREES: ReadonlyArray<Entree | Groupe> = [
   { href: "/admin", libelle: "Vue d'ensemble" },
   { href: "/admin/planning", libelle: "Planning des cours" },
-  { libelle: "Mes clientes" },
+  { href: "/admin/clientes", libelle: "Mes clientes" },
   { groupe: "Ventes" },
   { href: "/admin/formules", libelle: "Formules et tarifs" },
-  { libelle: "Codes promo" },
-  { libelle: "Paiements" },
+  { href: "/admin/promos", libelle: "Codes promo" },
+  { href: "/admin/paiements", libelle: "Paiements" },
   { groupe: "Réglages" },
   { href: "/admin/lieux", libelle: "Lieux" },
-  { libelle: "Paramètres" },
+  { href: "/admin/parametres", libelle: "Paramètres" },
 ];
 
 export function MenuAdmin() {
