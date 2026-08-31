@@ -59,6 +59,46 @@ Les trois familles de formules ne changent que la façon de recharger ce solde.
 
 Ajouter ou retirer une séance à la main, désinscrire une cliente d'un cours, consulter l'historique. Ce sont des gestes de rattrapage, ils doivent être tracés.
 
+## Formules et Stripe
+
+**Oriane est autonome sur ses formules. Elle n'ouvre jamais le tableau de bord Stripe.** Tout se pilote depuis `/admin/formules` : créer, publier, retirer de la vente, archiver, corriger. Stripe est un exécutant, pas une console d'administration.
+
+### L'ordre des opérations, et pourquoi
+
+**Stripe d'abord, la base ensuite.** À la création, la route serveur crée le produit puis le prix chez Stripe, et n'écrit la ligne `plans` qu'une fois les deux identifiants en main. Une formule enregistrée sans `stripe_price_id` serait visible sur la vitrine et impossible à payer — le pire des deux mondes.
+
+Trois compensations, dans cet ordre de gravité :
+
+1. **Le prix Stripe échoue après le produit** → le produit est archivé avant que l'erreur remonte. Pas de produit orphelin.
+2. **La base échoue après Stripe** → le produit *et* le prix sont archivés. C'est le cas du slug déjà pris qui passerait le pré-contrôle par une écriture concurrente.
+3. **Stripe échoue d'emblée** → rien n'est écrit nulle part, le message dit « rien n'a été créé, tu peux réessayer ».
+
+Un pré-contrôle d'unicité du slug est fait **avant** d'appeler Stripe : moins cher qu'un aller-retour suivi d'une compensation. La contrainte `plans_slug_key` reste le juge, et son `23505` est traduit en français.
+
+### Deux immuabilités qui se répondent
+
+**Côté base, règle 10** : le prix d'une formule vendue ne change pas, le trigger `plans_guard_immutable` le refuse. L'admin le dit *avant* qu'Oriane essaie — la fiche formule compte les commandes et remplace le formulaire de tarif par l'explication et un bouton « Créer une nouvelle formule à partir de celle-ci ».
+
+**Côté Stripe, un `price` est immuable aussi.** On ne modifie jamais un prix existant : on en crée un nouveau et on désactive l'ancien. Le nouveau prix est créé **avant** la désactivation de l'ancien, pour que la formule ne soit jamais ni à l'un ni à l'autre.
+
+Ces deux règles se rejoignent sur une formule **jamais vendue** : là, le tarif est encore corrigeable. La base l'autorise (aucune commande), et Stripe reçoit un nouveau `price` sur le **même produit** — c'est la même formule, au même nom. Dès la première vente, cette porte se ferme des deux côtés.
+
+Le nom et l'argumentaire, eux, restent modifiables à vie : le produit Stripe est renommé en conséquence. Seul le prix est gravé.
+
+### Règle 3, imposée dans le code
+
+Un abonnement se prélève **toutes les 4 semaines**. Une seule fonction du code fabrique une récurrence Stripe, et elle ne sait produire que `interval: "week", interval_count: 4`. Une assertion la suit, pour qu'une modification future échoue bruyamment au lieu de créer un prélèvement mensuel. Le serveur écrase la validité saisie dans le formulaire quand le type est `subscription` : il ne fait pas confiance à l'interface.
+
+### Une formule sans `stripe_price_id` n'est pas achetable
+
+C'est l'état des 6 formules du seed 0006, et de toute formule dont la publication a échoué. Il se voit à trois endroits : une pastille ambre sur la ligne, un bandeau en tête de liste qui les nomme, et — la vraie protection — **la vitrine ne doit jamais proposer à l'achat une formule dans cet état**. Utilise `estAchetable()`, jamais `is_active` seul.
+
+La synchronisation du seed vers Stripe passe par le bouton « Publier sur Stripe » de chaque ligne, pas par un script. Le chemin de code est le même que celui de la création, donc éprouvé en permanence, et Oriane peut rattraper elle-même un échec.
+
+### Retirer de la vente, archiver
+
+`is_active = false` retire de la vitrine et se défait. `archived_at` est définitif. Dans les deux cas le produit Stripe suit, et dans les deux cas les clientes qui ont acheté gardent leurs séances. La base est écrite **en premier** : c'est elle qui décide ce que la vitrine affiche. Si Stripe ne suit pas, la formule est déjà retirée de la vente et le message le dit.
+
 ## Les lieux
 
 Les Abymes, Le Moule, Jarry. Gérés en table, pas en enum figé — elle en ouvrira d'autres.
