@@ -111,6 +111,15 @@ Confirmation d'achat, confirmation de réservation, annulation d'un cours par Or
 
 **Toute nouvelle fonction doit révoquer `EXECUTE` à quatre rôles, puis le réaccorder nommément.** Deux mécanismes se cumulent. Postgres accorde `EXECUTE` à `PUBLIC` par défaut, et Supabase configure en plus le schéma `public` avec un `alter default privileges … grant all on functions to postgres, anon, authenticated, service_role` : chaque fonction créée reçoit donc un `GRANT` **nominatif** à ces trois rôles, qui survit à la révocation faite à `PUBLIC`. Révoquer à `PUBLIC` seul ne suffit pas. Le geste obligatoire est `revoke execute on all functions in schema public from public, anon, authenticated, service_role`, puis un `grant execute` explicite au seul rôle concerné. Une fonction `SECURITY DEFINER` oubliée est appelable avec les droits du propriétaire : c'est ainsi qu'on se fait créditer des séances sans payer. Les fonctions Stripe et cron ne vont jamais à `authenticated`.
 
+**Devenir admin ne passe pas par l'application, et c'est voulu.** `profiles.role` n'est modifiable ni par une policy ni par un RPC : `authenticated` n'a le droit d'écrire que `first_name`, `last_name` et `phone`. Personne ne peut se promouvoir, pas même Oriane. La promotion se fait une fois, à la main, dans le SQL Editor :
+
+```sql
+update public.profiles set role = 'admin' where email = 'adresse@exemple.fr';
+```
+
+Le compte doit exister au préalable — donc s'être inscrit par `/inscription`. C'est le seul geste d'administration qui reste hors de l'application.
+
+
 ## Hors périmètre (devis complémentaire)
 
 Liste d'attente, SMS, application mobile native, comptabilité, gestion de plusieurs intervenantes, maintenance. Si le besoin surgit, signale-le, ne l'implémente pas.

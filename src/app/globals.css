@@ -1,26 +1,79 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ---------------------------------------------------------------------------
+   Tokens — source de verite : maquettes/tokens.css
+   Aucune couleur, aucune taille, aucune police qui n'y figure pas.
+   --------------------------------------------------------------------------- */
+
+@theme {
+  --color-framboise: #D81840;
+  --color-framboise-deep: #A80F30;
+  --color-framboise-wash: #FBE7EC;
+
+  --color-encre: #1B1B1D;
+  --color-encre-soft: #3A3A3E;
+  --color-ivoire: #FAF6F4;
+  --color-sable: #EFE7E4;
+  --color-sable-deep: #D9CCC7;
+  --color-plume: #7C7076;
+
+  --color-menthe: #1F8F63;
+  --color-menthe-wash: #E4F2EB;
+  --color-ambre: #B9741A;
+  --color-ambre-wash: #FBEEDC;
+
+  --font-display: var(--police-archivo), system-ui, sans-serif;
+  --font-texte: var(--police-karla), system-ui, sans-serif;
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+
+  --container-shell: 1120px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  body {
+    background-color: var(--color-ivoire);
+    color: var(--color-encre);
+    font-family: var(--font-texte);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.02;
+  }
+  h1 { font-size: clamp(34px, 6vw, 60px); }
+  h2 { font-size: clamp(26px, 3.6vw, 38px); }
+  h3 { font-size: 20px; font-weight: 600; }
+
+  /* Le focus est visible partout : c'est la seule facon de traverser ces
+     formulaires au clavier. */
+  :focus-visible {
+    outline: 2px solid var(--color-encre);
+    outline-offset: 2px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  /* Titres et chiffres : Archivo, italique, 700. */
+  .chiffre {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+  }
 }
