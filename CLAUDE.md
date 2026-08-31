@@ -160,6 +160,9 @@ update public.profiles set role = 'admin' where email = 'adresse@exemple.fr';
 Le compte doit exister au préalable — donc s'être inscrit par `/inscription`. C'est le seul geste d'administration qui reste hors de l'application.
 
 
+**Un horaire de cours se compose avec l'offset `-04:00`, jamais avec un `Date` local.** La Guadeloupe est à UTC−4 toute l'année, sans changement d'heure. Quand Oriane saisit « 18:30 », l'instant exact est `new Date("2026-09-09T18:30:00-04:00")` — construire un `Date` à partir de la saisie donnerait le fuseau du serveur, c'est-à-dire celui de Vercel, pas le sien. Même règle pour une répétition hebdomadaire : on ajoute 7 jours à la **date calendaire** puis on recompose l'instant, plutôt que d'ajouter 604 800 000 ms. `src/lib/planning/dates.ts` est le seul endroit qui fabrique ces instants.
+
+
 ## Hors périmètre (devis complémentaire)
 
 Liste d'attente, SMS, application mobile native, comptabilité, gestion de plusieurs intervenantes, maintenance. Si le besoin surgit, signale-le, ne l'implémente pas.

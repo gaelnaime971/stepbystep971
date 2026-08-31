@@ -127,17 +127,27 @@ export function ChampNombre(
 export function Selecteur(
   props: PropsCommunes & {
     options: ReadonlyArray<{ valeur: string; libelle: string }>;
+    /** Selection pilotee par le parent. Exclusif avec `valeurParDefaut`. */
     valeur?: string;
+    valeurParDefaut?: string;
     onChange?: (valeur: string) => void;
     desactive?: boolean;
   },
 ) {
+  // React refuse `value` et `defaultValue` ensemble : on choisit selon ce que
+  // l'appelant fournit, plutot que de passer un undefined qui rendrait le
+  // champ non controle sans le dire.
+  const pilotage =
+    props.valeur !== undefined
+      ? { value: props.valeur }
+      : { defaultValue: props.valeurParDefaut };
+
   return (
     <Enveloppe {...props}>
       <select
         id={props.nom}
         name={props.nom}
-        value={props.valeur}
+        {...pilotage}
         disabled={props.desactive}
         onChange={props.onChange ? (e) => props.onChange!(e.target.value) : undefined}
         aria-describedby={props.aide ? `${props.nom}-aide` : undefined}

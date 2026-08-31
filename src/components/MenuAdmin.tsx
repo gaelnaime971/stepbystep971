@@ -13,14 +13,14 @@ type Groupe = { groupe: string; href?: never; libelle?: never };
  */
 const ENTREES: ReadonlyArray<Entree | Groupe> = [
   { href: "/admin", libelle: "Vue d'ensemble" },
-  { libelle: "Planning des cours" },
+  { href: "/admin/planning", libelle: "Planning des cours" },
   { libelle: "Mes clientes" },
   { groupe: "Ventes" },
   { href: "/admin/formules", libelle: "Formules et tarifs" },
   { libelle: "Codes promo" },
   { libelle: "Paiements" },
   { groupe: "Réglages" },
-  { libelle: "Lieux" },
+  { href: "/admin/lieux", libelle: "Lieux" },
   { libelle: "Paramètres" },
 ];
 
