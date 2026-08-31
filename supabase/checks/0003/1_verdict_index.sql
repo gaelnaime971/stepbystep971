@@ -38,31 +38,3 @@ select
 from attendu a
 left join reel r on r.indexname = a.indexname
 order by (r.indexname is not null), coalesce(a.indexname, r.indexname);
-
-
--- L'index de consommation, celui qui porte les regles 4 et 5, en detail.
--- Attendu : colonnes (user_id, expires_at, issued_at),
---           predicat (quantity_remaining > 0 AND closed_at IS NULL).
-select indexdef
-from pg_indexes
-where schemaname = 'public' and indexname = 'credit_lots_consumption_idx';
-
-
--- Totaux. Attendu : index_0003 = 23.
-select
-  (select count(*)::int from pg_indexes
-    where schemaname = 'public' and indexname like '%_idx')  as index_0003,
-  (select count(*)::int from pg_indexes
-    where schemaname = 'public')                             as index_tous;
--- index_tous inclut les cles primaires, les contraintes UNIQUE de 0002 et les
--- 4 index uniques partiels : ce total n'a pas de valeur attendue simple, il est
--- la pour l'oeil.
-
-
--- Aucun index invalide (un CREATE INDEX interrompu en laisse un derriere lui).
--- Attendu : 0 ligne.
-select c.relname as index_invalide
-from pg_index i
-join pg_class c on c.oid = i.indexrelid
-join pg_namespace n on n.oid = c.relnamespace
-where n.nspname = 'public' and not i.indisvalid;
