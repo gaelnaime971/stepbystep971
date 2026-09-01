@@ -57,7 +57,7 @@ export default async function PageAccueil() {
       <NavVitrine destinationCompte={destinationCompte} connectee={!!profil} />
 
       {/* Hero ------------------------------------------------------------ */}
-      <header className="relative overflow-hidden bg-encre">
+      <header id="contenu" className="relative overflow-hidden bg-encre">
         {/* La video est muette, en boucle et sans controle : c'est une texture,
             pas un contenu. `poster` evite l'aplat noir avant chargement, et
             prefers-reduced-motion la remplace par cette meme image fixe. */}
@@ -152,6 +152,16 @@ export default async function PageAccueil() {
             </p>
           </div>
 
+          {formules.length === 0 ? (
+            <div className="rounded-md border border-sable bg-white p-6 text-[15px] text-plume">
+              Les formules ne sont pas encore en ligne. Écris à Oriane, elle te
+              dira comment prendre ta première séance.{" "}
+              <Link href="/contact" className="text-framboise-deep underline underline-offset-[3px]">
+                La contacter
+              </Link>
+              .
+            </div>
+          ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {formules.map((f) => (
               <article key={f.id}
@@ -203,6 +213,7 @@ export default async function PageAccueil() {
               </article>
             ))}
           </div>
+          )}
 
           <p className="mt-6 max-w-[68ch] text-[15px] text-plume">
             Paiement par carte, sécurisé par Stripe. Tu pourras entrer un code

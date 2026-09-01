@@ -2,7 +2,7 @@ type Ton = "dispo" | "bientot" | "complet" | "rose";
 
 const TONS: Record<Ton, string> = {
   dispo: "bg-menthe-wash text-menthe",
-  bientot: "bg-ambre-wash text-ambre",
+  bientot: "bg-ambre-wash text-ambre-texte",
   complet: "bg-sable text-plume",
   rose: "bg-framboise-wash text-framboise-deep",
 };

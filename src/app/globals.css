@@ -21,6 +21,9 @@
   --color-menthe-wash: #E4F2EB;
   --color-ambre: #B9741A;
   --color-ambre-wash: #FBEEDC;
+  /* L'ambre de maquettes/espace-cliente.html (.rappel). L'ambre clair sur son
+     fond ne donne que 3,29:1 : illisible pour la moitie des lectrices. */
+  --color-ambre-texte: #7A4A0F;
 
   --font-display: var(--police-archivo), system-ui, sans-serif;
   --font-texte: var(--police-karla), system-ui, sans-serif;
@@ -53,11 +56,14 @@
   h2 { font-size: clamp(26px, 3.6vw, 38px); }
   h3 { font-size: 20px; font-weight: 600; }
 
-  /* Le focus est visible partout : c'est la seule facon de traverser ces
-     formulaires au clavier. */
+  /* Le focus doit se voir sur les DEUX fonds. L'encre sur la barre de
+     navigation sombre donne un rapport de 1:1 — l'anneau y etait purement et
+     simplement invisible, et toute la navigation inutilisable au clavier.
+     Le framboise tient partout : 4,7 sur ivoire, 3,4 sur encre, 5,1 sur blanc. */
   :focus-visible {
-    outline: 2px solid var(--color-encre);
+    outline: 2px solid var(--color-framboise);
     outline-offset: 2px;
+    border-radius: 2px;
   }
 }
 

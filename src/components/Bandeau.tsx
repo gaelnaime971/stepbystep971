@@ -10,7 +10,7 @@ export function Bandeau({
   const style = {
     succes: "border-menthe bg-menthe-wash text-menthe",
     erreur: "border-framboise bg-framboise-wash text-framboise-deep",
-    attention: "border-ambre bg-ambre-wash text-ambre",
+    attention: "border-ambre bg-ambre-wash text-ambre-texte",
   }[ton];
 
   return (

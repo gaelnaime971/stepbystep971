@@ -39,7 +39,7 @@ export default async function PageContact({
         connectee={!!profil}
       />
 
-      <main className="px-5 py-12 sm:px-6 sm:py-20">
+      <main id="contenu" className="px-5 py-12 sm:px-6 sm:py-20">
         <div className="mx-auto max-w-shell">
           <div className="mb-10 max-w-[54ch]">
             <h1 className="text-[clamp(30px,6vw,44px)]">Une question ?</h1>
@@ -93,6 +93,12 @@ export default async function PageContact({
             <aside className="flex flex-col gap-5">
               <section className="rounded-md border border-sable bg-white p-5 sm:p-[22px]">
                 <h3 className="mb-4">Où on se retrouve</h3>
+                {(lieux ?? []).length === 0 && (
+                  <p className="py-3 text-[15px] text-plume">
+                    Les lieux sont en cours de mise à jour. Demande-moi où on se
+                    retrouve, je te réponds tout de suite.
+                  </p>
+                )}
                 {(lieux ?? []).map((l) => (
                   <div key={l.id} className="border-b border-sable py-3 last:border-b-0">
                     <p className="text-[15px] font-medium">{l.name}</p>

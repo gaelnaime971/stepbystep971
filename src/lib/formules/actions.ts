@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { clientServeur } from "@/lib/supabase/server";
 import { profilCourant } from "@/lib/auth/session";
+import { detailTechnique } from "@/lib/erreur-technique";
 import type { EtatFormule } from "./etat";
 import {
   archiverProduit,
@@ -168,7 +169,7 @@ export async function creerFormule(
     }
     return echec(
       "La formule n'a pas pu être enregistrée.",
-      `Le produit Stripe créé a été archivé, rien ne traîne. Détail technique : ${error.message}`,
+      `Le produit Stripe créé a été archivé, rien ne traîne. ${detailTechnique("formule-creation", error)}`,
     );
   }
 
@@ -336,7 +337,10 @@ export async function modifierFormule(
     .single<Formule>();
 
   if (error || !f) {
-    return { erreur: "La formule n'a pas pu être modifiée.", detail: error?.message };
+    return {
+      erreur: "La formule n'a pas pu être modifiée.",
+      detail: detailTechnique("formule-modification", error),
+    };
   }
 
   if (miseEnAvant) await retirerAutresMisesEnAvant(f.slug);
@@ -440,7 +444,7 @@ export async function corrigerTarif(
       detail:
         error.code === "SB012" || error.message.includes("deja ete vendue")
           ? "Cette formule a été vendue entre-temps. Crée une nouvelle formule à partir de celle-ci."
-          : error.message,
+          : detailTechnique("formule-tarif", error),
     };
   }
 

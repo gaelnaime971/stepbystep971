@@ -68,11 +68,21 @@ export function PedagogieFormule({ kind, seances, validite, delaiHeures, forme =
 
   if (forme === "bloc") return contenu;
 
+  // Le libelle replie porte deja le fait qui compte. Une visiteuse qui
+  // n'ouvre jamais le panneau — la majorite — doit tout de meme lire la regle
+  // qui la surprendra plus tard.
+  const resume = abonnement
+    ? `Rechargé tous les 28 jours, sans cumul`
+    : `Valables ${validiteLisible(validite)}, sans report`;
+
   return (
     <details className="group mt-4 border-t border-sable pt-3">
-      <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-[14px] font-semibold text-framboise-deep [&::-webkit-details-marker]:hidden">
-        Ce qu&apos;il faut savoir avant
-        <span aria-hidden="true" className="text-lg leading-none">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-left text-[14px] font-semibold text-framboise-deep [&::-webkit-details-marker]:hidden">
+        <span>
+          {resume}
+          <span className="ml-1.5 font-normal text-plume">en savoir plus</span>
+        </span>
+        <span aria-hidden="true" className="shrink-0 text-lg leading-none">
           <span className="group-open:hidden">+</span>
           <span className="hidden group-open:inline">–</span>
         </span>

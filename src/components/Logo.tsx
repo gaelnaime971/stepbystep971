@@ -28,7 +28,9 @@ export function Logo({
   const image = (
     <Image
       src={clair ? "/logo-marque-claire.png" : "/logo-marque.png"}
-      alt="Step by Step Coaching"
+      /* Vide quand l'image est dans un lien deja nomme : sinon le lecteur
+         d'ecran annonce deux fois « Step by Step Coaching ». */
+      alt={lien ? "" : "Step by Step Coaching"}
       width={Math.round(hauteur * RATIO)}
       height={hauteur}
       priority={priorite}

@@ -109,7 +109,14 @@ export default async function PageFormules({
         )}
       </div>
 
-      <div className="overflow-x-auto rounded-md border border-sable bg-white">
+      {formules.length === 0 && (
+        <p className="rounded-md border border-sable bg-white px-6 py-10 text-center text-[15px] text-plume">
+          Aucune formule. Crées-en une : sans elle, tes clientes n&apos;ont rien
+          à acheter.
+        </p>
+      )}
+
+      <div className={`overflow-x-auto rounded-md border border-sable bg-white ${formules.length === 0 ? "hidden" : ""}`}>
         <table className="w-full border-collapse">
           <thead>
             <tr>

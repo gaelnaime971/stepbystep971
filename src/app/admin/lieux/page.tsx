@@ -35,6 +35,11 @@ export default async function PageLieux({
       <div className="grid items-start gap-5 lg:grid-cols-[1fr_360px]">
         <section className="rounded-md border border-sable bg-white p-[22px]">
           <h3 className="mb-4">Mes lieux</h3>
+          {lieux.length === 0 && (
+            <p className="py-8 text-center text-[15px] text-plume">
+              Aucun lieu. Ajoute-en un pour pouvoir créer des cours.
+            </p>
+          )}
           {lieux.map((l) => (
             <div
               key={l.id}

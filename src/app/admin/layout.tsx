@@ -39,7 +39,7 @@ export default async function LayoutAdmin({
         </div>
       </aside>
 
-      <main className="max-w-[1180px] px-5 py-7 md:px-[34px] md:pt-[30px] md:pb-[70px]">
+      <main id="contenu" className="max-w-[1180px] px-5 py-7 md:px-[34px] md:pt-[30px] md:pb-[70px]">
         {children}
       </main>
     </div>

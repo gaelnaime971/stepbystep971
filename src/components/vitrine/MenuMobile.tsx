@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Logo } from "@/components/Logo";
 
 /**
@@ -21,12 +21,16 @@ export function MenuMobile({
   connectee: boolean;
 }) {
   const [ouvert, setOuvert] = useState(false);
+  const fermeture = useRef<HTMLButtonElement>(null);
 
   // Le fond ne defile pas derriere le panneau, et Echap referme.
   useEffect(() => {
     if (!ouvert) return;
     const avant = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    // Le focus entre dans le panneau : sans cela il resterait sur le bouton
+    // burger, derriere l'ouverture, et la navigation au clavier serait perdue.
+    fermeture.current?.focus();
     const echap = (e: KeyboardEvent) => e.key === "Escape" && setOuvert(false);
     window.addEventListener("keydown", echap);
     return () => {
@@ -52,10 +56,12 @@ export function MenuMobile({
       </button>
 
       {ouvert && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-encre lg:hidden">
+        <div role="dialog" aria-modal="true" aria-label="Menu"
+          className="fixed inset-0 z-50 flex flex-col bg-encre lg:hidden">
           <div className="flex items-center justify-between px-6 py-3.5">
             <Logo clair hauteur={42} />
             <button
+              ref={fermeture}
               type="button"
               onClick={() => setOuvert(false)}
               aria-label="Fermer le menu"

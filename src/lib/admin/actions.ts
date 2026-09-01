@@ -8,6 +8,7 @@ import { eurosEnCentimes } from "@/lib/formules/format";
 import {
   creerCodePromo, desactiverCodePromo, messagePromoStripe, reactiverCodePromo,
 } from "@/lib/promo/stripe";
+import { detailTechnique } from "@/lib/erreur-technique";
 import type { EtatAdmin } from "./etat";
 
 function texte(d: FormData, champ: string): string {
@@ -296,7 +297,7 @@ export async function creerPromo(
     await desactiverCodePromo(refs.promotionCodeId).catch(() => {});
     return echec(
       "Le code n'a pas pu être enregistré.",
-      `Le code créé chez Stripe a été désactivé, rien ne traîne. Détail : ${error.message}`,
+      `Le code créé chez Stripe a été désactivé, rien ne traîne. ${detailTechnique("promo", error)}`,
     );
   }
 

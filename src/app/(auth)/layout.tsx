@@ -13,7 +13,7 @@ export default function LayoutAuth({
         </div>
       </header>
 
-      <main className="flex flex-1 items-center justify-center px-6 py-12">
+      <main id="contenu" className="flex flex-1 items-center justify-center px-6 py-12">
         <div className="w-full max-w-[420px]">{children}</div>
       </main>
     </div>

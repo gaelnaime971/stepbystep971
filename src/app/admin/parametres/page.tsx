@@ -78,6 +78,15 @@ export default async function PageParametres({
               a financé la séance, pas du cours. Passé ce délai, la séance est
               décomptée.
             </p>
+            {(formules ?? []).length === 0 ? (
+              <p className="text-[15px] text-plume">
+                Aucune formule active.{" "}
+                <Link href="/admin/formules" className="text-framboise-deep underline underline-offset-[3px]">
+                  Crées-en une
+                </Link>{" "}
+                pour régler son délai d&apos;annulation.
+              </p>
+            ) : (
             <form action={modifierDelais} className="flex flex-col gap-4">
               <div className="grid gap-3 sm:grid-cols-2">
                 {(formules ?? []).map((f) => (
@@ -90,6 +99,7 @@ export default async function PageParametres({
                 J&apos;enregistre les délais
               </button>
             </form>
+            )}
           </section>
         </div>
 
