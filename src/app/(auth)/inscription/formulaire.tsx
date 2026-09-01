@@ -15,8 +15,8 @@ export function FormulaireInscription() {
     return (
       <>
         <h2 className="mb-2">Regarde tes mails</h2>
-        <p className="mb-7 text-plume">{etat.succes}</p>
-        <p className="text-[15px] text-plume">
+        <p className="mb-7 text-plume-deep">{etat.succes}</p>
+        <p className="text-[15px] text-plume-deep">
           Rien reçu ? Le mail met parfois deux minutes, et il lui arrive de
           tomber dans les indésirables.
         </p>
@@ -27,7 +27,7 @@ export function FormulaireInscription() {
   return (
     <>
       <h2 className="mb-2">Rejoindre la team</h2>
-      <p className="mb-7 text-plume">
+      <p className="mb-7 text-plume-deep">
         Ton compte te sert à acheter tes séances et à les placer dans le
         planning.
       </p>
@@ -77,7 +77,7 @@ export function FormulaireInscription() {
         <BoutonEnvoi enAttente="Création…">Je crée mon compte</BoutonEnvoi>
       </form>
 
-      <p className="mt-7 border-t border-sable pt-6 text-[15px] text-plume">
+      <p className="mt-7 border-t border-sable pt-6 text-[15px] text-plume-deep">
         Tu as déjà un compte ?{" "}
         <Link
           href="/connexion"

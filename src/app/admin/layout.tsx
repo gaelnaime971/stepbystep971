@@ -23,7 +23,7 @@ export default async function LayoutAdmin({
           bas : le menu devient une barre qui defile horizontalement. */}
       <aside className="flex flex-col bg-encre px-4 py-4 md:py-5">
         <div className="mb-4 flex items-center justify-between gap-3 md:mx-2 md:mb-6 md:block">
-          <Logo clair hauteur={44} priorite />
+          <Logo clair hauteur={54} hauteurMobile={52} priorite />
           <div className="flex items-center gap-3 md:hidden">
             <BoutonDeconnexion />
           </div>

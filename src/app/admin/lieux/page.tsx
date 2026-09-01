@@ -19,7 +19,7 @@ export default async function PageLieux({
     <>
       <div className="mb-[26px]">
         <h2>Lieux</h2>
-        <p className="mt-1.5 max-w-[62ch] text-plume">
+        <p className="mt-1.5 max-w-[62ch] text-plume-deep">
           Un lieu fermé disparaît du choix à la création d&apos;un cours, mais
           les cours déjà programmés là-bas ne bougent pas. C&apos;est pour ça
           qu&apos;on ferme au lieu de supprimer.
@@ -36,7 +36,7 @@ export default async function PageLieux({
         <section className="rounded-md border border-sable bg-white p-[22px]">
           <h3 className="mb-4">Mes lieux</h3>
           {lieux.length === 0 && (
-            <p className="py-8 text-center text-[15px] text-plume">
+            <p className="py-8 text-center text-[15px] text-plume-deep">
               Aucun lieu. Ajoute-en un pour pouvoir créer des cours.
             </p>
           )}
@@ -54,7 +54,7 @@ export default async function PageLieux({
                     <Pastille ton="complet">Fermé</Pastille>
                   )}
                 </div>
-                <p className="text-[13px] text-plume">
+                <p className="text-[13px] text-plume-deep">
                   {[l.address, l.city].filter(Boolean).join(", ") || "Adresse non renseignée"}
                 </p>
               </div>
@@ -63,7 +63,7 @@ export default async function PageLieux({
                 <input type="hidden" name="id" value={l.id} />
                 <button
                   type="submit"
-                  className="cursor-pointer rounded-sm border border-sable-deep bg-white px-3.5 py-2 text-sm font-semibold text-encre transition-colors hover:bg-sable"
+                  className="cursor-pointer rounded-sm border border-sable-deep bg-white px-4 py-2.5 text-sm font-semibold text-encre transition-colors hover:bg-sable"
                 >
                   {l.is_active ? "Fermer" : "Rouvrir"}
                 </button>

@@ -43,7 +43,7 @@ export default async function PageContact({
         <div className="mx-auto max-w-shell">
           <div className="mb-10 max-w-[54ch]">
             <h1 className="text-[clamp(30px,6vw,44px)]">Une question ?</h1>
-            <p className="mt-4 text-[17px] text-plume">
+            <p className="mt-4 text-[17px] text-plume-deep">
               Écris-moi. Je réponds moi-même, en général sous 24 heures. Pour
               tout ce qui touche à ta réservation ou à ton solde, pense à
               regarder ton compte d&apos;abord, tout y est.
@@ -68,9 +68,8 @@ export default async function PageContact({
                 </div>
 
                 <div className="grid gap-5 sm:grid-cols-2">
-                  <Champ nom="nom" libelle="Ton prénom et ton nom"
-                    valeurParDefaut={profil ? `${profil.first_name} ${profil.last_name}` : ""}
-                    autoComplete="name" />
+                  <Champ nom="nom" libelle="Ton prénom et ton nom" autoComplete="name"
+                    valeurParDefaut={profil ? `${profil.first_name} ${profil.last_name}` : ""} />
                   <Champ nom="email" libelle="Ton email" type="email"
                     valeurParDefaut={profil?.email ?? ""} autoComplete="email" />
                 </div>
@@ -83,7 +82,7 @@ export default async function PageContact({
                   J&apos;envoie mon message
                 </button>
 
-                <p className="text-[13px] text-plume">
+                <p className="text-[13px] text-plume-deep">
                   Ton message arrive directement dans la boîte d&apos;Oriane. Elle
                   te répond à l&apos;adresse que tu donnes ici.
                 </p>
@@ -94,7 +93,7 @@ export default async function PageContact({
               <section className="rounded-md border border-sable bg-white p-5 sm:p-[22px]">
                 <h3 className="mb-4">Où on se retrouve</h3>
                 {(lieux ?? []).length === 0 && (
-                  <p className="py-3 text-[15px] text-plume">
+                  <p className="py-3 text-[15px] text-plume-deep">
                     Les lieux sont en cours de mise à jour. Demande-moi où on se
                     retrouve, je te réponds tout de suite.
                   </p>
@@ -102,12 +101,12 @@ export default async function PageContact({
                 {(lieux ?? []).map((l) => (
                   <div key={l.id} className="border-b border-sable py-3 last:border-b-0">
                     <p className="text-[15px] font-medium">{l.name}</p>
-                    <p className="text-[13px] text-plume">
+                    <p className="text-[13px] text-plume-deep">
                       {[l.address, l.city].filter(Boolean).join(", ") || "Adresse communiquée à l'inscription"}
                     </p>
                   </div>
                 ))}
-                <p className="mt-4 text-[13px] text-plume">
+                <p className="mt-4 text-[13px] text-plume-deep">
                   Les horaires changent chaque semaine.{" "}
                   <Link href="/#planning" className="text-framboise-deep underline underline-offset-[3px]">
                     Vois le planning

@@ -48,7 +48,7 @@ export default async function PagePlanning({
       <div className="mb-[26px] flex flex-wrap items-start justify-between gap-5">
         <div>
           <h2>Planning des cours</h2>
-          <p className="mt-1.5 text-plume">
+          <p className="mt-1.5 text-plume-deep">
             {duJour.length === 0
               ? "Aucun cours aujourd'hui."
               : duJour.length === 1
@@ -75,10 +75,10 @@ export default async function PagePlanning({
       <section className="mb-6 rounded-md border border-sable bg-white p-[22px]">
         <div className="mb-4 flex items-center justify-between gap-3.5">
           <h3>Aujourd&apos;hui</h3>
-          <span className="text-[13px] text-plume">{enJourCourt(`${jour}T12:00:00-04:00`)}</span>
+          <span className="text-[13px] text-plume-deep">{enJourCourt(`${jour}T12:00:00-04:00`)}</span>
         </div>
         {duJour.length === 0 ? (
-          <p className="py-4 text-[15px] text-plume">Rien au planning aujourd&apos;hui.</p>
+          <p className="py-4 text-[15px] text-plume-deep">Rien au planning aujourd&apos;hui.</p>
         ) : (
           duJour.map((c) => (
             <Link
@@ -130,7 +130,7 @@ export default async function PagePlanning({
 
           <div className="grid grid-cols-7 gap-1">
             {JOURS_COURTS.map((j) => (
-              <span key={j} className="pb-1.5 text-center text-[13px] text-plume">
+              <span key={j} className="pb-1.5 text-center text-[13px] text-plume-deep">
                 {j}
               </span>
             ))}
@@ -146,7 +146,7 @@ export default async function PagePlanning({
                       : "border border-sable bg-white"
                   } ${date === jour ? "outline-2 outline-framboise" : ""}`}
                 >
-                  <span className="text-[13px] text-plume">{Number(date.slice(8))}</span>
+                  <span className="text-[13px] text-plume-deep">{Number(date.slice(8))}</span>
                   {duCase.map((c) => {
                     const complet = c.seats_taken >= c.capacity;
                     return (
@@ -155,9 +155,9 @@ export default async function PagePlanning({
                         href={`/admin/planning/${c.id}`}
                         className={`mt-1 block rounded-[4px] px-1.5 py-[3px] text-xs leading-[1.3] font-semibold ${
                           c.status === "canceled"
-                            ? "bg-sable text-plume line-through"
+                            ? "bg-sable text-plume-deep line-through"
                             : complet
-                              ? "bg-sable text-plume"
+                              ? "bg-sable text-plume-deep"
                               : "bg-framboise-wash text-framboise-deep"
                         }`}
                       >
@@ -180,7 +180,7 @@ export default async function PagePlanning({
           </div>
 
           {deLaSemaine.length === 0 ? (
-            <p className="py-4 text-[15px] text-plume">Aucun cours cette semaine.</p>
+            <p className="py-4 text-[15px] text-plume-deep">Aucun cours cette semaine.</p>
           ) : (
             deLaSemaine.map((c) => (
               <Link
@@ -191,7 +191,7 @@ export default async function PagePlanning({
                 <span className="min-w-[104px] text-[15px] font-medium first-letter:uppercase">
                   {enJourCourt(c.starts_at)}, {enHeure(c.starts_at)}
                 </span>
-                <span className="flex-1 text-[15px] text-plume">
+                <span className="flex-1 text-[15px] text-plume-deep">
                   {nomLieu.get(c.location_id) ?? "Lieu supprimé"}
                 </span>
                 {c.status === "canceled" ? (
@@ -204,7 +204,7 @@ export default async function PagePlanning({
                         style={{ width: `${Math.min(100, tauxRemplissage(c))}%` }}
                       />
                     </span>
-                    <span className="min-w-[42px] text-right text-[13px] text-plume">
+                    <span className="min-w-[42px] text-right text-[13px] text-plume-deep">
                       {c.seats_taken}/{c.capacity}
                     </span>
                   </>
@@ -212,7 +212,7 @@ export default async function PagePlanning({
               </Link>
             ))
           )}
-          <p className="mt-3.5 text-[13px] text-plume">
+          <p className="mt-3.5 text-[13px] text-plume-deep">
             Clique sur un cours pour voir la liste des inscrites.
           </p>
         </section>

@@ -23,7 +23,7 @@ export default async function PageNouveauCours({
       </p>
 
       <h2 className="mb-2">Créer un cours</h2>
-      <p className="mb-8 max-w-[62ch] text-plume">
+      <p className="mb-8 max-w-[62ch] text-plume-deep">
         Les horaires sont ceux de la Guadeloupe. Une répétition crée toutes les
         séances d&apos;un coup, le même jour à la même heure.
       </p>
@@ -31,7 +31,7 @@ export default async function PageNouveauCours({
       {lieux.length === 0 ? (
         <div className="max-w-[520px] rounded-md border border-sable bg-white p-[22px]">
           <h3 className="mb-2">Aucun lieu ouvert</h3>
-          <p className="mb-4 text-[15px] text-plume">
+          <p className="mb-4 text-[15px] text-plume-deep">
             Il faut au moins un lieu pour créer un cours.
           </p>
           <Link

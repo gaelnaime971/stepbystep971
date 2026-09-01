@@ -16,9 +16,19 @@
   --color-sable: #EFE7E4;
   --color-sable-deep: #D9CCC7;
   --color-plume: #7C7076;
+  /* Idem pour le plume sur sable : 3,88 devient 4,81.
+     C'est ce ton, et non le plume d'origine, qui sert a TOUT le texte
+     secondaire du site : le plume ne passait pas sur ivoire (4,41) tout en
+     passant sur blanc (4,73). Deux tons selon le fond du parent serait un
+     piege des qu'un composant change de place. */
+  --color-plume-deep: #6C6267;
 
   --color-menthe: #1F8F63;
   --color-menthe-wash: #E4F2EB;
+  /* Meme teinte et meme saturation que le menthe, simplement plus sombre :
+     le menthe d'origine ne donne que 3,52 sur son propre fond, celui-ci 4,84.
+     Les fonds ne bougent pas, seul le texte fonce. */
+  --color-menthe-deep: #1A7652;
   --color-ambre: #B9741A;
   --color-ambre-wash: #FBEEDC;
   /* L'ambre de maquettes/espace-cliente.html (.rappel). L'ambre clair sur son
@@ -65,6 +75,50 @@
     outline-offset: 2px;
     border-radius: 2px;
   }
+}
+
+@layer components {
+  /* Les pages legales : un seul flux de texte long, avec sa propre mesure et
+     ses propres rythmes. Ecrit une fois ici plutot que classe par classe sur
+     trois documents. */
+  .legal h1 {
+    font-family: var(--font-display); font-style: italic; font-weight: 700;
+    font-size: clamp(28px, 5vw, 40px); line-height: 1.05; letter-spacing: -0.02em;
+    margin-bottom: 8px; text-wrap: balance;
+  }
+  .legal .maj {
+    display: block; font-family: var(--font-texte); font-style: normal;
+    font-size: 14px; font-weight: 400; color: var(--color-plume-deep);
+    margin-bottom: 32px;
+  }
+  .legal h2 {
+    font-family: var(--font-display); font-style: italic; font-weight: 700;
+    font-size: 22px; line-height: 1.15; margin: 40px 0 12px;
+  }
+  .legal h3 {
+    font-size: 16px; font-weight: 700; font-family: var(--font-texte);
+    font-style: normal; margin: 22px 0 6px;
+  }
+  .legal p, .legal li { max-width: 68ch; color: var(--color-encre-soft); }
+  .legal p { margin-bottom: 14px; }
+  .legal ul { margin: 0 0 16px; padding-left: 20px; }
+  .legal li { margin-bottom: 7px; }
+  .legal li::marker { color: var(--color-framboise); }
+  .legal dl { margin: 0 0 18px; }
+  .legal dt { font-weight: 700; margin-top: 12px; }
+  .legal dd { margin: 2px 0 0; color: var(--color-encre-soft); }
+  .legal a { color: var(--color-framboise-deep); text-decoration: underline; text-underline-offset: 3px; }
+  /* Ce qu'Oriane doit completer. Visible, sans etre alarmant pour une visiteuse. */
+  .legal .aremplir {
+    background: var(--color-ambre-wash); color: var(--color-ambre-texte);
+    padding: 1px 6px; border-radius: 4px; font-weight: 600;
+  }
+  .legal table { width: 100%; border-collapse: collapse; margin-bottom: 18px; font-size: 15px; }
+  .legal th, .legal td {
+    text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--color-sable);
+    vertical-align: top;
+  }
+  .legal th { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-plume-deep); }
 }
 
 @layer utilities {

@@ -16,7 +16,7 @@ export default function PageLienExpire() {
       <main className="flex flex-1 items-center justify-center px-6 py-12">
         <div className="w-full max-w-[420px]">
           <h2 className="mb-2">Ce lien ne marche plus</h2>
-          <p className="mb-7 text-plume">
+          <p className="mb-7 text-plume-deep">
             Les liens envoyés par mail expirent au bout d&apos;une heure, et ne
             servent qu&apos;une fois. Demandes-en un nouveau.
           </p>

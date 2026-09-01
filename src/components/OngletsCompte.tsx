@@ -25,7 +25,7 @@ export function OngletsCompte() {
               className={`whitespace-nowrap border-b-2 px-4 py-[15px] text-[15px] transition-colors ${
                 actif
                   ? "border-framboise font-semibold text-framboise"
-                  : "border-transparent font-medium text-plume hover:text-encre"
+                  : "border-transparent font-medium text-plume-deep hover:text-encre"
               }`}
             >
               {libelle}

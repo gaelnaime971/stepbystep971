@@ -34,15 +34,12 @@ export function FormulaireCours({
 
       <Selecteur nom="lieu" libelle="Lieu" options={lieux} />
 
-      <Champ nom="date" libelle="Date" type="text"
-        valeurParDefaut={v.date ?? dateParDefaut}
-        aide="Au format 2026-09-09." />
+      <Champ nom="date" libelle="Date" type="date"
+        valeurParDefaut={v.date ?? dateParDefaut} />
 
       <div className="grid grid-cols-2 gap-3">
-        <Champ nom="debut" libelle="Début" type="text" valeurParDefaut={v.debut ?? "18:30"}
-          aide="Au format 18:30." />
-        <Champ nom="fin" libelle="Fin" type="text" valeurParDefaut={v.fin ?? "19:30"}
-          aide="Au format 19:30." />
+        <Champ nom="debut" libelle="Début" type="time" valeurParDefaut={v.debut ?? "18:30"} />
+        <Champ nom="fin" libelle="Fin" type="time" valeurParDefaut={v.fin ?? "19:30"} />
       </div>
 
       <ChampNombre nom="places" libelle="Nombre de places" min={1}

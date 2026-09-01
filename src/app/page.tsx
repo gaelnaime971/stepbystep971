@@ -106,11 +106,11 @@ export default async function PageAccueil() {
           <div className="relative z-[5] mb-[-32px] rounded-lg bg-white p-5 shadow-[0_18px_40px_rgba(27,27,29,.14)] sm:mb-[-60px] sm:p-6">
             <div className="mb-4 flex flex-wrap items-baseline justify-between gap-3">
               <h3>Les cours de la semaine</h3>
-              {bornes && <span className="text-[13px] text-plume">{bornes}</span>}
+              {bornes && <span className="text-[13px] text-plume-deep">{bornes}</span>}
             </div>
 
             {semaine.length === 0 ? (
-              <p className="py-6 text-[15px] text-plume">
+              <p className="py-6 text-[15px] text-plume-deep">
                 Le planning de la semaine arrive. Reviens dans un moment, ou crée
                 ton compte pour être prête à réserver.
               </p>
@@ -123,7 +123,7 @@ export default async function PageAccueil() {
                       <span className="font-display text-[17px] font-semibold italic first-letter:uppercase">
                         {enJourCourt(c.starts_at)}
                       </span>
-                      <span className="text-sm text-plume">
+                      <span className="text-sm text-plume-deep">
                         {nomsLieux.get(c.location_id) ?? "Lieu à préciser"},{" "}
                         {enCreneau(c.starts_at, c.ends_at)}
                       </span>
@@ -134,7 +134,7 @@ export default async function PageAccueil() {
               </div>
             )}
 
-            <p className="mt-4 text-[13px] text-plume">
+            <p className="mt-4 text-[13px] text-plume-deep">
               Crée ton compte pour réserver ta place.
             </p>
           </div>
@@ -146,14 +146,14 @@ export default async function PageAccueil() {
         <div className="mx-auto max-w-shell">
           <div className="mb-8 max-w-[54ch] sm:mb-[34px]">
             <h2>Choisis ta formule</h2>
-            <p className="mt-3 text-[17px] text-plume">
+            <p className="mt-3 text-[17px] text-plume-deep">
               Toutes les formules te créditent des séances. Tu les places ensuite
               où tu veux dans le planning, dans le lieu qui t&apos;arrange.
             </p>
           </div>
 
           {formules.length === 0 ? (
-            <div className="rounded-md border border-sable bg-white p-6 text-[15px] text-plume">
+            <div className="rounded-md border border-sable bg-white p-6 text-[15px] text-plume-deep">
               Les formules ne sont pas encore en ligne. Écris à Oriane, elle te
               dira comment prendre ta première séance.{" "}
               <Link href="/contact" className="text-framboise-deep underline underline-offset-[3px]">
@@ -171,11 +171,11 @@ export default async function PageAccueil() {
                 {f.is_highlighted && (
                   <span className="mb-2.5 self-start"><Pastille ton="rose">Le plus choisi</Pastille></span>
                 )}
-                <span className="text-[15px] text-plume">{f.name}</span>
+                <span className="text-[15px] text-plume-deep">{f.name}</span>
                 <span className="chiffre mt-1.5 mb-0.5 text-[38px] text-framboise sm:text-[42px]">
                   {prixLisible(f.price_cents)}
                   {f.kind === "subscription" && (
-                    <small className="ml-1.5 font-texte text-[15px] font-normal text-plume not-italic">
+                    <small className="ml-1.5 font-texte text-[15px] font-normal text-plume-deep not-italic">
                       / 4 semaines
                     </small>
                   )}
@@ -215,7 +215,7 @@ export default async function PageAccueil() {
           </div>
           )}
 
-          <p className="mt-6 max-w-[68ch] text-[15px] text-plume">
+          <p className="mt-6 max-w-[68ch] text-[15px] text-plume-deep">
             Paiement par carte, sécurisé par Stripe. Tu pourras entrer un code
             promo à l&apos;étape suivante. Pas encore de compte ? Le paiement te
             demandera de te connecter d&apos;abord.
@@ -329,9 +329,18 @@ export default async function PageAccueil() {
               )}
             </div>
           </div>
-          <p className="mt-8 border-t border-[#343133] pt-[18px] sm:mt-[30px]">
-            Step by Step Coaching — Siret 915 127 534 00013.
-          </p>
+          <div className="mt-8 flex flex-col gap-3 border-t border-[#343133] pt-[18px] sm:mt-[30px] sm:flex-row sm:items-center sm:justify-between">
+            <p>Step by Step Coaching — Siret 915 127 534 00013.</p>
+            <div className="flex flex-wrap gap-x-5 gap-y-1">
+              {[["/mentions-legales", "Mentions légales"],
+                ["/cgv", "Conditions générales de vente"],
+                ["/confidentialite", "Confidentialité"]].map(([href, libelle]) => (
+                <Link key={href} href={href} className="text-[#C4BEC1] hover:text-white">
+                  {libelle}
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
       </footer>
     </>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Bandeau } from "@/components/Bandeau";
+import { ConfirmerAction } from "@/components/ConfirmerAction";
 import { Pastille } from "@/components/Pastille";
 import {
   archiverFormule,
@@ -45,7 +46,7 @@ function BoutonAction({
       <button
         type="submit"
         formNoValidate
-        className="cursor-pointer rounded-sm border border-sable-deep bg-white px-3.5 py-2 text-sm font-semibold text-encre transition-colors hover:bg-sable"
+        className="cursor-pointer rounded-sm border border-sable-deep bg-white px-4 py-2.5 text-sm font-semibold text-encre transition-colors hover:bg-sable"
         title={confirmation}
       >
         {children}
@@ -68,7 +69,7 @@ export default async function PageFormules({
       <div className="mb-7 flex flex-wrap items-start justify-between gap-4">
         <div>
           <h2 className="mb-2">Formules et tarifs</h2>
-          <p className="text-plume">
+          <p className="text-plume-deep">
             Tout se pilote d&apos;ici. Tu n&apos;as jamais besoin d&apos;ouvrir
             Stripe.
           </p>
@@ -110,7 +111,7 @@ export default async function PageFormules({
       </div>
 
       {formules.length === 0 && (
-        <p className="rounded-md border border-sable bg-white px-6 py-10 text-center text-[15px] text-plume">
+        <p className="rounded-md border border-sable bg-white px-6 py-10 text-center text-[15px] text-plume-deep">
           Aucune formule. Crées-en une : sans elle, tes clientes n&apos;ont rien
           à acheter.
         </p>
@@ -123,7 +124,7 @@ export default async function PageFormules({
               {["Formule", "Type", "Séances", "Validité", "Prix", "État", ""].map((t) => (
                 <th
                   key={t}
-                  className="border-b border-sable px-3 py-2.5 text-left text-[13px] font-semibold text-plume"
+                  className="border-b border-sable px-3 py-2.5 text-left text-[13px] font-semibold text-plume-deep"
                 >
                   {t}
                 </th>
@@ -144,7 +145,7 @@ export default async function PageFormules({
                         <Pastille ton="rose">Le plus choisi</Pastille>
                       </span>
                     )}
-                    {f.tagline && <p className="text-[13px] text-plume">{f.tagline}</p>}
+                    {f.tagline && <p className="text-[13px] text-plume-deep">{f.tagline}</p>}
                   </td>
                   <td className="border-b border-sable px-3 py-3.5 text-[15px]">
                     {LIBELLE_TYPE[f.kind]}
@@ -185,9 +186,23 @@ export default async function PageFormules({
                           <BoutonAction action={reactiverFormule} id={f.id}>
                             Remettre en vente
                           </BoutonAction>
-                          <BoutonAction action={archiverFormule} id={f.id}>
-                            Archiver
-                          </BoutonAction>
+                          <ConfirmerAction
+                            action={archiverFormule}
+                            variante="danger"
+                            declencheur="Archiver"
+                            champs={{ id: f.id }}
+                            avertissement={
+                              <>
+                                Archiver est <strong>définitif</strong> : cette
+                                formule ne pourra plus être remise en vente. Les
+                                clientes qui l&apos;ont achetée gardent leurs
+                                séances, et les abonnées en cours restent sur ce
+                                tarif. Si tu hésites, laisse-la simplement
+                                retirée de la vente.
+                              </>
+                            }
+                            confirmer={`Oui, archiver « ${f.name} »`}
+                          />
                         </>
                       )}
                     </div>
@@ -199,7 +214,7 @@ export default async function PageFormules({
         </table>
       </div>
 
-      <p className="mt-4 text-[13px] text-plume">
+      <p className="mt-4 text-[13px] text-plume-deep">
         Retirer de la vente est réversible : la formule disparaît de la vitrine,
         tu peux la remettre quand tu veux. Archiver est définitif. Dans les deux
         cas, les clientes qui ont déjà acheté gardent leurs séances.

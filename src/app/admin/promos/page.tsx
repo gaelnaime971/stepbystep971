@@ -43,7 +43,7 @@ export default async function PagePromos({
     <>
       <div className="mb-[26px]">
         <h2>Codes promo</h2>
-        <p className="mt-1.5 max-w-[62ch] text-plume">
+        <p className="mt-1.5 max-w-[62ch] text-plume-deep">
           Le code est créé chez Stripe et enregistré ici en même temps. Tes
           clientes le saisissent au moment de payer. Tu n&apos;as jamais besoin
           d&apos;ouvrir Stripe.
@@ -60,7 +60,7 @@ export default async function PagePromos({
         <section className="rounded-md border border-sable bg-white p-[22px]">
           <h3 className="mb-4">Mes codes</h3>
           {!promos?.length ? (
-            <p className="py-8 text-center text-[15px] text-plume">
+            <p className="py-8 text-center text-[15px] text-plume-deep">
               Aucun code pour l&apos;instant.
             </p>
           ) : (
@@ -80,7 +80,7 @@ export default async function PagePromos({
                         : `−${prixLisible(p.amount_off_cents ?? 0)}`}
                     </span>
                   </div>
-                  <p className="mt-1 text-[13px] text-plume">
+                  <p className="mt-1 text-[13px] text-plume-deep">
                     {p.description && `${p.description} · `}
                     {p.times_redeemed} utilisation{p.times_redeemed > 1 ? "s" : ""}
                     {p.max_redemptions ? ` sur ${p.max_redemptions}` : ""}
@@ -96,7 +96,7 @@ export default async function PagePromos({
                   <input type="hidden" name="id" value={p.id} />
                   <button
                     type="submit"
-                    className="cursor-pointer rounded-sm border border-sable-deep bg-white px-3.5 py-2 text-sm font-semibold text-encre hover:bg-sable"
+                    className="cursor-pointer rounded-sm border border-sable-deep bg-white px-4 py-2.5 text-sm font-semibold text-encre hover:bg-sable"
                   >
                     {p.is_active ? "Désactiver" : "Réactiver"}
                   </button>
@@ -104,7 +104,7 @@ export default async function PagePromos({
               </div>
             ))
           )}
-          <p className="mt-4 text-[13px] text-plume">
+          <p className="mt-4 text-[13px] text-plume-deep">
             Un code ne se supprime pas, il se désactive — des deux côtés, ici et
             chez Stripe. Les achats déjà payés avec ne bougent pas.
           </p>

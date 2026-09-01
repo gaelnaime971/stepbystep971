@@ -16,8 +16,8 @@ function Kpi({ valeur, libelle, note }: { valeur: string; libelle: string; note?
   return (
     <div className="rounded-md border border-sable bg-white px-[18px] py-[17px]">
       <p className="chiffre text-[32px] leading-[1.1]">{valeur}</p>
-      <p className="mt-1 text-sm text-plume">{libelle}</p>
-      {note && <p className="mt-0.5 text-[13px] text-plume">{note}</p>}
+      <p className="mt-1 text-sm text-plume-deep">{libelle}</p>
+      {note && <p className="mt-0.5 text-[13px] text-plume-deep">{note}</p>}
     </div>
   );
 }
@@ -78,7 +78,7 @@ export default async function PageAdmin() {
       <div className="mb-[26px] flex flex-wrap items-start justify-between gap-5">
         <div>
           <h2>Bonjour {profil.first_name}</h2>
-          <p className="mt-1.5 text-plume">
+          <p className="mt-1.5 text-plume-deep">
             {duJour.length === 0
               ? "Aucun cours aujourd'hui."
               : `${duJour.length} cours aujourd'hui, ${inscritesDuJour} inscrite${inscritesDuJour > 1 ? "s" : ""}.`}
@@ -137,12 +137,12 @@ export default async function PageAdmin() {
         <section className="rounded-md border border-sable bg-white p-[22px]">
           <div className="mb-4 flex items-center justify-between gap-3.5">
             <h3>Aujourd&apos;hui</h3>
-            <span className="text-[13px] text-plume first-letter:uppercase">
+            <span className="text-[13px] text-plume-deep first-letter:uppercase">
               {enJourCourt(`${jour}T12:00:00-04:00`)}
             </span>
           </div>
           {duJour.length === 0 ? (
-            <p className="py-4 text-[15px] text-plume">Rien au planning aujourd&apos;hui.</p>
+            <p className="py-4 text-[15px] text-plume-deep">Rien au planning aujourd&apos;hui.</p>
           ) : (
             duJour.map((c) => (
               <Link
@@ -171,7 +171,7 @@ export default async function PageAdmin() {
         <section className="rounded-md border border-sable bg-white p-[22px]">
           <h3 className="mb-4">Cette semaine</h3>
           {deLaSemaine.length === 0 ? (
-            <p className="py-4 text-[15px] text-plume">Aucun cours cette semaine.</p>
+            <p className="py-4 text-[15px] text-plume-deep">Aucun cours cette semaine.</p>
           ) : (
             deLaSemaine.map((c) => (
               <Link
@@ -182,10 +182,10 @@ export default async function PageAdmin() {
                 <span className="min-w-[104px] text-[15px] font-medium first-letter:uppercase">
                   {enJourCourt(c.starts_at)}, {enHeure(c.starts_at)}
                 </span>
-                <span className="flex-1 text-[15px] text-plume">
+                <span className="flex-1 text-[15px] text-plume-deep">
                   {nomLieu.get(c.location_id) ?? "—"}
                 </span>
-                <span className="text-[13px] text-plume tabular-nums">
+                <span className="text-[13px] text-plume-deep tabular-nums">
                   {c.seats_taken}/{c.capacity}
                 </span>
               </Link>

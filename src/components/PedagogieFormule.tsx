@@ -56,10 +56,10 @@ export function PedagogieFormule({ kind, seances, validite, delaiHeures, forme =
       {points.map(([titre, texte]) => (
         <div key={titre}>
           <p className="text-[14px] font-semibold text-encre">{titre}</p>
-          <p className="mt-0.5 text-[14px] leading-[1.55] text-plume">{texte}</p>
+          <p className="mt-0.5 text-[14px] leading-[1.55] text-plume-deep">{texte}</p>
         </div>
       ))}
-      <p className="text-[13px] text-plume">
+      <p className="text-[13px] text-plume-deep">
         Choisis la formule qui colle à ton rythme réel plutôt qu&apos;à celui que
         tu vises. En cas de doute, prends plus petit.
       </p>
@@ -80,7 +80,7 @@ export function PedagogieFormule({ kind, seances, validite, delaiHeures, forme =
       <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-left text-[14px] font-semibold text-framboise-deep [&::-webkit-details-marker]:hidden">
         <span>
           {resume}
-          <span className="ml-1.5 font-normal text-plume">en savoir plus</span>
+          <span className="ml-1.5 font-normal text-plume-deep">en savoir plus</span>
         </span>
         <span aria-hidden="true" className="shrink-0 text-lg leading-none">
           <span className="group-open:hidden">+</span>

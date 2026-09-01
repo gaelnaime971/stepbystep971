@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Bandeau } from "@/components/Bandeau";
+import { ConfirmerAction } from "@/components/ConfirmerAction";
 import { Pastille } from "@/components/Pastille";
 import { enCreneau, enDateAnnee, enJourLong } from "@/lib/dates";
 import { annulerCours, desinscrire } from "@/lib/planning/actions";
@@ -15,6 +16,27 @@ function heureLocale(iso: string): string {
   return new Intl.DateTimeFormat("fr-FR", {
     hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "America/Guadeloupe",
   }).format(new Date(iso));
+}
+
+/** Le motif, partage par les deux chemins d'annulation. */
+function ChampMotif() {
+  return (
+    <div>
+      <label htmlFor="motif" className="mb-1.5 block text-sm font-semibold">
+        Motif <span className="ml-1.5 font-normal text-plume-deep">facultatif</span>
+      </label>
+      <input
+        id="motif"
+        name="motif"
+        type="text"
+        placeholder="Salle indisponible"
+        className="w-full rounded-sm border border-sable-deep bg-white px-[13px] py-3 text-[16px]"
+      />
+      <p className="mt-1.5 text-[13px] text-plume-deep">
+        Il apparaît dans le mail que reçoivent les inscrites.
+      </p>
+    </div>
+  );
 }
 
 export default async function PageCours({
@@ -78,7 +100,7 @@ export default async function PageCours({
             </div>
 
             {inscrites.length === 0 ? (
-              <p className="py-6 text-center text-[15px] text-plume">
+              <p className="py-6 text-center text-[15px] text-plume-deep">
                 Personne d&apos;inscrite pour l&apos;instant.
               </p>
             ) : (
@@ -98,7 +120,7 @@ export default async function PageCours({
                       <p className="text-[15px]">
                         {i.prenom} {i.nom}
                       </p>
-                      <p className="text-[13px] text-plume">
+                      <p className="text-[13px] text-plume-deep">
                         {i.email}
                         {i.telephone && ` · ${i.telephone}`}
                       </p>
@@ -106,23 +128,25 @@ export default async function PageCours({
                   </div>
 
                   {!annule && !passe && (
-                    <form action={desinscrire}>
-                      <input type="hidden" name="coursId" value={cours.id} />
-                      <input type="hidden" name="reservationId" value={i.bookingId} />
-                      <button
-                        type="submit"
-                        className="cursor-pointer border-none bg-transparent p-0 text-sm text-plume underline underline-offset-[3px] hover:text-framboise-deep"
-                      >
-                        Désinscrire
-                      </button>
-                    </form>
+                    <ConfirmerAction
+                      action={desinscrire}
+                      declencheur="Désinscrire"
+                      champs={{ coursId: cours.id, reservationId: i.bookingId }}
+                      avertissement={
+                        <>
+                          {i.prenom} perd sa place et récupère sa séance. Elle
+                          n&apos;est pas prévenue automatiquement : préviens-la.
+                        </>
+                      }
+                      confirmer={`Oui, désinscrire ${i.prenom}`}
+                    />
                   )}
                 </div>
               ))
             )}
 
             {inscrites.length > 0 && !annule && !passe && (
-              <p className="mt-3.5 text-[13px] text-plume">
+              <p className="mt-3.5 text-[13px] text-plume-deep">
                 Désinscrire rend sa séance à la cliente, sans condition de délai.
                 Le geste est tracé.
               </p>
@@ -162,13 +186,13 @@ export default async function PageCours({
                 ["Places", `${cours.seats_taken} sur ${cours.capacity}`],
               ].map(([cle, valeur]) => (
                 <div key={cle} className="flex justify-between gap-3">
-                  <dt className="text-plume">{cle}</dt>
+                  <dt className="text-plume-deep">{cle}</dt>
                   <dd className="text-right font-medium">{valeur}</dd>
                 </div>
               ))}
             </dl>
             {cours.recurrence_group_id && (
-              <p className="mt-4 text-[13px] text-plume">
+              <p className="mt-4 text-[13px] text-plume-deep">
                 Ce cours fait partie d&apos;une série. Le modifier ou l&apos;annuler
                 ne touche que cette séance.
               </p>
@@ -178,32 +202,49 @@ export default async function PageCours({
           {!annule && !passe && (
             <section className="rounded-md border border-sable bg-white p-[22px]">
               <h3 className="mb-2">Annuler le cours</h3>
-              <p className="mb-4 text-[15px] text-plume">
+              <p className="mb-4 text-[15px] text-plume-deep">
                 {inscrites.length === 0
                   ? "Personne n'est inscrite, personne ne sera prévenue."
-                  : `Les ${inscrites.length} inscrite${inscrites.length > 1 ? "s" : ""} récupèrent leur séance automatiquement. Pense à les prévenir.`}
+                  : inscrites.length === 1
+                    ? "L'inscrite récupère sa séance automatiquement et reçoit un mail."
+                    : `Les ${inscrites.length} inscrites récupèrent leur séance automatiquement et reçoivent un mail.`}
               </p>
-              <form action={annulerCours} className="flex flex-col gap-3">
-                <input type="hidden" name="id" value={cours.id} />
-                <div>
-                  <label htmlFor="motif" className="mb-1.5 block text-sm font-semibold">
-                    Motif <span className="ml-1.5 font-normal text-plume">facultatif</span>
-                  </label>
-                  <input
-                    id="motif"
-                    name="motif"
-                    type="text"
-                    placeholder="Salle indisponible"
-                    className="w-full rounded-sm border border-sable-deep bg-white px-[13px] py-[11px] text-[15px]"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="cursor-pointer rounded-sm border border-framboise px-[22px] py-[13px] text-[15px] font-semibold text-framboise transition-colors hover:bg-framboise-wash"
-                >
-                  J&apos;annule ce cours
-                </button>
-              </form>
+              {/* Sans inscrite, annuler n'a aucune consequence pour personne :
+                  la confirmation serait de la friction pour rien. Des qu'il y a
+                  du monde, elle devient necessaire. */}
+              {inscrites.length === 0 ? (
+                <form action={annulerCours} className="flex flex-col gap-3">
+                  <input type="hidden" name="id" value={cours.id} />
+                  <ChampMotif />
+                  <button
+                    type="submit"
+                    className="cursor-pointer rounded-sm border border-framboise px-[22px] py-[13px] text-[15px] font-semibold text-framboise transition-colors hover:bg-framboise-wash"
+                  >
+                    J&apos;annule ce cours
+                  </button>
+                </form>
+              ) : (
+                <ConfirmerAction
+                  action={annulerCours}
+                  variante="danger"
+                  declencheur="Annuler ce cours"
+                  champs={{ id: cours.id }}
+                  avertissement={
+                    <>
+                      <strong>
+                        {inscrites.length} inscrite{inscrites.length > 1 ? "s" : ""}
+                      </strong>{" "}
+                      {inscrites.length > 1 ? "seront" : "sera"} recréditée
+                      {inscrites.length > 1 ? "s" : ""} et prévenue
+                      {inscrites.length > 1 ? "s" : ""} par mail. Le cours
+                      disparaît du planning. C&apos;est définitif : on ne
+                      &laquo;&nbsp;dés-annule&nbsp;&raquo; pas un cours.
+                    </>
+                  }
+                  confirmer="Oui, j'annule ce cours"
+                  enfants={<ChampMotif />}
+                />
+              )}
             </section>
           )}
         </aside>

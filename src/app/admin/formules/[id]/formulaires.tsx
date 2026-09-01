@@ -64,9 +64,9 @@ export function FormulaireTarif({ formule }: { formule: Formule }) {
       <input type="hidden" name="id" value={formule.id} />
 
       <div className="grid grid-cols-2 gap-4">
-        <Champ nom="prix" libelle="Prix en euros"
+        <Champ nom="prix" clavier="decimal" libelle="Prix en euros"
           valeurParDefaut={centimesEnEuros(formule.price_cents)} />
-        <Champ nom="prixBarre" libelle="Prix barré" requis={false}
+        <Champ nom="prixBarre" clavier="decimal" libelle="Prix barré" requis={false}
           valeurParDefaut={
             formule.compare_at_price_cents
               ? centimesEnEuros(formule.compare_at_price_cents)
@@ -80,10 +80,10 @@ export function FormulaireTarif({ formule }: { formule: Formule }) {
         {abonnement ? (
           <div>
             <span className="mb-1.5 block text-sm font-semibold">Validité</span>
-            <div className="rounded-sm border border-sable-deep bg-sable px-[13px] py-[11px] text-[15px] text-plume">
+            <div className="rounded-sm border border-sable-deep bg-sable px-[13px] py-[11px] text-[15px] text-plume-deep">
               4 semaines
             </div>
-            <p className="mt-1.5 text-[13px] text-plume">
+            <p className="mt-1.5 text-[13px] text-plume-deep">
               Non modifiable sur un abonnement.
             </p>
           </div>

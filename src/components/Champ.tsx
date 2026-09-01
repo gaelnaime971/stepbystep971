@@ -1,11 +1,23 @@
+/**
+ * Le style commun a tous les champs.
+ *
+ * 16 px sous 640 px et non 15 : en dessous de 16 px, Safari sur iPhone zoome
+ * automatiquement a la selection du champ, et Oriane doit ensuite repincer
+ * pour revoir son formulaire. Hauteur portee a ~48 px au doigt, contre 42.
+ */
+const STYLE_CHAMP =
+  "w-full rounded-sm border border-sable-deep bg-white px-[13px] py-3 text-[16px] text-encre focus:border-transparent focus:outline-2 focus:outline-offset-[-1px] focus:outline-framboise disabled:bg-sable disabled:text-plume-deep sm:py-[11px] sm:text-[15px]";
+
 type Props = {
   nom: string;
   libelle: string;
-  type?: "text" | "email" | "password" | "tel";
+  type?: "text" | "email" | "password" | "tel" | "date" | "time" | "url";
   valeurParDefaut?: string;
   requis?: boolean;
   autoComplete?: string;
   aide?: string;
+  /** Force le clavier mobile : « decimal » pour un montant, par exemple. */
+  clavier?: "text" | "decimal" | "numeric" | "email" | "tel" | "url";
 };
 
 export function Champ({
@@ -16,6 +28,7 @@ export function Champ({
   requis = true,
   autoComplete,
   aide,
+  clavier,
 }: Props) {
   const idAide = aide ? `${nom}-aide` : undefined;
 
@@ -23,7 +36,7 @@ export function Champ({
     <div>
       <label htmlFor={nom} className="mb-1.5 block text-sm font-semibold">
         {libelle}
-        {!requis && <span className="ml-1.5 font-normal text-plume">facultatif</span>}
+        {!requis && <span className="ml-1.5 font-normal text-plume-deep">facultatif</span>}
       </label>
       <input
         id={nom}
@@ -32,11 +45,12 @@ export function Champ({
         required={requis}
         defaultValue={valeurParDefaut}
         autoComplete={autoComplete}
+        inputMode={clavier}
         aria-describedby={idAide}
-        className="w-full rounded-sm border border-sable-deep bg-white px-[13px] py-[11px] text-[15px] text-encre focus:border-transparent focus:outline-2 focus:outline-offset-[-1px] focus:outline-framboise"
+        className={STYLE_CHAMP}
       />
       {aide && (
-        <p id={idAide} className="mt-1.5 text-[13px] text-plume">
+        <p id={idAide} className="mt-1.5 text-[13px] text-plume-deep">
           {aide}
         </p>
       )}
@@ -63,21 +77,18 @@ function Enveloppe({
       <label htmlFor={nom} className="mb-1.5 block text-sm font-semibold">
         {libelle}
         {requis === false && (
-          <span className="ml-1.5 font-normal text-plume">facultatif</span>
+          <span className="ml-1.5 font-normal text-plume-deep">facultatif</span>
         )}
       </label>
       {children}
       {aide && (
-        <p id={`${nom}-aide`} className="mt-1.5 text-[13px] text-plume">
+        <p id={`${nom}-aide`} className="mt-1.5 text-[13px] text-plume-deep">
           {aide}
         </p>
       )}
     </div>
   );
 }
-
-const STYLE_CHAMP =
-  "w-full rounded-sm border border-sable-deep bg-white px-[13px] py-[11px] text-[15px] text-encre focus:border-transparent focus:outline-2 focus:outline-offset-[-1px] focus:outline-framboise disabled:bg-sable disabled:text-plume";
 
 export function ZoneTexte(
   props: PropsCommunes & { valeurParDefaut?: string; lignes?: number },
@@ -88,6 +99,7 @@ export function ZoneTexte(
         id={props.nom}
         name={props.nom}
         rows={props.lignes ?? 4}
+        inputMode="text"
         defaultValue={props.valeurParDefaut}
         aria-describedby={props.aide ? `${props.nom}-aide` : undefined}
         className={STYLE_CHAMP}
@@ -185,7 +197,7 @@ export function Case({
         />
         <span className="font-semibold">{libelle}</span>
       </label>
-      {aide && <p className="mt-1.5 ml-[26px] text-[13px] text-plume">{aide}</p>}
+      {aide && <p className="mt-1.5 ml-[26px] text-[13px] text-plume-deep">{aide}</p>}
     </div>
   );
 }

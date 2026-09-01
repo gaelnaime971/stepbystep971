@@ -67,7 +67,7 @@ export default async function PagePaiements() {
     <>
       <div className="mb-[26px]">
         <h2>Paiements</h2>
-        <p className="mt-1.5 max-w-[62ch] text-plume">
+        <p className="mt-1.5 max-w-[62ch] text-plume-deep">
           Tout ce qui est passé par la caisse. En lecture seule : un
           remboursement ou un litige se traite chez Stripe, avec le lien de
           chaque ligne.
@@ -88,22 +88,22 @@ export default async function PagePaiements() {
       <div className="mb-[30px] grid grid-cols-[repeat(auto-fit,minmax(170px,1fr))] gap-3.5">
         <div className="rounded-md border border-sable bg-white px-[18px] py-[17px]">
           <p className="chiffre text-[32px] leading-[1.1]">{prixLisible(encaisse)}</p>
-          <p className="mt-1 text-sm text-plume">Encaissé depuis le début, net</p>
+          <p className="mt-1 text-sm text-plume-deep">Encaissé depuis le début, net</p>
         </div>
         <div className="rounded-md border border-sable bg-white px-[18px] py-[17px]">
           <p className="chiffre text-[32px] leading-[1.1]">{commandes.data?.length ?? 0}</p>
-          <p className="mt-1 text-sm text-plume">Commandes</p>
+          <p className="mt-1 text-sm text-plume-deep">Commandes</p>
         </div>
         <div className="rounded-md border border-sable bg-white px-[18px] py-[17px]">
           <p className="chiffre text-[32px] leading-[1.1]">{abos.data?.length ?? 0}</p>
-          <p className="mt-1 text-sm text-plume">Abonnements, tous statuts</p>
+          <p className="mt-1 text-sm text-plume-deep">Abonnements, tous statuts</p>
         </div>
       </div>
 
       <section className="mb-5 rounded-md border border-sable bg-white p-[22px]">
         <h3 className="mb-4">Les abonnements</h3>
         {!abos.data?.length ? (
-          <p className="py-6 text-[15px] text-plume">Aucun abonnement.</p>
+          <p className="py-6 text-[15px] text-plume-deep">Aucun abonnement.</p>
         ) : (
           abos.data.map((a) => (
             <div key={a.id} className="flex flex-wrap items-center justify-between gap-3 border-b border-sable py-3.5 last:border-b-0">
@@ -111,7 +111,7 @@ export default async function PagePaiements() {
                 <Link href={`/admin/clientes/${a.user_id}`} className="text-[15px] font-medium underline underline-offset-[3px]">
                   {qui.get(a.user_id) ?? "Cliente anonymisée"}
                 </Link>
-                <p className="text-[13px] text-plume">
+                <p className="text-[13px] text-plume-deep">
                   {quoi.get(a.plan_id) ?? "—"}
                   {a.current_period_end && ` · ${a.cancel_at_period_end || a.status === "canceled" ? "fin le" : "prochain paiement le"} ${enDateAnnee(a.current_period_end)}`}
                 </p>
@@ -131,7 +131,7 @@ export default async function PagePaiements() {
                 <a
                   href={STRIPE(`/subscriptions/${a.stripe_subscription_id}`)}
                   target="_blank" rel="noopener noreferrer"
-                  className="text-[13px] text-plume underline underline-offset-[3px] hover:text-framboise-deep"
+                  className="text-[13px] text-plume-deep underline underline-offset-[3px] hover:text-framboise-deep"
                 >
                   Stripe ↗
                 </a>
@@ -144,14 +144,14 @@ export default async function PagePaiements() {
       <section className="rounded-md border border-sable bg-white p-[22px]">
         <h3 className="mb-4">Les commandes</h3>
         {!commandes.data?.length ? (
-          <p className="py-6 text-[15px] text-plume">Aucune commande.</p>
+          <p className="py-6 text-[15px] text-plume-deep">Aucune commande.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
                 <tr>
                   {["Date", "Cliente", "Formule", "Montant", "Statut", ""].map((t) => (
-                    <th key={t} className="border-b border-sable px-2 py-2.5 text-left text-[13px] font-semibold text-plume">
+                    <th key={t} className="border-b border-sable px-2 py-2.5 text-left text-[13px] font-semibold text-plume-deep">
                       {t}
                     </th>
                   ))}
@@ -167,7 +167,7 @@ export default async function PagePaiements() {
                       : null;
                   return (
                     <tr key={c.id}>
-                      <td className="border-b border-sable px-2 py-3 text-[13px] whitespace-nowrap text-plume">
+                      <td className="border-b border-sable px-2 py-3 text-[13px] whitespace-nowrap text-plume-deep">
                         {enDateAnnee(c.paid_at ?? c.created_at)}
                       </td>
                       <td className="border-b border-sable px-2 py-3 text-[15px]">
@@ -175,7 +175,7 @@ export default async function PagePaiements() {
                           {qui.get(c.user_id) ?? "anonymisée"}
                         </Link>
                       </td>
-                      <td className="border-b border-sable px-2 py-3 text-[15px] text-plume">
+                      <td className="border-b border-sable px-2 py-3 text-[15px] text-plume-deep">
                         {quoi.get(c.plan_id) ?? "—"}
                         {c.kind === "subscription_cycle" && (
                           <span className="block text-[13px]">prélèvement</span>
@@ -184,7 +184,7 @@ export default async function PagePaiements() {
                       <td className="border-b border-sable px-2 py-3 text-[15px] font-medium whitespace-nowrap tabular-nums">
                         {prixLisible(c.amount_cents)}
                         {c.refunded_amount_cents > 0 && (
-                          <span className="block text-[13px] font-normal text-plume">
+                          <span className="block text-[13px] font-normal text-plume-deep">
                             −{prixLisible(c.refunded_amount_cents)}
                           </span>
                         )}
@@ -195,7 +195,7 @@ export default async function PagePaiements() {
                       <td className="border-b border-sable px-2 py-3 text-right">
                         {lien && (
                           <a href={lien} target="_blank" rel="noopener noreferrer"
-                            className="text-[13px] text-plume underline underline-offset-[3px] hover:text-framboise-deep">
+                            className="text-[13px] text-plume-deep underline underline-offset-[3px] hover:text-framboise-deep">
                             Stripe ↗
                           </a>
                         )}
@@ -207,7 +207,7 @@ export default async function PagePaiements() {
             </table>
           </div>
         )}
-        <p className="mt-4 text-[13px] text-plume">
+        <p className="mt-4 text-[13px] text-plume-deep">
           Pour rembourser, ouvre la ligne chez Stripe. Le site est prévenu tout
           seul et retire les séances non utilisées.
         </p>

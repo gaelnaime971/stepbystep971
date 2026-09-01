@@ -13,7 +13,7 @@ export function FormulaireNouveauMotDePasse() {
   return (
     <>
       <h2 className="mb-2">Nouveau mot de passe</h2>
-      <p className="mb-7 text-plume">
+      <p className="mb-7 text-plume-deep">
         Choisis-en un nouveau. Tu resteras connectée juste après.
       </p>
 

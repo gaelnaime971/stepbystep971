@@ -39,10 +39,10 @@ export default async function PageProfil({
 
           <div>
             <span className="mb-1.5 block text-sm font-semibold">Email</span>
-            <div className="rounded-sm border border-sable-deep bg-sable px-[13px] py-[11px] text-[15px] text-plume">
+            <div className="rounded-sm border border-sable-deep bg-sable px-[13px] py-[11px] text-[15px] text-plume-deep">
               {profil.email}
             </div>
-            <p className="mt-1.5 text-[13px] text-plume">
+            <p className="mt-1.5 text-[13px] text-plume-deep">
               Ton email sert à te connecter. Pour en changer, écris à Oriane.
             </p>
           </div>

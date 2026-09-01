@@ -39,11 +39,11 @@ export function FormulaireModification({
       <Selecteur nom="lieu" libelle="Lieu" options={lieux}
         valeurParDefaut={v.lieu ?? cours.location_id} />
 
-      <Champ nom="date" libelle="Date" type="text" valeurParDefaut={v.date ?? cours.date} />
+      <Champ nom="date" libelle="Date" type="date" valeurParDefaut={v.date ?? cours.date} />
 
       <div className="grid grid-cols-2 gap-3">
-        <Champ nom="debut" libelle="Début" type="text" valeurParDefaut={v.debut ?? cours.debut} />
-        <Champ nom="fin" libelle="Fin" type="text" valeurParDefaut={v.fin ?? cours.fin} />
+        <Champ nom="debut" libelle="Début" type="time" valeurParDefaut={v.debut ?? cours.debut} />
+        <Champ nom="fin" libelle="Fin" type="time" valeurParDefaut={v.fin ?? cours.fin} />
       </div>
 
       <ChampNombre nom="places" libelle="Nombre de places" min={Math.max(1, cours.seats_taken)}

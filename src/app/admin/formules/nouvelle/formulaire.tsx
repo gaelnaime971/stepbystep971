@@ -53,10 +53,10 @@ export function FormulaireFormule({ valeursInitiales }: { valeursInitiales?: Val
         {abonnement ? (
           <div>
             <span className="mb-1.5 block text-sm font-semibold">Validité</span>
-            <div className="rounded-sm border border-sable-deep bg-sable px-[13px] py-[11px] text-[15px] text-plume">
+            <div className="rounded-sm border border-sable-deep bg-sable px-[13px] py-[11px] text-[15px] text-plume-deep">
               4 semaines
             </div>
-            <p className="mt-1.5 text-[13px] text-plume">
+            <p className="mt-1.5 text-[13px] text-plume-deep">
               Un abonnement se recharge toutes les 4 semaines, jamais tous les
               mois. Ce n&apos;est pas modifiable.
             </p>
@@ -71,9 +71,9 @@ export function FormulaireFormule({ valeursInitiales }: { valeursInitiales?: Val
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <Champ nom="prix" libelle="Prix en euros" valeurParDefaut={v.prix}
+        <Champ nom="prix" clavier="decimal" libelle="Prix en euros" valeurParDefaut={v.prix}
           aide="Par exemple 70 ou 70,50." />
-        <Champ nom="prixBarre" libelle="Prix barré" requis={false}
+        <Champ nom="prixBarre" clavier="decimal" libelle="Prix barré" requis={false}
           valeurParDefaut={v.prixBarre}
           aide="Le tarif d'avant, affiché rayé. Laisse vide s'il n'y a pas de remise." />
       </div>

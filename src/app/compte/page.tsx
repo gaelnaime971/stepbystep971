@@ -137,13 +137,13 @@ export default async function PageMesSeances({
         <section className="rounded-md border border-sable bg-white p-5 sm:p-[22px]">
           <div className="mb-4 flex items-baseline justify-between gap-3.5">
             <h3>Les cours à venir</h3>
-            <span className="text-[13px] text-plume">
+            <span className="text-[13px] text-plume-deep">
               {aVenir.length} cours au planning
             </span>
           </div>
 
           {aVenir.length === 0 ? (
-            <p className="px-4 py-8 text-center text-[15px] text-plume">
+            <p className="px-4 py-8 text-center text-[15px] text-plume-deep">
               Aucun cours au planning pour l&apos;instant. Oriane les ajoute
               chaque semaine.
             </p>
@@ -170,7 +170,7 @@ export default async function PageMesSeances({
                         </span>
                         <div className="flex-1">
                           <p className="text-[15px] font-medium">{lieu}</p>
-                          <p className="text-sm font-semibold text-menthe">
+                          <p className="text-sm font-semibold text-menthe-deep">
                             Tu es inscrite
                           </p>
                         </div>
@@ -189,7 +189,7 @@ export default async function PageMesSeances({
                       </span>
                       <div className="flex-1">
                         <p className="text-[15px] font-medium">{lieu}</p>
-                        <p className="text-sm text-plume">
+                        <p className="text-sm text-plume-deep">
                           {places.texte} · {enCreneau(c.starts_at, c.ends_at)}
                         </p>
                       </div>
@@ -221,7 +221,7 @@ export default async function PageMesSeances({
           </div>
 
           {mesResaTriees.length === 0 ? (
-            <p className="px-4 py-8 text-center text-[15px] text-plume">
+            <p className="px-4 py-8 text-center text-[15px] text-plume-deep">
               Tu n&apos;as encore rien réservé.
             </p>
           ) : (
@@ -235,14 +235,14 @@ export default async function PageMesSeances({
                     <p className="text-[15px] font-medium first-letter:uppercase">
                       {enJourLong(c.starts_at)}, {enHeure(c.starts_at)}
                     </p>
-                    <p className="text-sm text-plume">
+                    <p className="text-sm text-plume-deep">
                       {nomsLieux.get(c.location_id) ?? "Lieu à préciser"}
                     </p>
                   </div>
                   <FormulaireAnnuler reservationId={resa.id} />
                 </div>
               ))}
-              <p className="mt-3.5 text-[13px] text-plume">
+              <p className="mt-3.5 text-[13px] text-plume-deep">
                 Le délai d&apos;annulation dépend de la formule qui a financé la
                 séance. Il est rappelé sur{" "}
                 <Link href="/compte/formule" className="underline underline-offset-[3px]">
@@ -258,7 +258,7 @@ export default async function PageMesSeances({
       {lots.length > 1 && (
         <section className="mt-[22px] rounded-md border border-sable bg-white p-[22px]">
           <h3 className="mb-4">Le détail de ton solde</h3>
-          <p className="mb-4 text-[15px] text-plume">
+          <p className="mb-4 text-[15px] text-plume-deep">
             Tes séances sont consommées en commençant par celles qui expirent le
             plus tôt.
           </p>
@@ -271,7 +271,7 @@ export default async function PageMesSeances({
                 <p className="text-[15px] font-medium">
                   {formules.get(l.plan_id ?? "")?.name ?? "Séances ajoutées par Oriane"}
                 </p>
-                <p className="text-sm text-plume">
+                <p className="text-sm text-plume-deep">
                   À utiliser avant le {enDate(l.expires_at)}
                 </p>
               </div>
@@ -297,7 +297,7 @@ function FormulaireAnnuler({ reservationId }: { reservationId: string }) {
       <input type="hidden" name="reservationId" value={reservationId} />
       <button
         type="submit"
-        className="cursor-pointer border-none bg-transparent p-0 text-sm text-plume underline underline-offset-[3px] transition-colors hover:text-framboise-deep"
+        className="cursor-pointer border-none bg-transparent p-0 text-sm text-plume-deep underline underline-offset-[3px] transition-colors hover:text-framboise-deep"
       >
         Annuler
       </button>

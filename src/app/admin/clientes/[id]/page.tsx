@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Bandeau } from "@/components/Bandeau";
+import { ConfirmerAction } from "@/components/ConfirmerAction";
 import { Pastille } from "@/components/Pastille";
 import { anonymiser, desinscrireDepuisFiche, enregistrerNotes } from "@/lib/admin/actions";
 import { ficheCliente } from "@/lib/admin/lecture";
@@ -32,7 +33,7 @@ function Bloc({ titre, children, aide }: { titre: string; children: React.ReactN
   return (
     <section className="rounded-md border border-sable bg-white p-[22px]">
       <h3 className="mb-1">{titre}</h3>
-      {aide && <p className="mb-4 text-[13px] text-plume">{aide}</p>}
+      {aide && <p className="mb-4 text-[13px] text-plume-deep">{aide}</p>}
       {!aide && <div className="mb-4" />}
       {children}
     </section>
@@ -93,7 +94,7 @@ export default async function PageFicheCliente({
             aide="Les séances sont consommées en commençant par celles qui expirent le plus tôt."
           >
             {lots.length === 0 ? (
-              <p className="py-4 text-[15px] text-plume">Aucune séance, jamais.</p>
+              <p className="py-4 text-[15px] text-plume-deep">Aucune séance, jamais.</p>
             ) : (
               lots.map((l) => {
                 const actif = l.quantite > 0 && !l.ferme && l.expire > new Date().toISOString();
@@ -103,11 +104,11 @@ export default async function PageFicheCliente({
                     <div>
                       <p className="text-[15px] font-medium">
                         {l.formule ?? "Séances ajoutées à la main"}
-                        <span className="ml-2 text-[13px] font-normal text-plume">
+                        <span className="ml-2 text-[13px] font-normal text-plume-deep">
                           {ORIGINES[l.origine] ?? l.origine}
                         </span>
                       </p>
-                      <p className="text-[13px] text-plume">
+                      <p className="text-[13px] text-plume-deep">
                         {l.ferme
                           ? l.motifFermeture === "superseded"
                             ? `Remplacé par le cycle suivant le ${enDate(l.ferme)}`
@@ -121,7 +122,7 @@ export default async function PageFicheCliente({
                     <div className="flex items-center gap-3">
                       <span className="chiffre text-lg">
                         {l.quantite}
-                        <span className="text-[13px] text-plume">/{l.quantiteInitiale}</span>
+                        <span className="text-[13px] text-plume-deep">/{l.quantiteInitiale}</span>
                       </span>
                       {actif && jours <= 7 && <Pastille ton="bientot">{jours} j</Pastille>}
                     </div>
@@ -150,7 +151,7 @@ export default async function PageFicheCliente({
           {/* Réservations --------------------------------------------- */}
           <Bloc titre="Ses réservations">
             {aVenir.length === 0 && passees.length === 0 ? (
-              <p className="py-4 text-[15px] text-plume">Elle n&apos;a jamais réservé.</p>
+              <p className="py-4 text-[15px] text-plume-deep">Elle n&apos;a jamais réservé.</p>
             ) : (
               <>
                 {aVenir.map((r) => (
@@ -159,19 +160,27 @@ export default async function PageFicheCliente({
                       <Link href={`/admin/planning/${r.coursId}`} className="text-[15px] font-medium underline underline-offset-[3px] first-letter:uppercase">
                         {enJourLong(r.debut)}, {enCreneau(r.debut, r.fin)}
                       </Link>
-                      <p className="text-[13px] text-plume">{r.lieu}</p>
+                      <p className="text-[13px] text-plume-deep">{r.lieu}</p>
                     </div>
-                    <form action={desinscrireDepuisFiche} className="flex items-center gap-2.5">
-                      <input type="hidden" name="clienteId" value={id} />
-                      <input type="hidden" name="reservationId" value={r.id} />
-                      <label className="flex items-center gap-1.5 text-[13px] text-plume">
-                        <input type="checkbox" name="recrediter" defaultChecked className="h-3.5 w-3.5 accent-[#D81840]" />
-                        rendre la séance
-                      </label>
-                      <button type="submit" className="cursor-pointer border-none bg-transparent p-0 text-sm text-plume underline underline-offset-[3px] hover:text-framboise-deep">
-                        Désinscrire
-                      </button>
-                    </form>
+                    <ConfirmerAction
+                      action={desinscrireDepuisFiche}
+                      declencheur="Désinscrire"
+                      champs={{ clienteId: id, reservationId: r.id }}
+                      avertissement={
+                        <>
+                          {profil.first_name} perd sa place sur ce cours. Elle
+                          n&apos;est pas prévenue automatiquement : préviens-la.
+                        </>
+                      }
+                      confirmer="Oui, désinscrire"
+                      enfants={
+                        <label className="flex cursor-pointer items-center gap-2.5 text-[15px]">
+                          <input type="checkbox" name="recrediter" defaultChecked
+                            className="h-4 w-4 accent-[#D81840]" />
+                          Lui rendre sa séance
+                        </label>
+                      }
+                    />
                   </div>
                 ))}
                 {passees.slice(0, 12).map((r) => (
@@ -180,9 +189,9 @@ export default async function PageFicheCliente({
                       <p className="text-[15px] first-letter:uppercase">
                         {enJourLong(r.debut)}, {enCreneau(r.debut, r.fin)}
                       </p>
-                      <p className="text-[13px] text-plume">{r.lieu}</p>
+                      <p className="text-[13px] text-plume-deep">{r.lieu}</p>
                     </div>
-                    <span className="text-[13px] text-plume">
+                    <span className="text-[13px] text-plume-deep">
                       {r.statut === "booked"
                         ? "passé"
                         : r.statut === "course_canceled"
@@ -200,13 +209,13 @@ export default async function PageFicheCliente({
           {/* Achats --------------------------------------------------- */}
           <Bloc titre="Ses achats">
             {achats.length === 0 ? (
-              <p className="py-4 text-[15px] text-plume">Aucun achat.</p>
+              <p className="py-4 text-[15px] text-plume-deep">Aucun achat.</p>
             ) : (
               achats.map((a) => (
                 <div key={a.id} className="flex items-center justify-between gap-3 border-b border-sable py-3 last:border-b-0">
                   <div>
                     <p className="text-[15px] font-medium">{a.formule ?? "Formule supprimée"}</p>
-                    <p className="text-[13px] text-plume">
+                    <p className="text-[13px] text-plume-deep">
                       {enDateAnnee(a.date)}
                       {a.type === "subscription_cycle" && " · prélèvement"}
                     </p>
@@ -227,16 +236,16 @@ export default async function PageFicheCliente({
           {/* Emails --------------------------------------------------- */}
           <Bloc titre="Ce qu'elle a reçu" aide="Utile quand elle dit n'avoir rien reçu.">
             {emails.length === 0 ? (
-              <p className="py-4 text-[15px] text-plume">Aucun email envoyé.</p>
+              <p className="py-4 text-[15px] text-plume-deep">Aucun email envoyé.</p>
             ) : (
               emails.map((e) => (
                 <div key={e.id} className="flex items-center justify-between gap-3 border-b border-sable py-2.5 last:border-b-0">
                   <div>
                     <p className="text-[15px]">{MODELES[e.modele] ?? e.modele}</p>
-                    <p className="text-[13px] text-plume">{e.destinataire}</p>
+                    <p className="text-[13px] text-plume-deep">{e.destinataire}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[13px] text-plume">{enDateAnnee(e.envoyeLe)}</p>
+                    <p className="text-[13px] text-plume-deep">{enDateAnnee(e.envoyeLe)}</p>
                     {e.erreur && <Pastille ton="complet">Non parti</Pastille>}
                   </div>
                 </div>
@@ -255,7 +264,7 @@ export default async function PageFicheCliente({
                 ["Inscrite le", enDateAnnee(profil.created_at)],
               ].map(([cle, valeur]) => (
                 <div key={cle} className="flex justify-between gap-3">
-                  <dt className="text-plume">{cle}</dt>
+                  <dt className="text-plume-deep">{cle}</dt>
                   <dd className="text-right break-all">{valeur}</dd>
                 </div>
               ))}
@@ -264,7 +273,7 @@ export default async function PageFicheCliente({
 
           <Bloc titre="Sa formule">
             {abonnements.length === 0 ? (
-              <p className="text-[15px] text-plume">Pas d&apos;abonnement. Ses séances viennent d&apos;achats ponctuels.</p>
+              <p className="text-[15px] text-plume-deep">Pas d&apos;abonnement. Ses séances viennent d&apos;achats ponctuels.</p>
             ) : (
               abonnements.map((a) => (
                 <div key={a.id} className="border-b border-sable py-3 last:border-b-0">
@@ -283,7 +292,7 @@ export default async function PageFicheCliente({
                     )}
                   </div>
                   {a.finPeriode && (
-                    <p className="text-[13px] text-plume">
+                    <p className="text-[13px] text-plume-deep">
                       {a.resilieALaFin || a.statut === "canceled" ? "Fin de validité" : "Prochain paiement"} le{" "}
                       {enDate(a.finPeriode)}
                     </p>

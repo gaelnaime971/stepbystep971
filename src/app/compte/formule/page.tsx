@@ -118,18 +118,18 @@ export default async function PageMaFormule({
                     ],
                   ].map(([cle, valeur]) => (
                     <div key={cle} className="flex justify-between gap-3 py-2.5 text-[15px]">
-                      <span className="text-plume">{cle}</span>
+                      <span className="text-plume-deep">{cle}</span>
                       <span className="font-medium">{valeur}</span>
                     </div>
                   ))}
                 </div>
 
-                <p className="mt-3 text-[15px] text-plume">{etat.explication}</p>
+                <p className="mt-3 text-[15px] text-plume-deep">{etat.explication}</p>
               </>
             ) : (
               <>
                 <h3 className="mb-2">Tu n&apos;as pas d&apos;abonnement</h3>
-                <p className="text-[15px] text-plume">
+                <p className="text-[15px] text-plume-deep">
                   Tes séances viennent d&apos;achats ponctuels, ou tu n&apos;en
                   as pas encore pris. Un abonnement se recharge tout seul toutes
                   les 4 semaines.
@@ -145,7 +145,7 @@ export default async function PageMaFormule({
                 Gérer mon abonnement
               </button>
             </form>
-            <p className="mt-2.5 text-[13px] text-plume">
+            <p className="mt-2.5 text-[13px] text-plume-deep">
               Changer de carte, télécharger tes factures ou résilier. Tout se
               passe chez Stripe, en sécurité.
             </p>
@@ -154,7 +154,7 @@ export default async function PageMaFormule({
           {delais.length > 0 && (
             <section className="rounded-md border border-sable bg-white p-5 sm:p-[22px]">
               <h3 className="mb-1">Comment marchent tes séances</h3>
-              <p className="mb-5 text-[13px] text-plume">
+              <p className="mb-5 text-[13px] text-plume-deep">
                 Les règles de la formule qui finance ton solde. Elles ne changent
                 pas en cours de route.
               </p>
@@ -178,7 +178,7 @@ export default async function PageMaFormule({
           <section className="rounded-md border border-sable bg-white p-[22px]">
             <h3 className="mb-4">Mes achats</h3>
             {achats.length === 0 ? (
-              <p className="px-4 py-8 text-center text-[15px] text-plume">
+              <p className="px-4 py-8 text-center text-[15px] text-plume-deep">
                 Aucun achat pour l&apos;instant.
               </p>
             ) : (
@@ -191,7 +191,7 @@ export default async function PageMaFormule({
                     <p className="text-[15px] font-medium">
                       {formules.get(a.plan_id)?.name ?? "Formule"}
                     </p>
-                    <p className="text-sm text-plume">
+                    <p className="text-sm text-plume-deep">
                       {a.paid_at ? enDateAnnee(a.paid_at) : enDateAnnee(a.created_at)}
                       {a.kind === "subscription_cycle" && " · prélèvement"}
                     </p>
@@ -211,12 +211,12 @@ export default async function PageMaFormule({
 
         <section className="rounded-md border border-sable bg-white p-[22px]">
           <h3 className="mb-2">Recharger mon solde</h3>
-          <p className="mb-4 text-[15px] text-plume">
+          <p className="mb-4 text-[15px] text-plume-deep">
             Toutes les formules te créditent des séances. Tu les places ensuite
             où tu veux dans le planning.
           </p>
           {enVente.length === 0 ? (
-            <p className="text-[15px] text-plume">
+            <p className="text-[15px] text-plume-deep">
               Aucune formule en vente pour l&apos;instant.
             </p>
           ) : (
@@ -236,7 +236,7 @@ export default async function PageMaFormule({
               </div>
             ))
           )}
-          <p className="mt-4 text-[13px] text-plume">
+          <p className="mt-4 text-[13px] text-plume-deep">
             Paiement par carte, sécurisé par Stripe. Tu pourras entrer un code
             promo à l&apos;étape suivante.
           </p>

@@ -14,7 +14,7 @@ export function FormulaireConnexion({ suite }: { suite: string }) {
   return (
     <>
       <h2 className="mb-2">Te revoilà</h2>
-      <p className="mb-7 text-plume">
+      <p className="mb-7 text-plume-deep">
         Connecte-toi pour placer tes séances dans le planning.
       </p>
 
@@ -49,7 +49,7 @@ export function FormulaireConnexion({ suite }: { suite: string }) {
         </Link>
       </p>
 
-      <p className="mt-7 border-t border-sable pt-6 text-[15px] text-plume">
+      <p className="mt-7 border-t border-sable pt-6 text-[15px] text-plume-deep">
         Pas encore de compte ?{" "}
         <Link
           href="/inscription"

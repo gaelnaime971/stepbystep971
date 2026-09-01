@@ -16,11 +16,14 @@ import Link from "next/link";
 export function Logo({
   clair = false,
   hauteur = 40,
+  hauteurMobile,
   lien = "/",
   priorite = false,
 }: {
   clair?: boolean;
   hauteur?: number;
+  /** Hauteur sous 640 px. Sans elle, la meme qu'au-dessus. */
+  hauteurMobile?: number;
   lien?: string | null;
   priorite?: boolean;
 }) {
@@ -34,8 +37,13 @@ export function Logo({
       width={Math.round(hauteur * RATIO)}
       height={hauteur}
       priority={priorite}
-      className="h-auto w-auto"
-      style={{ height: hauteur }}
+      className="h-[var(--h-mobile)] w-auto sm:h-[var(--h)]"
+      style={
+        {
+          "--h": `${hauteur}px`,
+          "--h-mobile": `${hauteurMobile ?? hauteur}px`,
+        } as React.CSSProperties
+      }
     />
   );
 

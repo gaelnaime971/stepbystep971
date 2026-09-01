@@ -25,7 +25,7 @@ export default async function PageNouvelleFormule({
       <h2 className="mb-2">
         {source ? `Nouvelle formule à partir de « ${source.name} »` : "Créer une formule"}
       </h2>
-      <p className="mb-8 max-w-[62ch] text-plume">
+      <p className="mb-8 max-w-[62ch] text-plume-deep">
         {source
           ? "Le prix d'une formule vendue ne se modifie pas. Change ce que tu veux ici, puis archive l'ancienne : les clientes qui l'ont achetée gardent leurs séances."
           : "Le produit et le prix sont créés chez Stripe au moment où tu enregistres. Tu n'as rien à faire de ton côté."}

@@ -83,7 +83,7 @@ export default async function PageFormule({
                     ["Type", LIBELLE_TYPE[formule.kind]],
                   ].map(([cle, valeur]) => (
                     <div key={cle} className="flex justify-between gap-4">
-                      <dt className="text-plume">{cle}</dt>
+                      <dt className="text-plume-deep">{cle}</dt>
                       <dd className="font-semibold">{valeur}</dd>
                     </div>
                   ))}
@@ -98,7 +98,7 @@ export default async function PageFormule({
               </>
             ) : (
               <>
-                <p className="mb-5 text-[15px] text-plume">
+                <p className="mb-5 text-[15px] text-plume-deep">
                   Personne n&apos;a encore acheté cette formule : tu peux encore
                   corriger son tarif. Un nouveau prix sera créé chez Stripe et
                   l&apos;ancien désactivé — un prix Stripe ne se modifie jamais.
@@ -115,11 +115,11 @@ export default async function PageFormule({
             {formule.stripe_price_id ? (
               <dl className="flex flex-col gap-3 text-[13px]">
                 <div>
-                  <dt className="text-plume">Produit</dt>
+                  <dt className="text-plume-deep">Produit</dt>
                   <dd className="break-all font-mono">{formule.stripe_product_id}</dd>
                 </div>
                 <div>
-                  <dt className="text-plume">Prix</dt>
+                  <dt className="text-plume-deep">Prix</dt>
                   <dd className="break-all font-mono">{formule.stripe_price_id}</dd>
                 </div>
               </dl>
@@ -135,7 +135,7 @@ export default async function PageFormule({
           <section className="rounded-md border border-sable bg-white p-[22px]">
             <h3 className="mb-4">Ventes</h3>
             <p className="chiffre text-4xl text-framboise">{ventes}</p>
-            <p className="mt-1 text-[13px] text-plume">
+            <p className="mt-1 text-[13px] text-plume-deep">
               {ventes === 0
                 ? "Aucune vente pour l'instant."
                 : ventes === 1

@@ -17,7 +17,7 @@ export function FormulaireMotDePasseOublie() {
   return (
     <>
       <h2 className="mb-2">Mot de passe oublié</h2>
-      <p className="mb-7 text-plume">
+      <p className="mb-7 text-plume-deep">
         Donne-moi ton email, je t&apos;envoie un lien pour en choisir un
         nouveau.
       </p>

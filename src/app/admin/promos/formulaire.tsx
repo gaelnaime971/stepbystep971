@@ -43,6 +43,7 @@ export function FormulairePromo({ formules }: { formules: { id: string; name: st
         <Selecteur nom="type" libelle="Type de remise" options={TYPES} valeur={type} onChange={setType} />
         <Champ
           nom="valeur"
+          clavier="decimal"
           libelle={type === "percent" ? "Pourcentage" : "Montant en euros"}
           valeurParDefaut={v.valeur}
           aide={type === "percent" ? "Par exemple 20 pour −20 %." : "Par exemple 10 pour −10 €."}
@@ -60,13 +61,13 @@ export function FormulairePromo({ formules }: { formules: { id: string; name: st
       <div className="grid grid-cols-2 gap-3">
         <ChampNombre nom="maxi" libelle="Nombre d'utilisations" requis={false} min={1}
           valeurParDefaut={v.maxi} aide="Laisse vide pour illimité." />
-        <Champ nom="expire" libelle="Expire le" requis={false} valeurParDefaut={v.expire}
-          aide="Format 2026-12-31. Vide = sans fin." />
+        <Champ nom="expire" libelle="Expire le" type="date" requis={false}
+          valeurParDefaut={v.expire} aide="Vide = sans fin." />
       </div>
 
       <fieldset className="border-0 p-0">
         <legend className="mb-2 text-sm font-semibold">Limiter à certaines formules</legend>
-        <p className="mb-2.5 text-[13px] text-plume">
+        <p className="mb-2.5 text-[13px] text-plume-deep">
           Aucune case cochée : le code marche sur tout.
         </p>
         <div className="flex flex-col gap-2">

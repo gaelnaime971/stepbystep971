@@ -19,7 +19,7 @@ export default async function PageClientes({
     <>
       <div className="mb-[26px]">
         <h2>Mes clientes</h2>
-        <p className="mt-1.5 text-plume">
+        <p className="mt-1.5 text-plume-deep">
           {q
             ? `${liste.length} résultat${liste.length > 1 ? "s" : ""} pour « ${q} »`
             : `${liste.length} cliente${liste.length > 1 ? "s" : ""} inscrite${liste.length > 1 ? "s" : ""}`}
@@ -60,7 +60,7 @@ export default async function PageClientes({
       </form>
 
       {liste.length === 0 ? (
-        <p className="rounded-md border border-sable bg-white px-6 py-10 text-center text-[15px] text-plume">
+        <p className="rounded-md border border-sable bg-white px-6 py-10 text-center text-[15px] text-plume-deep">
           {q ? "Personne ne correspond à cette recherche." : "Aucune cliente inscrite pour l'instant."}
         </p>
       ) : (
@@ -69,7 +69,7 @@ export default async function PageClientes({
             <thead>
               <tr>
                 {["Cliente", "Formule", "Séances", "Validité", ""].map((t) => (
-                  <th key={t} className="border-b border-sable px-3 py-2.5 text-left text-[13px] font-semibold text-plume">
+                  <th key={t} className="border-b border-sable px-3 py-2.5 text-left text-[13px] font-semibold text-plume-deep">
                     {t}
                   </th>
                 ))}
@@ -92,15 +92,15 @@ export default async function PageClientes({
                           <Link href={`/admin/clientes/${c.id}`} className="text-[15px] font-semibold underline underline-offset-[3px]">
                             {c.prenom} {c.nom}
                           </Link>
-                          <p className="text-[13px] text-plume">{c.email}</p>
+                          <p className="text-[13px] text-plume-deep">{c.email}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="border-b border-sable px-3 py-3.5 text-[15px] text-plume">
+                    <td className="border-b border-sable px-3 py-3.5 text-[15px] text-plume-deep">
                       {c.formule ?? "—"}
                     </td>
                     <td className="border-b border-sable px-3 py-3.5">
-                      <span className={`chiffre text-lg ${c.solde === 0 ? "text-plume" : ""}`}>
+                      <span className={`chiffre text-lg ${c.solde === 0 ? "text-plume-deep" : ""}`}>
                         {c.solde}
                       </span>
                     </td>
@@ -118,7 +118,7 @@ export default async function PageClientes({
                     <td className="border-b border-sable px-3 py-3.5 text-right">
                       <Link
                         href={`/admin/clientes/${c.id}`}
-                        className="inline-flex rounded-sm border border-sable-deep bg-white px-3.5 py-2 text-sm font-semibold text-encre hover:bg-sable"
+                        className="inline-flex rounded-sm border border-sable-deep bg-white px-4 py-2.5 text-sm font-semibold text-encre hover:bg-sable"
                       >
                         Ouvrir
                       </Link>

@@ -13,7 +13,7 @@ export default async function PageMerci() {
   return (
     <>
       <h2 className="mb-2">Merci</h2>
-      <p className="mb-7 max-w-[62ch] text-plume">
+      <p className="mb-7 max-w-[62ch] text-plume-deep">
         Ton paiement est passé. Tes séances arrivent sur ton solde dans quelques
         secondes — Stripe nous prévient juste après l&apos;encaissement.
       </p>
