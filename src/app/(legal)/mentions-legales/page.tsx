@@ -14,31 +14,38 @@ export default function PageMentionsLegales() {
       <h2>L&apos;éditrice du site</h2>
       <dl>
         <dt>Dénomination</dt>
+        <dd>Hegesippe Oriane, entrepreneur individuel (EI)</dd>
+        <dt>Nom commercial</dt>
         <dd>Step by Step Coaching</dd>
-        <dt>Forme juridique</dt>
-        <dd>Entreprise individuelle (micro-entreprise)</dd>
-        <dt>Responsable de la publication</dt>
-        <dd><span className="aremplir">[Prénom et nom complet d&apos;Oriane]</span></dd>
+        <dt>Directrice de la publication</dt>
+        <dd>Hegesippe Oriane</dd>
         <dt>Siège</dt>
-        <dd><span className="aremplir">[Adresse complète, code postal, commune — Guadeloupe]</span></dd>
-        <dt>SIRET</dt>
+        <dd>Rue Adrien Legrand, 97139 Les Abymes, Guadeloupe</dd>
+        <dt>SIREN</dt>
+        <dd>915 127 534</dd>
+        <dt>SIRET du siège</dt>
         <dd>915 127 534 00013</dd>
         <dt>Code APE</dt>
-        <dd><span className="aremplir">[Code APE, probablement 8551Z — enseignement de disciplines sportives et d&apos;activités de loisirs]</span></dd>
+        <dd>96.09Z — Autres services personnels n.c.a.</dd>
+        <dt>Immatriculation</dt>
+        <dd>
+          Non inscrite au registre du commerce et des sociétés. Inscrite au
+          Registre national des entreprises depuis le 1<sup>er</sup> juillet 2022.
+        </dd>
         <dt>Numéro de TVA intracommunautaire</dt>
         <dd>
           Sans objet : l&apos;entreprise bénéficie de la franchise en base de TVA
           (article 293 B du Code général des impôts). TVA non applicable.
         </dd>
-        <dt>Carte professionnelle d&apos;éducateur sportif</dt>
-        <dd><span className="aremplir">[Numéro de carte professionnelle et DRAJES de délivrance — obligatoire pour l&apos;enseignement contre rémunération]</span></dd>
         <dt>Assurance responsabilité civile professionnelle</dt>
-        <dd><span className="aremplir">[Assureur, numéro de contrat, étendue géographique]</span></dd>
+        <dd>
+          MAIF, société d&apos;assurance mutuelle à cotisations variables,
+          CS 90000, 79038 Niort cedex 9 — numéro de sociétaire 4853673H.
+          Garantie applicable en France, Guadeloupe comprise.
+        </dd>
         <dt>Contact</dt>
         <dd>
           <a href="mailto:sbscoaching28@gmail.com">sbscoaching28@gmail.com</a>
-          {" — "}
-          <span className="aremplir">[Numéro de téléphone si tu veux l&apos;afficher]</span>
         </dd>
       </dl>
 

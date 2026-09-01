@@ -330,7 +330,7 @@ export default async function PageAccueil() {
             </div>
           </div>
           <div className="mt-8 flex flex-col gap-3 border-t border-[#343133] pt-[18px] sm:mt-[30px] sm:flex-row sm:items-center sm:justify-between">
-            <p>Step by Step Coaching — Siret 915 127 534 00013.</p>
+            <p>Step by Step Coaching — Hegesippe Oriane (EI) — Siret 915 127 534 00013.</p>
             <div className="flex flex-wrap gap-x-5 gap-y-1">
               {[["/mentions-legales", "Mentions légales"],
                 ["/cgv", "Conditions générales de vente"],

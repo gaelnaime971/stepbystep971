@@ -14,10 +14,13 @@ export default function PageCgv() {
       <span className="maj">Dernière mise à jour : septembre 2026</span>
 
       <p>
-        Ces conditions régissent la vente de séances de step par Step by Step
-        Coaching, entreprise individuelle immatriculée sous le SIRET
-        915 127 534 00013, ci-après « Step by Step », à toute personne majeure
-        achetant sur ce site, ci-après « la cliente ».
+        Ces conditions régissent la vente de séances de step par{" "}
+        <strong>Hegesippe Oriane, entrepreneur individuel (EI)</strong>, exerçant
+        sous le nom commercial <strong>Step by Step Coaching</strong>, dont le
+        siège est rue Adrien Legrand, 97139 Les Abymes (Guadeloupe), immatriculée
+        sous le SIREN 915 127 534 et le SIRET 915 127 534 00013, ci-après
+        « Step by Step », à toute personne majeure achetant sur ce site, ci-après
+        « la cliente ».
       </p>
       <p>
         Toute commande vaut acceptation des présentes conditions, dans leur
@@ -217,9 +220,9 @@ export default function PageCgv() {
       </p>
       <p>
         <span className="aremplir">
-          [Obligatoire : adhérer à un médiateur de la consommation et indiquer
-          ici son nom, son adresse postale et son site. Sans cette mention, les
-          CGV sont incomplètes au regard de la loi.]
+          [À compléter : nom du médiateur de la consommation, adresse postale et
+          site internet. L&apos;adhésion à un dispositif de médiation est
+          obligatoire, article L. 612-1 du Code de la consommation.]
         </span>
       </p>
 

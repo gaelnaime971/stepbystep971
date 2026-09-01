@@ -20,8 +20,9 @@ export default function PageConfidentialite() {
 
       <h2>Qui est responsable</h2>
       <p>
-        Step by Step Coaching, entreprise individuelle, SIRET 915 127 534 00013,{" "}
-        <span className="aremplir">[adresse complète]</span>. Contact :{" "}
+        Hegesippe Oriane, entrepreneur individuel (EI), exerçant sous le nom
+        commercial Step by Step Coaching, rue Adrien Legrand, 97139 Les Abymes
+        (Guadeloupe), SIRET 915 127 534 00013. Contact :{" "}
         <a href="mailto:sbscoaching28@gmail.com">sbscoaching28@gmail.com</a>.
       </p>
       <p>
