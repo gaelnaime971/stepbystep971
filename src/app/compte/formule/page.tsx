@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Bandeau } from "@/components/Bandeau";
 import { BoutonAchat } from "@/components/BoutonAchat";
 import { Pastille } from "@/components/Pastille";
+import { PedagogieFormule } from "@/components/PedagogieFormule";
 import { ouvrirPortail } from "@/lib/compte/actions";
 import {
   formulesEnVente, formulesLisibles, lotsActifs, lotsParIds, mesAchats,
@@ -151,20 +152,26 @@ export default async function PageMaFormule({
           </section>
 
           {delais.length > 0 && (
-            <section className="rounded-md border border-sable bg-white p-[22px]">
-              <h3 className="mb-4">Mon délai d&apos;annulation</h3>
+            <section className="rounded-md border border-sable bg-white p-5 sm:p-[22px]">
+              <h3 className="mb-1">Comment marchent tes séances</h3>
+              <p className="mb-5 text-[13px] text-plume">
+                Les règles de la formule qui finance ton solde. Elles ne changent
+                pas en cours de route.
+              </p>
               {delais.map((f) => (
-                <div key={f.id} className="flex justify-between gap-3 py-2.5 text-[15px]">
-                  <span className="text-plume">{f.name}</span>
-                  <span className="font-medium">
-                    {f.cancellation_deadline_hours} h avant le cours
-                  </span>
+                <div key={f.id} className="border-b border-sable pb-5 last:border-b-0 last:pb-0 [&+&]:pt-5">
+                  {delais.length > 1 && (
+                    <p className="mb-3 text-[15px] font-semibold">{f.name}</p>
+                  )}
+                  <PedagogieFormule
+                    forme="bloc"
+                    kind={f.kind}
+                    seances={f.sessions_count}
+                    validite={f.validity_interval}
+                    delaiHeures={f.cancellation_deadline_hours}
+                  />
                 </div>
               ))}
-              <p className="mt-3 text-[13px] text-plume">
-                Passé ce délai, la séance est décomptée. Annulée dans les temps,
-                elle revient sur ton solde.
-              </p>
             </section>
           )}
 

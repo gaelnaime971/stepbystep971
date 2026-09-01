@@ -1,5 +1,5 @@
 import { BoutonDeconnexion } from "./BoutonDeconnexion";
-import { Marque } from "./Marque";
+import { Logo } from "./Logo";
 import type { Profil } from "@/lib/auth/session";
 
 function initiales(profil: Profil) {
@@ -8,17 +8,19 @@ function initiales(profil: Profil) {
 
 export function EnteteConnectee({ profil }: { profil: Profil }) {
   return (
-    <nav className="sticky top-0 z-20 bg-encre px-6 py-3.5">
-      <div className="mx-auto flex max-w-shell items-center justify-between gap-5">
-        <Marque clair />
-        <div className="flex items-center gap-3">
+    <nav className="sticky top-0 z-20 bg-encre px-5 py-2.5 sm:px-6 sm:py-3">
+      <div className="mx-auto flex max-w-shell items-center justify-between gap-3">
+        <Logo clair hauteur={38} priorite />
+        <div className="flex items-center gap-2.5 sm:gap-3">
           <span
             aria-hidden="true"
             className="flex h-8 w-8 items-center justify-center rounded-full bg-framboise text-[13px] font-semibold text-white"
           >
             {initiales(profil)}
           </span>
-          <span className="text-[15px] text-white">
+          {/* Le nom complet ferait deborder une barre de 375 px : les
+              initiales suffisent, le nom revient des qu'il y a la place. */}
+          <span className="hidden text-[15px] whitespace-nowrap text-white sm:inline">
             {profil.first_name} {profil.last_name}
           </span>
           <BoutonDeconnexion />

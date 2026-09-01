@@ -1,4 +1,4 @@
-import { Marque } from "@/components/Marque";
+import { Logo } from "@/components/Logo";
 
 export default function LayoutAuth({
   children,
@@ -9,7 +9,7 @@ export default function LayoutAuth({
     <div className="flex min-h-screen flex-col bg-ivoire">
       <header className="border-b border-sable px-6 py-4">
         <div className="mx-auto max-w-shell">
-          <Marque />
+          <Logo hauteur={44} priorite />
         </div>
       </header>
 

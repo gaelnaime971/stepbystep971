@@ -14,7 +14,7 @@ export function OngletsCompte() {
 
   return (
     <div className="border-b border-sable bg-white">
-      <nav className="mx-auto flex max-w-shell gap-1 overflow-x-auto px-6">
+      <nav className="mx-auto flex max-w-shell gap-1 overflow-x-auto px-5 sm:px-6">
         {ONGLETS.map(([href, libelle]) => {
           const actif = chemin === href;
           return (

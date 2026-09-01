@@ -7,6 +7,7 @@ import { clientService } from "@/lib/supabase/service";
 import { stripe } from "@/lib/stripe/client";
 import { urlDuSite } from "@/lib/site";
 import { COLONNES_FORMULE, type Formule } from "@/lib/formules/types";
+import { validiteLisible } from "@/lib/formules/format";
 import { estAchetable } from "@/lib/formules/types";
 
 function texte(d: FormData, champ: string): string {
@@ -77,12 +78,21 @@ export async function demarrerPaiement(donnees: FormData): Promise<void> {
 
   const abonnement = formule.kind === "subscription";
 
+  // La regle qui fera reagir la cliente le jour ou elle s'applique, affichee
+  // au-dessus du bouton de paiement. Stripe Checkout est la derniere page ou
+  // l'on peut encore dire les choses avant que l'argent parte — la dire ici
+  // vaut mieux que de l'expliquer apres coup.
+  const aSavoir = abonnement
+    ? `Prélèvement toutes les 4 semaines. À chaque fois ton solde repart à ${formule.sessions_count} séances : ce qui reste du cycle précédent n'est pas ajouté. Tu peux résilier quand tu veux depuis ton compte, tu gardes tes séances jusqu'à la fin de la période payée. Annulation d'un cours jusqu'à ${formule.cancellation_deadline_hours} h avant.`
+    : `${formule.sessions_count} séance${formule.sessions_count > 1 ? "s" : ""} valable${formule.sessions_count > 1 ? "s" : ""} ${validiteLisible(formule.validity_interval)} à partir d'aujourd'hui. Passé cette date, celles que tu n'as pas utilisées sont perdues, sans report. Annulation d'un cours jusqu'à ${formule.cancellation_deadline_hours} h avant.`;
+
   const session = await sdk.checkout.sessions.create({
     mode: abonnement ? "subscription" : "payment",
     customer: clientStripe,
     line_items: [{ price: formule.stripe_price_id!, quantity: 1 }],
     allow_promotion_codes: true,
     locale: "fr",
+    custom_text: { submit: { message: aSavoir.slice(0, 1200) } },
     client_reference_id: profil.id,
     success_url: `${urlDuSite()}/compte/merci?session={CHECKOUT_SESSION_ID}`,
     cancel_url: `${urlDuSite()}/compte/formule?message=${encodeURIComponent("Paiement abandonné. Rien ne t'a été débité.")}&ton=erreur`,

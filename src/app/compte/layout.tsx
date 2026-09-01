@@ -18,7 +18,7 @@ export default async function LayoutCompte({
     <div className="min-h-screen bg-ivoire">
       <EnteteConnectee profil={profil} />
       <OngletsCompte />
-      <main className="mx-auto max-w-shell px-6 pt-9 pb-[70px]">{children}</main>
+      <main className="mx-auto max-w-shell px-5 pt-7 pb-16 sm:px-6 sm:pt-9 sm:pb-[70px]">{children}</main>
     </div>
   );
 }

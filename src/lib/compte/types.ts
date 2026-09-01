@@ -51,4 +51,6 @@ export type FormuleLisible = {
   price_cents: number;
   cancellation_deadline_hours: number;
   kind: string;
+  sessions_count: number;
+  validity_interval: string;
 };

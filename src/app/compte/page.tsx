@@ -69,8 +69,8 @@ export default async function PageMesSeances({
       )}
 
       {/* Le solde ------------------------------------------------------- */}
-      <section className="grid items-center gap-7 rounded-lg bg-encre p-7 text-white sm:grid-cols-[auto_1fr_auto]">
-        <span className="chiffre text-[66px] leading-none text-framboise">{solde}</span>
+      <section className="grid items-center gap-5 rounded-lg bg-encre p-6 text-white sm:gap-7 sm:p-7 lg:grid-cols-[auto_1fr_auto]">
+        <span className="chiffre text-[54px] leading-none text-framboise sm:text-[66px]">{solde}</span>
         <div>
           <p className="font-display text-[22px] font-bold italic">
             {solde === 0
@@ -132,9 +132,9 @@ export default async function PageMesSeances({
         </div>
       )}
 
-      <div className="mt-8 grid items-start gap-[22px] lg:grid-cols-[1.65fr_1fr]">
+      <div className="mt-7 grid items-start gap-5 sm:mt-8 sm:gap-[22px] lg:grid-cols-[1.65fr_1fr]">
         {/* Les cours à venir ------------------------------------------- */}
-        <section className="rounded-md border border-sable bg-white p-[22px]">
+        <section className="rounded-md border border-sable bg-white p-5 sm:p-[22px]">
           <div className="mb-4 flex items-baseline justify-between gap-3.5">
             <h3>Les cours à venir</h3>
             <span className="text-[13px] text-plume">
@@ -163,7 +163,7 @@ export default async function PageMesSeances({
                     return (
                       <div
                         key={c.id}
-                        className="mb-2 flex items-center gap-4 rounded-sm bg-menthe-wash px-3 py-3.5"
+                        className="mb-2 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-sm bg-menthe-wash px-3 py-3.5"
                       >
                         <span className="min-w-[62px] font-display text-[17px] font-semibold italic">
                           {enHeure(c.starts_at)}
@@ -182,7 +182,7 @@ export default async function PageMesSeances({
                   return (
                     <div
                       key={c.id}
-                      className="flex items-center gap-4 border-b border-sable py-3.5 last:border-b-0"
+                      className="flex flex-wrap items-center gap-x-4 gap-y-2.5 border-b border-sable py-3.5 last:border-b-0"
                     >
                       <span className="min-w-[62px] font-display text-[17px] font-semibold italic">
                         {enHeure(c.starts_at)}
@@ -200,7 +200,7 @@ export default async function PageMesSeances({
                           <input type="hidden" name="coursId" value={c.id} />
                           <button
                             type="submit"
-                            className="cursor-pointer rounded-sm bg-framboise px-3.5 py-2 text-sm font-semibold text-white transition-colors hover:bg-framboise-deep"
+                            className="cursor-pointer rounded-sm bg-framboise px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-framboise-deep"
                           >
                             Je réserve
                           </button>
@@ -215,7 +215,7 @@ export default async function PageMesSeances({
         </section>
 
         {/* Mes réservations -------------------------------------------- */}
-        <section className="rounded-md border border-sable bg-white p-[22px]">
+        <section className="rounded-md border border-sable bg-white p-5 sm:p-[22px]">
           <div className="mb-4 flex items-baseline justify-between gap-3.5">
             <h3>Mes réservations</h3>
           </div>

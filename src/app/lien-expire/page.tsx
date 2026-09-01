@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Marque } from "@/components/Marque";
+import { Logo } from "@/components/Logo";
 
 export const metadata: Metadata = { title: "Lien expiré — Step by Step" };
 
@@ -9,7 +9,7 @@ export default function PageLienExpire() {
     <div className="flex min-h-screen flex-col bg-ivoire">
       <header className="border-b border-sable px-6 py-4">
         <div className="mx-auto max-w-shell">
-          <Marque />
+          <Logo hauteur={44} />
         </div>
       </header>
 
