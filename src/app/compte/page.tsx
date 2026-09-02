@@ -9,6 +9,7 @@ import {
 } from "@/lib/compte/lecture";
 import type { Cours } from "@/lib/compte/types";
 import { enCreneau, enDate, enHeure, enJourLong, joursLisibles, joursRestants } from "@/lib/dates";
+import { libelleNiveau } from "@/lib/niveaux";
 
 export const metadata: Metadata = { title: "Mes séances — Step by Step" };
 
@@ -170,6 +171,9 @@ export default async function PageMesSeances({
                         </span>
                         <div className="flex-1">
                           <p className="text-[15px] font-medium">{lieu}</p>
+                          <p className="text-sm text-plume-deep">
+                            {libelleNiveau(c.level)} · {enCreneau(c.starts_at, c.ends_at)}
+                          </p>
                           <p className="text-sm font-semibold text-menthe-deep">
                             Tu es inscrite
                           </p>
@@ -190,7 +194,8 @@ export default async function PageMesSeances({
                       <div className="flex-1">
                         <p className="text-[15px] font-medium">{lieu}</p>
                         <p className="text-sm text-plume-deep">
-                          {places.texte} · {enCreneau(c.starts_at, c.ends_at)}
+                          {libelleNiveau(c.level)} · {places.texte} ·{" "}
+                          {enCreneau(c.starts_at, c.ends_at)}
                         </p>
                       </div>
                       {places.complet ? (

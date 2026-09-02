@@ -4,7 +4,8 @@ import type {
 } from "./types";
 
 const COLONNES_LOT = "id, quantity_remaining, expires_at, plan_id";
-const COLONNES_COURS = "id, starts_at, ends_at, capacity, seats_taken, status, location_id";
+const COLONNES_COURS =
+  "id, starts_at, ends_at, capacity, seats_taken, status, location_id, level";
 const COLONNES_FORMULE_LISIBLE =
   "id, slug, name, price_cents, cancellation_deadline_hours, kind, sessions_count, validity_interval";
 

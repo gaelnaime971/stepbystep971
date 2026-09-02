@@ -1,3 +1,5 @@
+import type { Niveau } from "@/lib/niveaux";
+
 export type CoursAdmin = {
   id: string;
   location_id: string;
@@ -9,6 +11,7 @@ export type CoursAdmin = {
   canceled_at: string | null;
   cancellation_reason: string | null;
   recurrence_group_id: string | null;
+  level: Niveau | null;
 };
 
 export type LieuAdmin = {
@@ -32,6 +35,6 @@ export type Inscrite = {
 
 export const COLONNES_COURS_ADMIN =
   "id, location_id, starts_at, ends_at, capacity, seats_taken, status, " +
-  "canceled_at, cancellation_reason, recurrence_group_id";
+  "canceled_at, cancellation_reason, recurrence_group_id, level";
 
 export const COLONNES_LIEU = "id, name, address, city, is_active, sort_order";

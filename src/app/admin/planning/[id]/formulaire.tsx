@@ -6,6 +6,7 @@ import { BoutonEnvoi } from "@/components/Bouton";
 import { Champ, ChampNombre, Selecteur } from "@/components/Champ";
 import { modifierCours } from "@/lib/planning/actions";
 import { ETAT_PLANNING_INITIAL } from "@/lib/planning/etat";
+import { NIVEAUX } from "@/lib/niveaux";
 
 export function FormulaireModification({
   cours,
@@ -19,6 +20,7 @@ export function FormulaireModification({
     fin: string;
     capacity: number;
     seats_taken: number;
+    niveau: string | null;
   };
   lieux: { valeur: string; libelle: string }[];
 }) {
@@ -45,6 +47,13 @@ export function FormulaireModification({
         <Champ nom="debut" libelle="Début" type="time" valeurParDefaut={v.debut ?? cours.debut} />
         <Champ nom="fin" libelle="Fin" type="time" valeurParDefaut={v.fin ?? cours.fin} />
       </div>
+
+      <Selecteur nom="niveau" libelle="Niveau"
+        options={NIVEAUX.map((n) => ({ valeur: n.valeur, libelle: n.libelle }))}
+        valeurParDefaut={v.niveau ?? cours.niveau ?? "tous_niveaux"}
+        aide={cours.niveau
+          ? "Une indication pour tes clientes. Personne n'est empêchée de réserver."
+          : "Ce cours n'a jamais eu de niveau : il s'affiche « Tous niveaux ». Enregistrer fixera la valeur."} />
 
       <ChampNombre nom="places" libelle="Nombre de places" min={Math.max(1, cours.seats_taken)}
         valeurParDefaut={v.places ?? cours.capacity}

@@ -12,6 +12,7 @@ import { coursAVenir, lieux } from "@/lib/compte/lecture";
 import { enCreneau, enDate, enJourCourt } from "@/lib/dates";
 import { prixLisible, validiteLisible } from "@/lib/formules/format";
 import { COLONNES_FORMULE, estAchetable, type Formule } from "@/lib/formules/types";
+import { libelleNiveau } from "@/lib/niveaux";
 import { clientServeur } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -127,7 +128,10 @@ export default async function PageAccueil() {
                         {nomsLieux.get(c.location_id) ?? "Lieu à préciser"},{" "}
                         {enCreneau(c.starts_at, c.ends_at)}
                       </span>
-                      <span><Pastille ton={p.ton}>{p.texte}</Pastille></span>
+                      <span className="flex flex-wrap gap-2">
+                        <Pastille ton={p.ton}>{p.texte}</Pastille>
+                        <Pastille ton="neutre">{libelleNiveau(c.level)}</Pastille>
+                      </span>
                     </div>
                   );
                 })}

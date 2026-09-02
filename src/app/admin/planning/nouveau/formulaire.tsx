@@ -6,6 +6,7 @@ import { BoutonEnvoi } from "@/components/Bouton";
 import { Champ, ChampNombre, Selecteur } from "@/components/Champ";
 import { creerCours } from "@/lib/planning/actions";
 import { ETAT_PLANNING_INITIAL } from "@/lib/planning/etat";
+import { NIVEAUX } from "@/lib/niveaux";
 
 const REPETITIONS = [
   { valeur: "1", libelle: "Une seule fois" },
@@ -41,6 +42,11 @@ export function FormulaireCours({
         <Champ nom="debut" libelle="Début" type="time" valeurParDefaut={v.debut ?? "18:30"} />
         <Champ nom="fin" libelle="Fin" type="time" valeurParDefaut={v.fin ?? "19:30"} />
       </div>
+
+      <Selecteur nom="niveau" libelle="Niveau"
+        options={NIVEAUX.map((n) => ({ valeur: n.valeur, libelle: n.libelle }))}
+        valeurParDefaut={v.niveau ?? "tous_niveaux"}
+        aide="Une indication pour tes clientes. Personne n'est empêchée de réserver." />
 
       <ChampNombre nom="places" libelle="Nombre de places" min={1}
         valeurParDefaut={v.places ?? 15}

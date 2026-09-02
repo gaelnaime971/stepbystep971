@@ -13,8 +13,16 @@ import { ajouterJours, instantGuadeloupe } from "./dates";
 import { messagePlanning } from "./erreurs";
 import type { EtatPlanning } from "./etat";
 import { COLONNES_COURS_ADMIN, type CoursAdmin } from "./types";
+import type { Niveau } from "@/lib/niveaux";
 
 const REPETITIONS = new Map([["1", 1], ["4", 4], ["12", 12]]);
+const NIVEAUX_VALIDES: Niveau[] = ["debutante", "intermediaire", "tous_niveaux"];
+
+/** Le niveau saisi, ou null si la valeur ne fait pas partie de l'enum. */
+function niveauSaisi(d: FormData): Niveau | null {
+  const v = texte(d, "niveau");
+  return (NIVEAUX_VALIDES as string[]).includes(v) ? (v as Niveau) : null;
+}
 
 function texte(d: FormData, champ: string): string {
   const v = d.get(champ);
@@ -47,8 +55,12 @@ export async function creerCours(
   const fin = texte(donnees, "fin");
   const places = Number(texte(donnees, "places"));
   const repetition = texte(donnees, "repetition");
+  const niveau = niveauSaisi(donnees);
 
-  const valeurs = { lieu: lieuId, date, debut, fin, places: String(places || ""), repetition };
+  const valeurs = {
+    lieu: lieuId, date, debut, fin, places: String(places || ""), repetition,
+    niveau: niveau ?? "tous_niveaux",
+  };
   const echec = (erreur: string, detail?: string) => ({ erreur, detail, valeurs });
 
   if (!lieuId) return echec("Choisis un lieu.");
@@ -113,6 +125,7 @@ export async function creerCours(
       starts_at: o.starts_at,
       ends_at: o.ends_at,
       capacity: places,
+      level: niveau,
       recurrence_group_id: groupe,
       created_by: profil?.id ?? null,
     })),
@@ -145,8 +158,12 @@ export async function modifierCours(
   const debut = texte(donnees, "debut");
   const fin = texte(donnees, "fin");
   const places = Number(texte(donnees, "places"));
+  const niveau = niveauSaisi(donnees);
 
-  const valeurs = { lieu: lieuId, date, debut, fin, places: String(places || "") };
+  const valeurs = {
+    lieu: lieuId, date, debut, fin, places: String(places || ""),
+    niveau: niveau ?? "tous_niveaux",
+  };
   const echec = (erreur: string, detail?: string) => ({ erreur, detail, valeurs });
 
   if (!lieuId || !date || !debut || !fin) return echec("Tous les champs sont nécessaires.");
@@ -188,7 +205,7 @@ export async function modifierCours(
 
   const { error } = await supabase
     .from("courses")
-    .update({ location_id: lieuId, starts_at, ends_at, capacity: places })
+    .update({ location_id: lieuId, starts_at, ends_at, capacity: places, level: niveau })
     .eq("id", id);
 
   if (error) return echec(messagePlanning(error, { inscrites: cours.seats_taken }));

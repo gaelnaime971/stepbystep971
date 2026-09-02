@@ -5,6 +5,7 @@ import { Bandeau } from "@/components/Bandeau";
 import { ConfirmerAction } from "@/components/ConfirmerAction";
 import { Pastille } from "@/components/Pastille";
 import { enCreneau, enDateAnnee, enJourLong } from "@/lib/dates";
+import { libelleNiveau } from "@/lib/niveaux";
 import { annulerCours, desinscrire } from "@/lib/planning/actions";
 import { coursParId, inscritesDuCours, tousLesLieux } from "@/lib/planning/lecture";
 import { dateLocale } from "@/lib/planning/dates";
@@ -67,6 +68,7 @@ export default async function PageCours({
 
       <div className="mb-6 flex flex-wrap items-center gap-3">
         <h2 className="first-letter:uppercase">{enJourLong(cours.starts_at)}</h2>
+        <Pastille ton="neutre">{libelleNiveau(cours.level)}</Pastille>
         {annule && <Pastille ton="complet">Annulé</Pastille>}
         {!annule && cours.seats_taken >= cours.capacity && (
           <Pastille ton="complet">Complet</Pastille>
@@ -166,6 +168,7 @@ export default async function PageCours({
                   fin: heureLocale(cours.ends_at),
                   capacity: cours.capacity,
                   seats_taken: cours.seats_taken,
+                  niveau: cours.level,
                 }}
                 lieux={lieux
                   .filter((l) => l.is_active || l.id === cours.location_id)

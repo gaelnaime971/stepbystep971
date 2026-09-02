@@ -1,3 +1,5 @@
+import type { Niveau } from "@/lib/niveaux";
+
 export type Lot = {
   id: string;
   quantity_remaining: number;
@@ -15,6 +17,7 @@ export type Cours = {
   seats_taken: number;
   status: "scheduled" | "canceled";
   location_id: string;
+  level: Niveau | null;
 };
 
 export type Reservation = {
