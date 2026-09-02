@@ -1,16 +1,24 @@
 export type Niveau = "debutante" | "intermediaire" | "tous_niveaux";
 
-export const NIVEAUX: ReadonlyArray<{ valeur: Niveau; libelle: string }> = [
-  { valeur: "tous_niveaux", libelle: "Tous niveaux" },
-  { valeur: "debutante", libelle: "Débutante" },
-  { valeur: "intermediaire", libelle: "Intermédiaire" },
-];
-
+/**
+ * Les libelles affiches. Source unique : le selecteur comme les badges y
+ * puisent, il n'y a pas deux listes a tenir d'accord.
+ *
+ * Les cles sont les valeurs de l'enum `course_level` en base. Ce sont des
+ * identifiants techniques : `debutante` s'affiche « Débutant » sans qu'aucune
+ * migration soit necessaire, et renommer un libelle ne les touche jamais.
+ */
 const LIBELLES: Record<Niveau, string> = {
-  debutante: "Débutante",
+  debutante: "Débutant",
   intermediaire: "Intermédiaire",
   tous_niveaux: "Tous niveaux",
 };
+
+/** L'ordre du selecteur : le cas le plus courant en premier. */
+const ORDRE: readonly Niveau[] = ["tous_niveaux", "debutante", "intermediaire"];
+
+export const NIVEAUX: ReadonlyArray<{ valeur: Niveau; libelle: string }> =
+  ORDRE.map((valeur) => ({ valeur, libelle: LIBELLES[valeur] }));
 
 /**
  * Un cours sans niveau s'affiche « Tous niveaux ».
