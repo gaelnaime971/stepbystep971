@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bienvenue dans la team</title></head>
+<body style="margin:0;padding:0;background:#FAF6F4;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#FAF6F4;padding:28px 12px;">
+<tr><td align="center">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border:1px solid #EFE7E4;border-radius:18px;">
+<tr><td style="background:#1B1B1D;border-radius:17px 17px 0 0;padding:18px 26px;">
+<span style="font-family:Archivo, 'Helvetica Neue', Helvetica, Arial, sans-serif;font-style:italic;font-weight:700;font-size:19px;color:#ffffff;">Step <span style="color:#D81840;">by</span> Step</span>
+</td></tr>
+<tr><td style="padding:26px;font-family:Karla, 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+<h1 style="margin:0 0 16px;font-family:Archivo, 'Helvetica Neue', Helvetica, Arial, sans-serif;font-style:italic;font-weight:700;font-size:26px;line-height:1.1;color:#1B1B1D;">Bienvenue dans la team</h1>
+<p style="margin:0 0 14px;font-size:16px;line-height:1.6;color:#3A3A3E;">Salut,</p>
+<p style="margin:0 0 14px;font-size:16px;line-height:1.6;color:#3A3A3E;">Il ne reste qu&rsquo;un clic pour activer ton compte. Ensuite tu pourras choisir ta formule, et placer tes séances dans le planning quand ça t&rsquo;arrange.</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 18px;"><tr>
+<td style="background:#FBEEDC;border-radius:12px;padding:14px 16px;font-size:15px;line-height:1.6;color:#7A4A0F;">Ce lien est valable une heure et ne sert qu&rsquo;une fois.</td>
+</tr></table>
+<table role="presentation" cellpadding="0" cellspacing="0" style="margin:6px 0 18px;"><tr>
+<td style="background:#D81840;border-radius:6px;">
+<a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=signup" style="display:inline-block;padding:13px 22px;font-family:Karla, 'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;">J&rsquo;active mon compte</a>
+</td></tr></table>
+<p style="margin:0 0 14px;font-size:13px;line-height:1.6;color:#7C7076;word-break:break-all;">Si le bouton ne marche pas, copie ce lien dans ton navigateur :<br>{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=signup</p>
+<p style="margin:0 0 8px;font-size:13px;line-height:1.6;color:#7C7076;">Tu n&rsquo;as pas créé de compte&nbsp;? Ignore ce message, il ne se passera rien.</p>
+</td></tr>
+<tr><td style="padding:0 26px 26px;font-family:Karla, 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+<p style="margin:0;padding-top:18px;border-top:1px solid #EFE7E4;font-size:13px;line-height:1.6;color:#7C7076;">
+Step by Step Coaching — cours de step en Guadeloupe<br>Les Abymes, Le Moule, Jarry<br>
+Réponds à ce mail, il arrive directement chez Oriane.
+</p>
+</td></tr>
+</table>
+</td></tr></table>
+</body></html>
