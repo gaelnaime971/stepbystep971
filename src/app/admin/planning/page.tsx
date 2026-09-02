@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Bandeau } from "@/components/Bandeau";
+import { ListeMoisMobile } from "@/components/admin/ListeMoisMobile";
 import { Pastille } from "@/components/Pastille";
+import { libelleNiveau } from "@/lib/niveaux";
 import { enHeure, enJourCourt } from "@/lib/dates";
 import { coursEntre, tousLesLieux } from "@/lib/planning/lecture";
 import {
@@ -18,9 +20,9 @@ function tauxRemplissage(c: CoursAdmin): number {
 export default async function PagePlanning({
   searchParams,
 }: {
-  searchParams: Promise<{ mois?: string; message?: string; ton?: string }>;
+  searchParams: Promise<{ mois?: string; passe?: string; message?: string; ton?: string }>;
 }) {
-  const { mois: moisParam, message, ton } = await searchParams;
+  const { mois: moisParam, passe, message, ton } = await searchParams;
   const jour = aujourdHui();
   const mois = /^\d{4}-\d{2}$/.test(moisParam ?? "") ? moisParam! : moisDe(jour);
 
@@ -42,6 +44,25 @@ export default async function PagePlanning({
   }
 
   const duJour = deLaSemaine.filter((c) => dateLocale(c.starts_at) === jour);
+
+  // La liste mobile ne montre que le mois demande, pas les jours voisins que
+  // la grille affiche pour completer ses semaines.
+  const duMoisSeul = duMois
+    .filter((c) => dateLocale(c.starts_at).slice(0, 7) === mois)
+    .sort((a, b) => a.starts_at.localeCompare(b.starts_at));
+  const moisCourant = mois === moisDe(jour);
+
+  // Sur telephone, le mois en cours s'ouvre a aujourd'hui. Le 28 du mois, faire
+  // defiler 27 jours revolus avant d'atteindre le cours de ce soir n'a pas de
+  // sens quand on tient l'appareil d'une main. Les jours passes restent
+  // accessibles, derriere un lien.
+  const revolus = moisCourant
+    ? duMoisSeul.filter((c) => dateLocale(c.starts_at) < jour).length
+    : 0;
+  const montrerPasse = passe === "1" || !moisCourant;
+  const listeMobile = montrerPasse
+    ? duMoisSeul
+    : duMoisSeul.filter((c) => dateLocale(c.starts_at) >= jour);
 
   return (
     <>
@@ -95,13 +116,73 @@ export default async function PagePlanning({
               {c.status === "canceled" ? (
                 <Pastille ton="complet">Annulé</Pastille>
               ) : (
-                <span className="chiffre text-lg">
-                  {c.seats_taken}/{c.capacity}
-                </span>
+                <>
+                  <Pastille ton="neutre">{libelleNiveau(c.level)}</Pastille>
+                  <span className="chiffre text-lg">
+                    {c.seats_taken}/{c.capacity}
+                  </span>
+                </>
               )}
             </Link>
           ))
         )}
+      </section>
+
+      {/* Le mois en liste, sur téléphone seulement. Même navigation que la
+          grille : c'est le paramètre `mois` qui pilote les deux. */}
+      <section className="mb-6 md:hidden">
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <h3 className="first-letter:uppercase">{moisLisible(mois)}</h3>
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/admin/planning?mois=${moisSuivant(mois, -1)}`}
+              aria-label="Mois précédent"
+              className="flex h-11 w-11 items-center justify-center rounded-sm border border-sable-deep bg-white text-lg"
+            >
+              ‹
+            </Link>
+            <Link
+              href={`/admin/planning?mois=${moisSuivant(mois, 1)}`}
+              aria-label="Mois suivant"
+              className="flex h-11 w-11 items-center justify-center rounded-sm border border-sable-deep bg-white text-lg"
+            >
+              ›
+            </Link>
+          </div>
+        </div>
+
+        {!moisCourant && (
+          <p className="mb-4">
+            <Link
+              href="/admin/planning"
+              className="text-[15px] text-framboise-deep underline underline-offset-[3px]"
+            >
+              Revenir au mois en cours
+            </Link>
+          </p>
+        )}
+
+        {moisCourant && revolus > 0 && !montrerPasse && (
+          <p className="mb-4">
+            <Link
+              href="/admin/planning?passe=1"
+              className="text-[15px] text-framboise-deep underline underline-offset-[3px]"
+            >
+              Voir aussi les {revolus} cours déjà passés
+            </Link>
+          </p>
+        )}
+
+        <ListeMoisMobile
+          cours={listeMobile}
+          nomLieu={nomLieu}
+          aujourdHui={jour}
+          libelleVide={
+            moisCourant && !montrerPasse
+              ? "Plus aucun cours d'ici la fin du mois. Passe au mois suivant, ou crée un cours."
+              : "Aucun cours ce mois-ci. Change de mois, ou crée un cours."
+          }
+        />
       </section>
 
       <div className="grid items-start gap-5 lg:grid-cols-[1.5fr_1fr]">
@@ -163,7 +244,12 @@ export default async function PagePlanning({
                       >
                         {nomLieu.get(c.location_id)?.replace("Les ", "") ?? "?"}{" "}
                         {enHeure(c.starts_at)}
-                        {complet && c.status === "scheduled" && " · complet"}
+                        {c.status === "scheduled" && (
+                          <span className="block font-normal opacity-80">
+                            {libelleNiveau(c.level)}
+                            {complet && " · complet"}
+                          </span>
+                        )}
                       </Link>
                     );
                   })}
@@ -173,8 +259,9 @@ export default async function PagePlanning({
           </div>
         </section>
 
-        {/* Cette semaine, avec taux de remplissage */}
-        <section className="rounded-md border border-sable bg-white p-[22px]">
+        {/* Cette semaine, avec taux de remplissage. Masquée sur téléphone :
+            la liste du mois montre déjà ces cours, avec les mêmes chiffres. */}
+        <section className="hidden rounded-md border border-sable bg-white p-[22px] md:block">
           <div className="mb-4 flex items-center justify-between gap-3.5">
             <h3>Cette semaine</h3>
           </div>
@@ -193,6 +280,7 @@ export default async function PagePlanning({
                 </span>
                 <span className="flex-1 text-[15px] text-plume-deep">
                   {nomLieu.get(c.location_id) ?? "Lieu supprimé"}
+                  <span className="block text-[13px]">{libelleNiveau(c.level)}</span>
                 </span>
                 {c.status === "canceled" ? (
                   <Pastille ton="complet">Annulé</Pastille>
