@@ -41,6 +41,9 @@ const GALERIE = [
   { src: "/groupe2.JPG", alt: "Oriane sur son step, index levé, au milieu d'un cours dans la salle au sol vert", large: false, w: 854, h: 1280 },
   { src: "/groupe3.JPG", alt: "Un cours en pleine chorégraphie, bras levés, chacune sur son step", large: false, w: 854, h: 1280 },
   { src: "/oriane3.JPG", alt: "Oriane en plein cours du soir, souriante, entourée de sa communauté", large: false, w: 854, h: 1280 },
+  // En 16/9, la plus panoramique des six. En cellule portrait, le recadrage
+  // centre tombe sur le podium et garde la foule derriere.
+  { src: "/groupe6.jpg", alt: "Un cours géant en plein air : plusieurs centaines de participants face à la coach sur son podium, sous les chapiteaux blancs", large: false, w: 1600, h: 900 },
 ];
 
 export default async function PageAccueil() {
