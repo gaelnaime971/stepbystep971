@@ -36,7 +36,8 @@ function places(restantes: number) {
 }
 
 const GALERIE = [
-  { src: "/groupe1.JPG", alt: "La Team Super Nana réunie à la Fitness Academy, une centaine de femmes en t-shirt blanc au milieu des steps", large: true, w: 1280, h: 854 },
+  { src: "/groupe4.jpg", alt: "La Team Super Nana au grand complet à la Fitness Academy, une cinquantaine de personnes en tenue noire, bras levés sur la pelouse, le soir", large: true, w: 1600, h: 1066 },
+  { src: "/groupe5.jpg", alt: "Le même groupe en tenues colorées et bandeaux fluo, serré pour la photo de fin de soirée", large: true, w: 1600, h: 1066 },
   { src: "/groupe2.JPG", alt: "Oriane sur son step, index levé, au milieu d'un cours dans la salle au sol vert", large: false, w: 854, h: 1280 },
   { src: "/groupe3.JPG", alt: "Un cours en pleine chorégraphie, bras levés, chacune sur son step", large: false, w: 854, h: 1280 },
   { src: "/oriane3.JPG", alt: "Oriane en plein cours du soir, souriante, entourée de sa communauté", large: false, w: 854, h: 1280 },
