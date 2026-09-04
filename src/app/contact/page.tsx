@@ -144,7 +144,7 @@ export default async function PageContact({
         <div className="mx-auto flex max-w-shell flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <Logo clair hauteur={44} />
-            <p className="mt-3">Cours de step en Guadeloupe</p>
+            <p className="mt-3">Cours de Fitness Step en Guadeloupe</p>
           </div>
           <p>Step by Step Coaching — Hegesippe Oriane (EI) — Siret 915 127 534 00013.</p>
         </div>

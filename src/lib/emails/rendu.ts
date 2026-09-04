@@ -57,7 +57,7 @@ export function rendre(contenu: Contenu): { html: string; texte: string } {
     ...(contenu.pied?.length ? ["", ...contenu.pied] : []),
     "",
     "—",
-    "Step by Step Coaching — cours de step en Guadeloupe",
+    "Step by Step Coaching — cours de Fitness Step en Guadeloupe",
     "Les Abymes, Le Moule, Jarry",
     "Réponds à ce mail, il arrive directement chez Oriane.",
   ].join("\n");
@@ -122,7 +122,7 @@ ${pied}
 </td></tr>
 <tr><td style="padding:0 26px 26px;font-family:${POLICE};">
 <p style="margin:0;padding-top:18px;border-top:1px solid ${COULEURS.sable};font-size:13px;line-height:1.6;color:${COULEURS.plume};">
-Step by Step Coaching — cours de step en Guadeloupe<br>Les Abymes, Le Moule, Jarry<br>
+Step by Step Coaching — cours de Fitness Step en Guadeloupe<br>Les Abymes, Le Moule, Jarry<br>
 Réponds à ce mail, il arrive directement chez Oriane.
 </p>
 </td></tr>

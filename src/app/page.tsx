@@ -16,9 +16,9 @@ import { libelleNiveau } from "@/lib/niveaux";
 import { clientServeur } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "Step by Step Coaching — cours de step en Guadeloupe",
+  title: "Step by Step Coaching — cours de Fitness Step en Guadeloupe",
   description:
-    "Des cours de step aux Abymes, au Moule et à Jarry. Achète tes séances, place-les toi-même dans le planning depuis ton compte.",
+    "Des cours de Fitness Step aux Abymes, au Moule et à Jarry. Achète tes séances, place-les toi-même dans le planning depuis ton compte.",
 };
 
 async function formulesVitrine(): Promise<Formule[]> {
@@ -79,11 +79,12 @@ export default async function PageAccueil() {
         <div className="relative mx-auto max-w-shell px-5 pt-16 pb-20 sm:px-6 sm:pt-[92px] sm:pb-[84px]">
           <h1 className="max-w-[15ch] text-balance text-white">
             Ne viens pas juste faire du sport,{" "}
-            <span className="text-framboise">viens vivre une expérience</span>
+            <span className="text-framboise">viens vivre une expérience !</span>
           </h1>
           <p className="mt-5 max-w-[46ch] text-[17px] text-[#D6D2D4] sm:text-lg">
-            Des cours de step où chacune évolue à son rythme, sans pression.
-            Bouger, se dépenser, et surtout prendre du plaisir.
+            Des cours de Fitness Step dans lesquels chacun.e évolue à son
+            rythme… Objectif : bouger, se dépenser et surtout, prendre du
+            plaisir.
           </p>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <Link href="#formules"
@@ -96,7 +97,8 @@ export default async function PageAccueil() {
             </Link>
           </div>
           <p className="mt-8 text-[15px] text-[#9A9096]">
-            Cours aux Abymes, au Moule et à Jarry
+            Retrouve mes cours à la salle Ladies (Abymes), à la salle Reborn
+            Gym (Le Moule) et à la salle Infinity Fit (Jarry).
           </p>
         </div>
       </header>
@@ -152,7 +154,7 @@ export default async function PageAccueil() {
             <h2>Choisis ta formule</h2>
             <p className="mt-3 text-[17px] text-plume-deep">
               Toutes les formules te créditent des séances. Tu les places ensuite
-              où tu veux dans le planning, dans le lieu qui t&apos;arrange.
+              où tu veux sur le planning, dans la salle qui te convient.
             </p>
           </div>
 
@@ -220,9 +222,8 @@ export default async function PageAccueil() {
           )}
 
           <p className="mt-6 max-w-[68ch] text-[15px] text-plume-deep">
-            Paiement par carte, sécurisé par Stripe. Tu pourras entrer un code
-            promo à l&apos;étape suivante. Pas encore de compte ? Le paiement te
-            demandera de te connecter d&apos;abord.
+            Paiement par carte, sécurisé par Stripe. Pas encore de compte ? Le
+            paiement te demandera de te connecter d&apos;abord.
           </p>
         </div>
       </section>
@@ -238,16 +239,16 @@ export default async function PageAccueil() {
             className="h-auto w-full rounded-lg object-cover"
           />
           <div>
-            <h2>Hello, moi c&apos;est Oriane</h2>
+            <h2>Hello, moi c&apos;est Oriane !</h2>
             <p className="mt-4 max-w-[46ch] text-[17px] text-encre-soft">
-              Diplômée en éducation physique et sportive, je donne des cours de
-              step depuis 2022. Mon truc, c&apos;est de rendre le sport
-              épanouissant et ludique.
+              Diplômée en Éducation Physique et Sportive, je donne des cours de
+              Fitness Step depuis 2022. Mon ambition est de rendre votre pratique
+              sportive épanouissante et ludique.
             </p>
             <p className="mt-4 max-w-[46ch] text-[17px] text-encre-soft">
-              Pas besoin d&apos;être experte pour venir. Chacune évolue à son
-              rythme, sans pression, avec un seul objectif : bouger, se dépenser
-              et prendre du plaisir.
+              Pas besoin d&apos;être expert.e pour participer. Chacun.e évolue à
+              son rythme, sans pression, avec un seul objectif : bouger, se
+              dépenser et prendre du plaisir.
             </p>
             <p className="mt-[22px] font-display text-[22px] font-bold italic text-framboise">
               Ta Super Nana
@@ -261,9 +262,10 @@ export default async function PageAccueil() {
         <div className="mx-auto max-w-shell">
           <h2 className="text-white">La Team Super Nana</h2>
           <p className="mt-3.5 max-w-[48ch] text-[17px] text-[#C4BEC1]">
-            Un cours de step, c&apos;est une heure. La team, c&apos;est ce qui
-            reste après. On s&apos;encourage, on rigole, et on se retrouve chaque
-            année à la Fitness Academy.
+            Le Fitness Step, c&apos;est notre rendez-vous sportif quotidien. La
+            Team Super Nana, c&apos;est notre énergie, nos fous rires, nos
+            encouragements et notre complicité. Et chaque année, on se retrouve à
+            la Fitness Academy pour continuer à faire vivre cette belle aventure !
           </p>
 
           <div className="mt-8 grid grid-cols-2 gap-3 sm:mt-[34px] lg:grid-cols-4">
@@ -295,7 +297,7 @@ export default async function PageAccueil() {
       {/* FAQ ------------------------------------------------------------- */}
       <section className="px-5 py-16 sm:px-6 sm:py-24">
         <div className="mx-auto max-w-[820px]">
-          <h2 className="mb-[22px]">Les questions qu&apos;on me pose</h2>
+          <h2 className="mb-[22px]">Des questions ?</h2>
           <Faq />
         </div>
       </section>
@@ -307,7 +309,7 @@ export default async function PageAccueil() {
             <div>
               <Logo clair hauteur={48} />
               <p className="mt-3">
-                Cours de step en Guadeloupe
+                Cours de Fitness Step en Guadeloupe
                 <br />
                 Les Abymes, Le Moule, Jarry
               </p>

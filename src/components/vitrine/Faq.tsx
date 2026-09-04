@@ -1,19 +1,19 @@
 const QUESTIONS: [string, string][] = [
   [
-    "Je n'ai jamais fait de step, je peux venir ?",
-    "Oui, c'est même l'idée. Les mouvements sont montrés pas à pas et tu ajustes l'intensité comme tu le sens. Prends une séance à la carte pour tester.",
+    "Je n'ai jamais fait de Fitness Step, je peux venir ?",
+    "Oui, c'est l'idée : les cours sont ouverts et accessibles à tous. Les mouvements sont montrés, décortiqués et adaptés. Prends une séance à la carte pour tester.",
   ],
   [
     "Comment je réserve ma place ?",
-    "Tu achètes une formule, elle te crédite des séances. Depuis ton compte, tu ouvres le planning et tu cliques sur les cours qui t'arrangent. Une inscription retire une séance de ton solde.",
+    "Tu achètes une formule et tes séances sont ensuite créditées. Depuis ton compte personnel, tu ouvres le planning et tu cliques sur les cours qui te conviennent. Chaque inscription retire une séance de ton solde.",
   ],
   [
     "Et si j'ai un empêchement ?",
-    "Tu peux annuler jusqu'à 24 heures avant le cours, la séance revient sur ton solde. Passé ce délai, elle est décomptée. Ce délai dépend de ta formule, il est rappelé sur ton compte.",
+    "Tu peux annuler jusqu'à 24 heures avant le cours : la séance revient alors sur ton solde. Passé ce délai, elle est décomptée. Ce délai dépend de ta formule.",
   ],
   [
     "Mes séances non utilisées sont perdues ?",
-    "À la fin de la période, oui. Un abonnement se recharge à chaque prélèvement, un pack est valable 3 mois. Choisis la formule qui colle à ton rythme réel plutôt qu'à celui que tu vises.",
+    "À la fin de la période, oui. Un abonnement se recharge à chaque prélèvement et un pack est valable 3 mois. Choisis la formule qui colle à ton rythme réel plutôt qu'à celui que tu vises.",
   ],
   [
     "Je peux arrêter mon abonnement ?",

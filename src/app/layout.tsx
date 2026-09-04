@@ -18,9 +18,9 @@ const karla = Karla({
 });
 
 export const metadata: Metadata = {
-  title: "Step by Step Coaching — cours de step en Guadeloupe",
+  title: "Step by Step Coaching — cours de Fitness Step en Guadeloupe",
   description:
-    "Des cours de step où chacune évolue à son rythme, aux Abymes, au Moule et à Jarry.",
+    "Des cours de Fitness Step où chacune évolue à son rythme, aux Abymes, au Moule et à Jarry.",
 };
 
 export default function RootLayout({

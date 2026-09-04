@@ -14,7 +14,7 @@ export default function PageCgv() {
       <span className="maj">Dernière mise à jour : septembre 2026</span>
 
       <p>
-        Ces conditions régissent la vente de séances de step par{" "}
+        Ces conditions régissent la vente de séances de Fitness Step par{" "}
         <strong>Hegesippe Oriane, entrepreneur individuel (EI)</strong>, exerçant
         sous le nom commercial <strong>Step by Step Coaching</strong>, dont le
         siège est rue Adrien Legrand, 97139 Les Abymes (Guadeloupe), immatriculée
@@ -176,7 +176,7 @@ export default function PageCgv() {
 
       <h2>8. Accès aux cours et sécurité</h2>
       <p>
-        La pratique du step est une activité physique. La cliente déclare être en
+        La pratique du Fitness Step est une activité physique. La cliente déclare être en
         état de la pratiquer et s&apos;engage à signaler à Step by Step toute
         contre-indication, blessure ou grossesse.
       </p>
