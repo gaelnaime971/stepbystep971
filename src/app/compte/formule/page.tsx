@@ -12,6 +12,11 @@ import type { Abonnement } from "@/lib/compte/types";
 import { enDate, enDateAnnee } from "@/lib/dates";
 import { prixLisible } from "@/lib/formules/format";
 
+// Le paiement part d'ici : la Server Action s'execute dans cette route.
+// Sans plafond explicite, c'est le defaut du plan qui s'applique et une
+// lenteur de Stripe fait tomber la fonction en pleine session Checkout.
+export const maxDuration = 30;
+
 export const metadata: Metadata = { title: "Ma formule — Step by Step" };
 
 function etatAbonnement(a: Abonnement): {

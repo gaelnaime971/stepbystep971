@@ -15,6 +15,11 @@ import { COLONNES_FORMULE, estAchetable, type Formule } from "@/lib/formules/typ
 import { libelleNiveau } from "@/lib/niveaux";
 import { clientServeur } from "@/lib/supabase/server";
 
+// Le paiement part d'ici : la Server Action s'execute dans cette route.
+// Sans plafond explicite, c'est le defaut du plan qui s'applique et une
+// lenteur de Stripe fait tomber la fonction en pleine session Checkout.
+export const maxDuration = 30;
+
 export const metadata: Metadata = {
   title: "Step by Step Coaching — cours de Fitness Step en Guadeloupe",
   description:

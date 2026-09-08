@@ -22,7 +22,12 @@ export function stripe(): Stripe {
     );
   }
 
-  return new Stripe(cle);
+  // Le defaut du SDK est de 80 SECONDES d'attente par tentative, et il
+  // reessaie deux fois : de quoi tenir une requete ouverte plusieurs minutes.
+  // La fonction Vercel, elle, est coupee bien avant, et la cliente voit une
+  // page de panne. Huit secondes suffisent largement a Stripe ; au-dela, mieux
+  // vaut rendre la main et lui dire de reessayer.
+  return new Stripe(cle, { timeout: 8_000, maxNetworkRetries: 2 });
 }
 
 /** Vrai si l'on travaille sur les cles de test. Affiche dans l'admin. */
