@@ -8,6 +8,7 @@ import { urlDuSite } from "@/lib/site";
 import type { EtatFormulaire } from "./formulaire";
 import { messageErreur } from "./messages";
 import { accueilSelonRole, COLONNES_PROFIL, type Role } from "./session";
+import { MESSAGE_TELEPHONE, telephoneValide } from "@/lib/telephone";
 
 const LONGUEUR_MOT_DE_PASSE = 8;
 
@@ -113,6 +114,10 @@ export async function inscription(
       erreur: `Ton mot de passe doit faire au moins ${LONGUEUR_MOT_DE_PASSE} caractères.`,
       valeurs,
     };
+  }
+
+  if (telephone && !telephoneValide(telephone)) {
+    return { erreur: MESSAGE_TELEPHONE, valeurs };
   }
 
   const supabase = await clientServeur();

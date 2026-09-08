@@ -10,6 +10,7 @@ import { urlDuSite } from "@/lib/site";
 import { envoyer } from "@/lib/emails/envoyer";
 import { confirmationReservation } from "@/lib/emails/modeles";
 import { messageReservation } from "./messages";
+import { MESSAGE_TELEPHONE, telephoneValide } from "@/lib/telephone";
 
 function texte(d: FormData, champ: string): string {
   const v = d.get(champ);
@@ -143,6 +144,7 @@ export async function modifierProfil(donnees: FormData): Promise<void> {
     redirect(`/compte/profil?message=${encodeURIComponent(m)}&ton=erreur`);
 
   if (!prenom || !nom) echec("Renseigne ton prénom et ton nom.");
+  if (telephone && !telephoneValide(telephone)) echec(MESSAGE_TELEPHONE);
 
   const supabase = await clientServeur();
   // Seules ces trois colonnes sont accordees a `authenticated` : ni le role,

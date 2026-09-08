@@ -8,6 +8,7 @@ import { clientService } from "@/lib/supabase/service";
 import { stripe } from "@/lib/stripe/client";
 import { urlDuSite } from "@/lib/site";
 import { detailTechnique } from "@/lib/erreur-technique";
+import { telephonePourStripe } from "@/lib/telephone";
 import { COLONNES_FORMULE, type Formule } from "@/lib/formules/types";
 import { validiteLisible } from "@/lib/formules/format";
 import { estAchetable } from "@/lib/formules/types";
@@ -64,7 +65,9 @@ async function urlDePaiement(
   const clientStripe = profil.stripe_customer_id ?? (await sdk.customers.create({
     email: profil.email,
     name: `${profil.first_name} ${profil.last_name}`,
-    phone: profil.phone ?? undefined,
+    // Plafonne a 20 caracteres chez Stripe. Un profil ancien peut porter
+    // n'importe quoi : on prefere ne rien envoyer plutot que refuser la vente.
+    phone: telephonePourStripe(profil.phone),
     metadata: { user_id: profil.id },
   })).id;
 
