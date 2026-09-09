@@ -1,0 +1,30 @@
+-- =============================================================================
+-- REVERT 0008 — DESTRUCTIF, ET PARTIELLEMENT IMPOSSIBLE
+-- =============================================================================
+--
+-- Postgres NE SAIT PAS retirer une valeur d'un enum. Il n'existe pas de
+-- `alter type ... drop value`. Defaire 0008 demande de reconstruire le type
+-- entier, donc de reecrire toutes les colonnes qui l'utilisent.
+--
+-- Ce n'est pas necessaire : une valeur d'enum inutilisee ne coute rien et ne
+-- gene rien. Si le bloc remboursement etait abandonne, laisser
+-- 'refund_processed' en place est le bon choix.
+--
+-- Le script ci-dessous n'est la que pour le cas ou il faudrait vraiment
+-- revenir en arriere. Il EFFACE les envois deja traces sous cette valeur.
+-- A ne jouer qu'apres 0009.down, et en connaissance de cause.
+--
+-- delete from public.email_log where template = 'refund_processed';
+--
+-- alter type public.email_template rename to email_template_ancien;
+--
+-- create type public.email_template as enum (
+--   'purchase_confirmation', 'booking_confirmation', 'course_canceled',
+--   'expiry_warning', 'payment_failed', 'subscription_ended'
+-- );
+--
+-- alter table public.email_log
+--   alter column template type public.email_template
+--   using template::text::public.email_template;
+--
+-- drop type public.email_template_ancien;

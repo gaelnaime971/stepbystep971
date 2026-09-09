@@ -16,6 +16,8 @@ dans l'ordre de leur numéro.
 | `0005` | 6 | 26 fonctions `ok`, 10 triggers `ok`, 9 assertions `ok` |
 | `0006` | 3 | 3 lieux `ok`, 6 formules `ok`, 2 abonnements à 28 jours |
 | `0007` | 3 | 6 contrôles `ok`, tous les cours existants sans niveau, lecture cliente qui passe |
+| `0008` | 2 | 3 contrôles `ok`, les envois déjà tracés inchangés |
+| `0009` | 3 | 6 contrôles `ok`, `authenticated` seul sur la fonction, grand livre équilibré |
 
 Les fichiers `1_…` et `2_…` rendent un verdict par ligne : tout doit dire `ok`,
 et le tri met les problèmes en tête. Les fichiers suivants sont du détail à

@@ -134,6 +134,14 @@ Seul `next_payment_attempt === null` déclenche l'email, et `apply_subscription_
 
 Un remboursement **total** révoque le solde encore disponible du lot (`close_reason = 'revoked'`). Les séances déjà consommées le restent : un cours suivi ne se défait pas parce qu'un paiement est remboursé. Un remboursement **partiel** n'entraîne aucune révocation automatique — la moitié d'un pack n'a pas de traduction évidente en nombre de séances, Oriane arbitre avec `admin_revoke_credits`.
 
+### Un remboursement d'abonnement ne se rattache pas tout seul
+
+`charge.refunded` cherche la commande par `orders.stripe_payment_intent_id`. Une commande de type `subscription_cycle` est née d'`invoice.paid`, qui n'écrit que `stripe_invoice_id` : cette colonne est **vide**. Rembourser un prélèvement d'abonnement depuis le tableau de bord Stripe ne produit donc rien en base — ni statut, ni montant, ni révocation. L'argent part, la cliente garde ses séances, et rien ne le signale.
+
+C'est pour cette raison que le remboursement se pilote depuis `/admin/clientes/[id]` et non depuis Stripe. L'action serveur **résout le `payment_intent` depuis la facture et l'écrit sur la commande avant d'appeler Stripe** — le webhook retrouve alors sa commande sans avoir été modifié. Le code qui encaisse ne bouge pas ; c'est l'appelant qui se met en état d'être compris.
+
+Si un remboursement doit être fait à la main dans Stripe un jour, il faut d'abord poser ce `stripe_payment_intent_id` sur la commande, sinon le webhook ne trouvera rien.
+
 ### service_role
 
 `clientService()` contourne la RLS. Deux usages, et aucun autre : les webhooks Stripe, qui n'ont pas de session, et les jobs planifiés. Une exception : la pose de `profiles.stripe_customer_id` au premier paiement, car `authenticated` n'a pas le droit d'écrire cette colonne. Ne jamais l'utiliser par commodité dans une action qui agit au nom d'une cliente : la RLS est la protection.
