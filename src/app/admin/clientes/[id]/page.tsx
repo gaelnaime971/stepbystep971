@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Bandeau } from "@/components/Bandeau";
 import { ConfirmerAction } from "@/components/ConfirmerAction";
+import { FormulaireRemboursement } from "@/components/admin/FormulaireRemboursement";
 import { Pastille } from "@/components/Pastille";
 import { anonymiser, desinscrireDepuisFiche, enregistrerNotes } from "@/lib/admin/actions";
 import { ficheCliente } from "@/lib/admin/lecture";
@@ -212,22 +213,31 @@ export default async function PageFicheCliente({
               <p className="py-4 text-[15px] text-plume-deep">Aucun achat.</p>
             ) : (
               achats.map((a) => (
-                <div key={a.id} className="flex items-center justify-between gap-3 border-b border-sable py-3 last:border-b-0">
-                  <div>
-                    <p className="text-[15px] font-medium">{a.formule ?? "Formule supprimée"}</p>
-                    <p className="text-[13px] text-plume-deep">
-                      {enDateAnnee(a.date)}
-                      {a.type === "subscription_cycle" && " · prélèvement"}
-                    </p>
+                <div key={a.id} className="border-b border-sable py-3 last:border-b-0">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <p className="text-[15px] font-medium">{a.formule ?? "Formule supprimée"}</p>
+                      <p className="text-[13px] text-plume-deep">
+                        {enDateAnnee(a.date)}
+                        {a.type === "subscription_cycle" && " · prélèvement"}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[15px] font-medium">{prixLisible(a.montant)}</span>
+                      {a.statut === "refunded" && <Pastille ton="complet">Remboursé</Pastille>}
+                      {a.statut === "partially_refunded" && (
+                        <Pastille ton="bientot">{prixLisible(a.rembourse)} rendus</Pastille>
+                      )}
+                      {a.statut === "pending" && <Pastille ton="bientot">En attente</Pastille>}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-[15px] font-medium">{prixLisible(a.montant)}</span>
-                    {a.statut === "refunded" && <Pastille ton="complet">Remboursé</Pastille>}
-                    {a.statut === "partially_refunded" && (
-                      <Pastille ton="bientot">{prixLisible(a.rembourse)} rendus</Pastille>
+
+                  {(a.statut === "paid" || a.statut === "partially_refunded") &&
+                    a.impact.remboursable > 0 && (
+                      <div className="mt-3">
+                        <FormulaireRemboursement achat={a} clienteId={profil.id} />
+                      </div>
                     )}
-                    {a.statut === "pending" && <Pastille ton="bientot">En attente</Pastille>}
-                  </div>
                 </div>
               ))
             )}

@@ -7,7 +7,8 @@ export type Modele =
   | "booking_confirmation"
   | "course_canceled"
   | "expiry_warning"
-  | "payment_failed";
+  | "payment_failed"
+  | "refund_processed";
 
 export type Envoi = {
   modele: Modele;

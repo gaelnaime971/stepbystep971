@@ -198,13 +198,13 @@ export async function ficheCliente(id: string) {
 
   const [lotsBruts, resaBrutes, achatsBruts, abosBruts, mails] = await Promise.all([
     supabase.from("credit_lots")
-      .select("id, quantity_remaining, quantity_initial, expires_at, origin, closed_at, close_reason, plan_id, reason")
+      .select("id, quantity_remaining, quantity_initial, expires_at, origin, closed_at, close_reason, plan_id, reason, order_id")
       .eq("user_id", id).order("expires_at", { ascending: false })
-      .returns<{ id: string; quantity_remaining: number; quantity_initial: number; expires_at: string; origin: string; closed_at: string | null; close_reason: string | null; plan_id: string | null; reason: string | null }[]>(),
+      .returns<{ id: string; quantity_remaining: number; quantity_initial: number; expires_at: string; origin: string; closed_at: string | null; close_reason: string | null; plan_id: string | null; reason: string | null; order_id: string | null }[]>(),
     supabase.from("bookings")
-      .select("id, status, booked_at, credit_refunded_at, course_id")
+      .select("id, status, booked_at, credit_refunded_at, course_id, credit_lot_id")
       .eq("user_id", id).order("booked_at", { ascending: false }).limit(60)
-      .returns<{ id: string; status: string; booked_at: string; credit_refunded_at: string | null; course_id: string }[]>(),
+      .returns<{ id: string; status: string; booked_at: string; credit_refunded_at: string | null; course_id: string; credit_lot_id: string }[]>(),
     supabase.from("orders")
       .select("id, kind, status, amount_cents, refunded_amount_cents, paid_at, created_at, plan_id, stripe_payment_intent_id, stripe_invoice_id, stripe_checkout_session_id")
       .eq("user_id", id).order("created_at", { ascending: false })
@@ -266,14 +266,56 @@ export async function ficheCliente(id: string) {
     })
     .filter((x): x is ReservationDetail => !!x);
 
-  const achats: AchatDetail[] = (achatsBruts.data ?? []).map((a) => ({
-    id: a.id, type: a.kind, statut: a.status, montant: a.amount_cents,
-    rembourse: a.refunded_amount_cents, date: a.paid_at ?? a.created_at,
-    formule: nomFormule.get(a.plan_id) ?? null,
-    stripePaymentIntent: a.stripe_payment_intent_id,
-    stripeInvoice: a.stripe_invoice_id,
-    stripeSession: a.stripe_checkout_session_id,
-  }));
+  const maintenantIso = new Date().toISOString();
+
+  const achats: AchatDetail[] = (achatsBruts.data ?? []).map((a) => {
+    // Les lots nes de cet achat. Un achat unique en produit un ; un cycle
+    // d'abonnement aussi, mais chacun le sien.
+    const lotsDeLAchat = (lotsBruts.data ?? []).filter((l) => l.order_id === a.id);
+    const idsLots = new Set(lotsDeLAchat.map((l) => l.id));
+
+    const soldeRevocable = lotsDeLAchat
+      .filter((l) => !l.closed_at)
+      .reduce((n, l) => n + l.quantity_remaining, 0);
+
+    const resaDeLAchat = (resaBrutes.data ?? []).filter(
+      (r) => r.status === "booked" && idsLots.has(r.credit_lot_id),
+    );
+
+    const coursAVenir = resaDeLAchat
+      .map((r) => ({ r, c: parCours.get(r.course_id) }))
+      .filter((x) => x.c && x.c.status !== "canceled" && x.c.starts_at > maintenantIso)
+      .map((x) => ({
+        bookingId: x.r.id,
+        debut: x.c!.starts_at,
+        fin: x.c!.ends_at,
+        lieu: nomLieu.get(x.c!.location_id) ?? "—",
+      }))
+      // La plus LOINTAINE d'abord : c'est celle qu'on annule en premier. Une
+      // cliente inscrite demain s'est organisee autour de ce cours.
+      .sort((u, v) => v.debut.localeCompare(u.debut));
+
+    const consommeesPassees = resaDeLAchat.length - coursAVenir.length;
+
+    const seancesAchetees = lotsDeLAchat.reduce((n, l) => n + l.quantity_initial, 0);
+    const remboursable = Math.max(0, a.amount_cents - a.refunded_amount_cents);
+
+    return {
+      id: a.id, type: a.kind, statut: a.status, montant: a.amount_cents,
+      rembourse: a.refunded_amount_cents, date: a.paid_at ?? a.created_at,
+      formule: nomFormule.get(a.plan_id) ?? null,
+      stripePaymentIntent: a.stripe_payment_intent_id,
+      stripeInvoice: a.stripe_invoice_id,
+      stripeSession: a.stripe_checkout_session_id,
+      impact: {
+        remboursable,
+        soldeRevocable,
+        consommeesPassees,
+        coursAVenir,
+        prixSeance: seancesAchetees > 0 ? Math.round(a.amount_cents / seancesAchetees) : null,
+      },
+    };
+  });
 
   const abonnements: AbonnementDetail[] = (abosBruts.data ?? []).map((a) => ({
     id: a.id, statut: a.status, finPeriode: a.current_period_end,

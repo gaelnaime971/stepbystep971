@@ -45,6 +45,29 @@ export type AchatDetail = {
   stripePaymentIntent: string | null;
   stripeInvoice: string | null;
   stripeSession: string | null;
+  /** Ce qu'un remboursement de cet achat emporterait. Calcule pour l'affichage. */
+  impact: ImpactRemboursement;
+};
+
+/**
+ * L'etat des lieux montre a Oriane AVANT qu'elle valide.
+ *
+ * Deux gisements distincts, jamais additionnes : le solde encore disponible se
+ * revoque, les inscriptions a venir s'annulent. Les cours deja suivis ne
+ * bougent pas — un cours suivi ne se defait pas parce qu'un paiement est
+ * rembourse.
+ */
+export type ImpactRemboursement = {
+  /** Ce qu'il reste a rembourser sur cet achat, en centimes. */
+  remboursable: number;
+  /** Seances encore au solde, finances par cet achat. */
+  soldeRevocable: number;
+  /** Seances de cet achat deja consommees sur des cours PASSES. */
+  consommeesPassees: number;
+  /** Inscriptions a venir financees par cet achat, de la plus lointaine d'abord. */
+  coursAVenir: { bookingId: string; debut: string; fin: string; lieu: string }[];
+  /** Prix d'une seance sur cet achat, en centimes. Null si indeterminable. */
+  prixSeance: number | null;
 };
 
 export type AbonnementDetail = {

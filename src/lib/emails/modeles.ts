@@ -159,3 +159,60 @@ export function paiementEchoue(a: {
     },
   };
 }
+
+/**
+ * Le remboursement, envoye au moment ou Oriane le declenche.
+ *
+ * Le motif qu'elle a saisi n'y figure PAS. Il est trace dans le grand livre et
+ * dans le journal d'audit, ou il sert a comprendre un geste des mois plus tard.
+ * Ecrit tel quel a la cliente, il sonnerait faux — « geste commercial, se
+ * plaint du cours du 12 » n'est pas une phrase qu'on adresse a quelqu'un. Si
+ * elle veut expliquer, elle repond a ce mail : le reply-to arrive chez elle.
+ */
+export function remboursementEffectue(a: {
+  prenom: string;
+  formule: string;
+  montantCents: number;
+  total: boolean;
+  seancesRetirees: number;
+  coursAnnules: { debut: string; fin: string; lieu: string }[];
+}): { objet: string; contenu: Contenu } {
+  const rien = a.seancesRetirees === 0 && a.coursAnnules.length === 0;
+
+  return {
+    objet: `Remboursement de ${prixLisible(a.montantCents)}`,
+    contenu: {
+      titre: "C'est remboursé",
+      paragraphes: [
+        `Salut ${a.prenom},`,
+        `${prixLisible(a.montantCents)} viennent de t'être remboursés${a.total ? "" : ", sur une partie de ton achat"}. Le montant revient sur la carte qui a servi à payer, en général sous 5 à 10 jours ouvrés — le délai dépend de ta banque, pas de nous.`,
+        ...(rien
+          ? ["Ton solde de séances ne change pas."]
+          : []),
+        ...(a.coursAnnules.length > 0
+          ? [
+              a.coursAnnules.length === 1
+                ? "Ton inscription à ce cours a été annulée, la place est rendue :"
+                : `Tes inscriptions à ces ${a.coursAnnules.length} cours ont été annulées, les places sont rendues :`,
+              a.coursAnnules
+                .map((c) => `${enJourLong(c.debut)}, ${enCreneau(c.debut, c.fin)} ${auLieu(c.lieu)}`)
+                .join("\n"),
+            ]
+          : []),
+      ],
+      lignes: [
+        ["Achat", a.formule],
+        ["Montant rendu", prixLisible(a.montantCents)],
+        ...(a.seancesRetirees > 0
+          ? ([["Séances retirées de ton solde", String(a.seancesRetirees)]] as [string, string][])
+          : []),
+        ...(a.coursAnnules.length > 0
+          ? ([["Inscriptions annulées", String(a.coursAnnules.length)]] as [string, string][])
+          : []),
+      ],
+      encadre:
+        "Les cours que tu as déjà suivis restent acquis : un cours suivi ne se défait pas parce qu'un paiement est remboursé.",
+      bouton: { libelle: "Voir mon compte", chemin: "/compte" },
+    },
+  };
+}
