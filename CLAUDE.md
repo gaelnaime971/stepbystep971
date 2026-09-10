@@ -109,14 +109,23 @@ La synchronisation du seed vers Stripe passe par le bouton « Publier sur Stripe
 
 **Un échec de traitement rend un 500, jamais un 200.** Stripe réessaie sur 500 ; répondre 200 sur un échec ferait disparaître l'événement pour toujours. `processed_at` reste à `NULL` et `stripe_events_unprocessed_idx` sert à les retrouver.
 
-### Deux pièges de version d'API
+### Trois pièges de version d'API, et la règle qui les couvre
 
-L'API `2026-08-26.dahlia` a déplacé deux champs, et les deux comptent :
+L'API `2026-08-26.dahlia` a déplacé trois champs :
 
 - `invoice.subscription` → **`invoice.parent.subscription_details.subscription`**
 - `subscription.current_period_end` → **`subscription.items.data[0].current_period_end`**
+- `invoice.payment_intent` → **`invoice.payments.data[].payment.payment_intent`**, et ce `payments` **n'est rendu que si on le demande**
 
-Le second est le plus grave : c'est cette date qui devient l'`expires_at` du lot. S'y tromper ferait expirer les séances au mauvais moment. `src/lib/paiement/webhook.ts` lit les deux formes, pour survivre à un changement de version épinglée.
+Le deuxième est le plus grave en argent : c'est cette date qui devient l'`expires_at` du lot. S'y tromper ferait expirer les séances au mauvais moment.
+
+Le troisième est le plus sournois, parce qu'il est **silencieux**. Sans `expand: ["payments"]`, la facture revient complète, sans erreur, sans champ manquant visible — le paiement est simplement absent, et on conclut à tort qu'il n'y en a pas. C'est ce qui a fait échouer un remboursement d'abonnement en production, avec le message « aucun paiement rattaché » sur une facture parfaitement payée.
+
+**La règle générale : avant de lire un champ imbriqué sur un objet Stripe, vérifie qu'il est rendu par défaut, ou demande-le explicitement.** Stripe distingue trois états qu'on confond facilement — un champ absent parce qu'il n'existe pas, un champ absent parce qu'il a été déplacé, et un champ absent parce qu'il n'est pas expansé. Les trois se présentent en JavaScript comme `undefined`, et aucun ne lève d'erreur. La seule façon d'en avoir le cœur net est de lire l'objet réel une fois, avec un `curl` ou le SDK, avant d'écrire le code qui le décode.
+
+Chaque décodeur lit les **deux formes**, l'ancienne et la nouvelle, pour survivre à un changement de version épinglée : `src/lib/paiement/webhook.ts` pour les deux premiers, `src/lib/admin/remboursement.ts` pour le troisième.
+
+Un corollaire, sur ce troisième champ : `invoice_payment.payment` est une **union**, et son `type` décide. `payment_intent` est remboursable ; `payment_record` désigne une facture marquée payée hors Stripe, que Stripe ne peut pas rendre. Et une facture peut être `paid` sans qu'un centime ait circulé — remise de 100 %, solde client, facture à 0 € — ce qui se reconnaît à `amount_paid = 0` et à une liste `payments` vide. Ces trois situations ne sont pas des pannes : elles méritent une phrase française chacune, pas un code technique.
 
 ### Qui traite quoi
 

@@ -9,7 +9,7 @@ import { enDateAnnee } from "@/lib/dates";
 import { stripe } from "@/lib/stripe/client";
 import { envoyer } from "@/lib/emails/envoyer";
 import { remboursementEffectue } from "@/lib/emails/modeles";
-import { paymentIntentDeLaCommande } from "./remboursement";
+import { paymentIntentDeLaCommande, RemboursementImpossible } from "./remboursement";
 import {
   creerCodePromo, desactiverCodePromo, messagePromoStripe, reactiverCodePromo,
 } from "@/lib/promo/stripe";
@@ -583,9 +583,27 @@ export async function rembourser(donnees: FormData): Promise<void> {
   const coursAVenir = await inscriptionsAVenir(supabase, (lots ?? []).map((l) => l.id));
 
   // --- 1. STRIPE. Rien n'est ecrit avant que l'argent soit parti. -----------
+  //
+  // La resolution du paiement est SEPAREE de l'appel de remboursement. Ses
+  // refus ne sont pas des pannes — une facture a 0 EUR n'a rien a rendre — et
+  // les confondre ferait dire « Stripe a refuse » la ou il n'y a rien a
+  // demander.
+  let paymentIntent: string;
+  try {
+    paymentIntent = await paymentIntentDeLaCommande(commande);
+  } catch (erreur) {
+    retour(
+      fiche,
+      erreur instanceof RemboursementImpossible
+        ? erreur.messageOriane
+        : "Le paiement de cet achat n'a pas pu être retrouvé chez Stripe. Rien n'a bougé. " +
+          detailTechnique("remboursement", erreur as { code?: string; message?: string }),
+      "erreur",
+    );
+  }
+
   let remboursement: { id: string };
   try {
-    const paymentIntent = await paymentIntentDeLaCommande(commande);
     remboursement = await stripe().refunds.create(
       { payment_intent: paymentIntent, amount: montant, metadata: { order_id: commande.id } },
       // Un double clic sur un bouton qui rend de l'argent rendrait l'argent
