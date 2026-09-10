@@ -3,6 +3,7 @@ import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe/client";
 import { clientService } from "@/lib/supabase/service";
 import {
+  traiterAbonnementModifie,
   traiterAbonnementSupprime,
   traiterEchecPaiement,
   traiterFacturePayee,
@@ -75,6 +76,9 @@ export async function POST(requete: NextRequest) {
         break;
       case "invoice.payment_failed":
         resultat = await traiterEchecPaiement(evenement.data.object);
+        break;
+      case "customer.subscription.updated":
+        resultat = await traiterAbonnementModifie(evenement.data.object);
         break;
       case "customer.subscription.deleted":
         resultat = await traiterAbonnementSupprime(evenement.data.object);

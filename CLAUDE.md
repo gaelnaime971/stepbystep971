@@ -129,6 +129,8 @@ Un corollaire, sur ce troisième champ : `invoice_payment.payment` est une **uni
 
 ### Qui traite quoi
 
+**`customer.subscription.updated` reflète ce qui se décide ailleurs.** Une cliente qui résilie depuis le portail Stripe ne passe par aucune ligne de code du site : sans ce handler, `cancel_at_period_end` changeait chez Stripe et nulle part ailleurs, et elle lisait « En cours » jusqu'à la fin de sa période. Le handler se contente de refléter — statut, `cancel_at_period_end`, `canceled_at`, période — sans rien déduire, sans retirer de séance et sans envoyer d'email. Il ne crée jamais la ligne : `invoice.paid` est le seul chemin qui sait à quelle cliente et à quelle formule rattacher un abonnement. Et il refuse d'écrire sur un abonnement dont `ended_at` est posé, parce que Stripe ne garantit pas l'ordre entre `updated` et `deleted`.
+
 **Un abonnement est traité par `invoice.paid`, jamais par `checkout.session.completed`.** Les deux événements arrivent dans un ordre non garanti, et seule la facture porte la période. Le handler de session ignore donc `mode: "subscription"` — un seul chemin, pas deux qui se marchent dessus.
 
 `credit_order()` applique la règle 2 : au renouvellement, le reliquat est annulé et tracé (`subscription_reset`), le solde repart à N. Il ne s'additionne jamais.

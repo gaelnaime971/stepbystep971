@@ -357,6 +357,85 @@ export async function traiterAbonnementSupprime(abo: Stripe.Subscription): Promi
 }
 
 // ---------------------------------------------------------------------------
+// customer.subscription.updated
+// ---------------------------------------------------------------------------
+
+/**
+ * Les statuts que la contrainte `subscriptions_status_known` accepte.
+ *
+ * Stripe fait evoluer ses statuts. Un statut inconnu ferait echouer l'ecriture
+ * sur la contrainte, donc rendre 500, donc Stripe rejouerait sans fin le meme
+ * evenement. On prefere garder le statut precedent et le signaler : la
+ * resiliation, elle, sera quand meme enregistree.
+ */
+const STATUTS_CONNUS = new Set([
+  "incomplete", "incomplete_expired", "trialing", "active",
+  "past_due", "canceled", "unpaid", "paused",
+]);
+
+/**
+ * Reflete un changement d'abonnement decide ailleurs que sur le site.
+ *
+ * LE CAS QUI COMPTE : une cliente resilie depuis le portail Stripe. Sans ce
+ * handler, `cancel_at_period_end` passait a true chez Stripe et nulle part
+ * ailleurs — elle voyait « En cours » jusqu'a la fin de sa periode, croyait sa
+ * resiliation perdue, et ecrivait a Oriane.
+ *
+ * L'evenement arrive aussi pour bien d'autres raisons. Le handler se contente
+ * donc de refleter l'etat courant, sans rien deduire ni declencher : aucune
+ * seance retiree, aucun email. Ce qu'elle a paye lui reste jusqu'a l'echeance.
+ */
+export async function traiterAbonnementModifie(abo: Stripe.Subscription): Promise<string> {
+  const base = clientService();
+
+  const { data: connu } = await base
+    .from("subscriptions")
+    .select("id, status, ended_at")
+    .eq("stripe_subscription_id", abo.id)
+    .maybeSingle<{ id: string; status: string; ended_at: string | null }>();
+
+  // Pas de creation ici : `invoice.paid` est le seul chemin qui sait a quelle
+  // cliente et a quelle formule rattacher un abonnement. Un evenement arrive
+  // avant lui n'est pas perdu pour autant — l'upsert de `invoice.paid` ecrit
+  // `cancel_at_period_end` avec le reste.
+  if (!connu) return "abonnement inconnu en base, rien a refleter";
+
+  // Un `updated` peut arriver APRES le `deleted` correspondant : Stripe ne
+  // garantit pas l'ordre. Sans ce garde-fou, un abonnement termine
+  // ressusciterait en « active ».
+  if (connu.ended_at) return "abonnement deja termine, etat conserve";
+
+  const periode = periodeDe(abo);
+  const statutValide = STATUTS_CONNUS.has(abo.status);
+
+  const { error } = await base
+    .from("subscriptions")
+    .update({
+      ...(statutValide ? { status: abo.status } : {}),
+      cancel_at_period_end: abo.cancel_at_period_end,
+      // `canceled_at` est l'instant ou la resiliation a ete DEMANDEE, pas la
+      // fin de la periode. Stripe le remet a null si elle se ravise.
+      canceled_at: enISO(abo.canceled_at),
+      ...(periode.debut ? { current_period_start: periode.debut } : {}),
+      ...(periode.fin ? { current_period_end: periode.fin } : {}),
+    })
+    .eq("stripe_subscription_id", abo.id);
+
+  if (error) throw new Error(`abonnement non mis a jour : ${error.message}`);
+
+  if (!statutValide) {
+    console.error(
+      `[webhook] statut Stripe inconnu « ${abo.status} » sur ${abo.id}, statut conserve : ${connu.status}`,
+    );
+  }
+
+  return abo.cancel_at_period_end
+    ? "resiliation en fin de periode enregistree"
+    : `abonnement mis a jour${statutValide ? ` (${abo.status})` : " (statut inconnu ignore)"}`;
+}
+
+
+// ---------------------------------------------------------------------------
 // charge.refunded
 // ---------------------------------------------------------------------------
 
