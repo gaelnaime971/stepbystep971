@@ -18,6 +18,7 @@ dans l'ordre de leur numéro.
 | `0007` | 3 | 6 contrôles `ok`, tous les cours existants sans niveau, lecture cliente qui passe |
 | `0008` | 2 | 3 contrôles `ok`, les envois déjà tracés inchangés |
 | `0009` | 3 | 6 contrôles `ok`, `authenticated` seul sur la fonction, grand livre équilibré |
+| `0010` | 6 | 9 contrôles `ok`, écriture directe refusée aux clientes, données intactes |
 
 Les fichiers `1_…` et `2_…` rendent un verdict par ligne : tout doit dire `ok`,
 et le tri met les problèmes en tête. Les fichiers suivants sont du détail à
