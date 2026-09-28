@@ -4,6 +4,8 @@ import { Bandeau } from "@/components/Bandeau";
 import { Pastille } from "@/components/Pastille";
 import { profilCourant } from "@/lib/auth/session";
 import { kpis, pointsDAttention } from "@/lib/admin/lecture";
+import { etatCharteDeTous } from "@/lib/charte/lecture";
+import { clientes } from "@/lib/admin/lecture";
 import type { Attention } from "@/lib/admin/types";
 import { enHeure, enJourCourt } from "@/lib/dates";
 import { prixLisible } from "@/lib/formules/format";
@@ -65,9 +67,18 @@ export default async function PageAdmin() {
   const jour = aujourdHui();
   const semaine = semaineDe(jour);
 
-  const [chiffres, attentions, deLaSemaine, lieux] = await Promise.all([
+  const [chiffres, attentions, deLaSemaine, lieux, toutes, chartes] = await Promise.all([
     kpis(), pointsDAttention(), coursEntre(semaine[0], semaine.at(-1)!), tousLesLieux(),
+    clientes(), etatCharteDeTous(),
   ]);
+
+  // Sur deux cents comptes, Oriane doit voir d'un coup d'oeil ou en est la
+  // charte — et surtout combien refusent leur image, puisque c'est ce qu'elle
+  // regarde avant de publier.
+  const signees = toutes.filter((c) => chartes.get(c.id)?.signee).length;
+  const refusImage = toutes.filter(
+    (c) => chartes.get(c.id)?.autorisationImage === false,
+  ).length;
 
   const nomLieu = new Map(lieux.map((l) => [l.id, l.name]));
   const duJour = deLaSemaine.filter((c) => dateLocale(c.starts_at) === jour);
@@ -100,6 +111,20 @@ export default async function PageAdmin() {
           valeur={chiffres.tauxRemplissage === null ? "—" : `${chiffres.tauxRemplissage} %`}
           libelle="Taux de remplissage"
           note={chiffres.coursTrenteJours > 0 ? `sur ${chiffres.coursTrenteJours} cours passés` : "aucun cours passé"}
+        />
+        <Kpi
+          valeur={`${signees}/${toutes.length}`}
+          libelle="Chartes signées"
+          note={
+            toutes.length - signees > 0
+              ? `${toutes.length - signees} à signer au prochain accès`
+              : "tout le monde a signé"
+          }
+        />
+        <Kpi
+          valeur={String(refusImage)}
+          libelle="Refusent leur image"
+          note="à vérifier avant de publier"
         />
       </div>
 

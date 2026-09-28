@@ -4,16 +4,32 @@ import { Bandeau } from "@/components/Bandeau";
 import { Pastille } from "@/components/Pastille";
 import { clientes } from "@/lib/admin/lecture";
 import { enDate, joursRestants } from "@/lib/dates";
+import { etatCharteDeTous } from "@/lib/charte/lecture";
 
 export const metadata: Metadata = { title: "Mes clientes — Step by Step" };
 
 export default async function PageClientes({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; message?: string; ton?: string }>;
+  searchParams: Promise<{ q?: string; filtre?: string; message?: string; ton?: string }>;
 }) {
-  const { q, message, ton } = await searchParams;
-  const liste = await clientes(q);
+  const { q, filtre, message, ton } = await searchParams;
+  const [toutes, chartes] = await Promise.all([clientes(q), etatCharteDeTous()]);
+
+  const etatDe = (id: string) =>
+    chartes.get(id) ?? { signee: false, version: null, signeeLe: null,
+                         autorisationImage: null, imageDecideeLe: null };
+
+  // Le filtre dont Oriane a besoin avant de publier une story : qui refuse.
+  const liste =
+    filtre === "refus-image"
+      ? toutes.filter((c) => etatDe(c.id).autorisationImage === false)
+      : filtre === "sans-charte"
+        ? toutes.filter((c) => !etatDe(c.id).signee)
+        : toutes;
+
+  const refus = toutes.filter((c) => etatDe(c.id).autorisationImage === false).length;
+  const sansCharte = toutes.filter((c) => !etatDe(c.id).signee).length;
 
   return (
     <>
@@ -59,6 +75,34 @@ export default async function PageClientes({
         )}
       </form>
 
+      <div className="mb-5 flex flex-wrap items-center gap-2.5 text-[15px]">
+        {[
+          ["", `Toutes (${toutes.length})`],
+          ["refus-image", `Refusent leur image (${refus})`],
+          ["sans-charte", `Charte à signer (${sansCharte})`],
+        ].map(([valeur, libelle]) => {
+          const actif = (filtre ?? "") === valeur;
+          const params = new URLSearchParams();
+          if (q) params.set("q", q);
+          if (valeur) params.set("filtre", valeur);
+          const href = `/admin/clientes${params.size ? `?${params}` : ""}`;
+          return (
+            <Link
+              key={libelle}
+              href={href}
+              aria-current={actif ? "true" : undefined}
+              className={`rounded-sm border px-[14px] py-2 font-semibold ${
+                actif
+                  ? "border-framboise bg-framboise-wash text-framboise-deep"
+                  : "border-sable-deep bg-white text-encre hover:bg-sable"
+              }`}
+            >
+              {libelle}
+            </Link>
+          );
+        })}
+      </div>
+
       {liste.length === 0 ? (
         <p className="rounded-md border border-sable bg-white px-6 py-10 text-center text-[15px] text-plume-deep">
           {q ? "Personne ne correspond à cette recherche." : "Aucune cliente inscrite pour l'instant."}
@@ -68,7 +112,7 @@ export default async function PageClientes({
           <table className="w-full border-collapse">
             <thead>
               <tr>
-                {["Cliente", "Formule", "Séances", "Validité", ""].map((t) => (
+                {["Cliente", "Formule", "Séances", "Validité", "Charte", "Image", ""].map((t) => (
                   <th key={t} className="border-b border-sable px-3 py-2.5 text-left text-[13px] font-semibold text-plume-deep">
                     {t}
                   </th>
@@ -113,6 +157,24 @@ export default async function PageClientes({
                         )
                       ) : (
                         <Pastille ton="complet">Aucune séance</Pastille>
+                      )}
+                    </td>
+                    <td className="border-b border-sable px-3 py-3.5">
+                      {etatDe(c.id).signee ? (
+                        <span className="text-[15px] text-plume-deep">
+                          {etatDe(c.id).signeeLe ? enDate(etatDe(c.id).signeeLe!) : "Signée"}
+                        </span>
+                      ) : (
+                        <Pastille ton="bientot">À signer</Pastille>
+                      )}
+                    </td>
+                    <td className="border-b border-sable px-3 py-3.5">
+                      {etatDe(c.id).autorisationImage === null ? (
+                        <span className="text-[15px] text-plume-deep">—</span>
+                      ) : etatDe(c.id).autorisationImage ? (
+                        <span className="text-[15px] text-plume-deep">Autorise</span>
+                      ) : (
+                        <Pastille ton="complet">Refuse</Pastille>
                       )}
                     </td>
                     <td className="border-b border-sable px-3 py-3.5 text-right">

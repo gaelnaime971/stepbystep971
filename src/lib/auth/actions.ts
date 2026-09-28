@@ -9,6 +9,7 @@ import type { EtatFormulaire } from "./formulaire";
 import { messageErreur } from "./messages";
 import { accueilSelonRole, COLONNES_PROFIL, type Role } from "./session";
 import { MESSAGE_TELEPHONE, telephoneValide } from "@/lib/telephone";
+import { VERSION_CHARTE } from "@/lib/charte/texte";
 
 const LONGUEUR_MOT_DE_PASSE = 8;
 
@@ -120,6 +121,25 @@ export async function inscription(
     return { erreur: MESSAGE_TELEPHONE, valeurs };
   }
 
+  // Les DEUX consentements, lus separement. Aucun ne se deduit de l'autre, et
+  // le second n'a pas de valeur par defaut : ne pas repondre n'est pas repondre
+  // « non », et surtout pas « oui ».
+  if (donnees.get("reglement") !== "on") {
+    return {
+      erreur: "Pour créer ton compte, il faut accepter la charte de participation.",
+      valeurs,
+    };
+  }
+  const brutImage = donnees.get("autorisationImage");
+  if (brutImage !== "autorise" && brutImage !== "refuse") {
+    return {
+      erreur:
+        "Dis-nous si tu autorises la diffusion de ton image. Un refus ne t'empêche de rien.",
+      valeurs,
+    };
+  }
+  const autoriseImage = brutImage === "autorise";
+
   const supabase = await clientServeur();
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -128,7 +148,19 @@ export async function inscription(
       emailRedirectTo: `${await origine()}/auth/confirm`,
       // Ces trois valeurs alimentent le trigger handle_new_user, qui cree la
       // ligne profiles. Sans elles, le profil naitrait avec « Prenom » / « Nom ».
-      data: { first_name: prenom, last_name: nom, phone: telephone || null },
+      //
+      // Les deux dernieres transportent les consentements jusqu'a la PREMIERE
+      // session : avec la confirmation par email active, `signUp` ne l'ouvre
+      // pas, et `accepter_charte()` a besoin d'un auth.uid(). La ligne sera
+      // ecrite au premier acces, avec l'adresse et le navigateur de ce
+      // moment-la. Voir `enregistrerDepuisInscription()`.
+      data: {
+        first_name: prenom,
+        last_name: nom,
+        phone: telephone || null,
+        charte_version: VERSION_CHARTE,
+        charte_image: autoriseImage,
+      },
     },
   });
 

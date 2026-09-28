@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AvertissementJuridique } from "@/components/AvertissementJuridique";
 
 export const metadata: Metadata = {
   title: "Confidentialité — Step by Step Coaching",
@@ -9,6 +10,7 @@ export const metadata: Metadata = {
 export default function PageConfidentialite() {
   return (
     <>
+      <AvertissementJuridique />
       <h1>Politique de confidentialité</h1>
       <span className="maj">Dernière mise à jour : septembre 2026</span>
 

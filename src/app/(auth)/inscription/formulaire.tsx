@@ -7,6 +7,7 @@ import { ETAT_INITIAL } from "@/lib/auth/formulaire";
 import { Alerte } from "@/components/Alerte";
 import { BoutonEnvoi } from "@/components/Bouton";
 import { Champ } from "@/components/Champ";
+import { ChoixImage } from "@/components/charte/ChoixImage";
 
 export function FormulaireInscription() {
   const [etat, action] = useActionState(inscription, ETAT_INITIAL);
@@ -73,6 +74,36 @@ export function FormulaireInscription() {
           autoComplete="new-password"
           aide="8 caractères au minimum."
         />
+
+        {/* Les deux consentements. Jamais fusionnes en une seule case : le
+            reglement conditionne le compte, l'image ne conditionne rien. */}
+        <div className="border-t border-sable pt-5">
+          <label className="flex cursor-pointer items-start gap-3">
+            <input
+              type="checkbox"
+              name="reglement"
+              className="mt-1 h-[18px] w-[18px] shrink-0 accent-framboise"
+            />
+            <span className="text-[15px] font-semibold">
+              J&apos;ai lu et j&apos;accepte la{" "}
+              <Link
+                href="/charte"
+                target="_blank"
+                className="text-framboise-deep underline underline-offset-[3px]"
+              >
+                charte de participation
+              </Link>
+            </span>
+          </label>
+          <p className="mt-1.5 pl-[30px] text-[13px] text-plume-deep">
+            Les règles des cours : ponctualité, tenue, sécurité, respect du
+            matériel. Obligatoire pour créer ton compte.
+          </p>
+        </div>
+
+        <div className="border-t border-sable pt-5">
+          <ChoixImage />
+        </div>
 
         <BoutonEnvoi enAttente="Création…">Je crée mon compte</BoutonEnvoi>
       </form>

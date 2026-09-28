@@ -348,6 +348,7 @@ export default async function PageAccueil() {
             <p>Step by Step Coaching — Hegesippe Oriane (EI) — Siret 915 127 534 00013.</p>
             <div className="flex flex-wrap gap-x-5 gap-y-1">
               {[["/mentions-legales", "Mentions légales"],
+                ["/charte", "Charte de participation"],
                 ["/cgv", "Conditions générales de vente"],
                 ["/confidentialite", "Confidentialité"]].map(([href, libelle]) => (
                 <Link key={href} href={href} className="text-[#C4BEC1] hover:text-white">

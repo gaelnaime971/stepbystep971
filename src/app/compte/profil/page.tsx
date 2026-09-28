@@ -2,7 +2,12 @@ import type { Metadata } from "next";
 import { Bandeau } from "@/components/Bandeau";
 import { Champ } from "@/components/Champ";
 import { modifierProfil } from "@/lib/compte/actions";
+import Link from "next/link";
 import { profilCourant } from "@/lib/auth/session";
+import { ChoixImage } from "@/components/charte/ChoixImage";
+import { changerAutorisationImage } from "@/lib/charte/actions";
+import { etatCharte } from "@/lib/charte/lecture";
+import { enDateAnnee } from "@/lib/dates";
 
 export const metadata: Metadata = { title: "Mon profil — Step by Step" };
 
@@ -14,6 +19,8 @@ export default async function PageProfil({
   const { message, ton } = await searchParams;
   const profil = await profilCourant();
   if (!profil) return null; // Le layout a deja redirige.
+
+  const charte = await etatCharte(profil.id);
 
   return (
     <>
@@ -52,6 +59,36 @@ export default async function PageProfil({
             className="inline-flex cursor-pointer items-center justify-center rounded-sm bg-framboise px-[22px] py-[13px] text-[15px] font-semibold text-white transition-colors hover:bg-framboise-deep"
           >
             J&apos;enregistre
+          </button>
+        </form>
+      </section>
+
+      {/* La charte reste consultable, et le choix d'image modifiable DANS LES
+          DEUX SENS a tout moment : l'article 7.4 le prevoit expressement. */}
+      <section className="mt-5 max-w-[520px] rounded-md border border-sable bg-white p-[22px]">
+        <h3 className="mb-1">La charte</h3>
+        <p className="mb-4 text-[13px] text-plume-deep">
+          {charte.signeeLe
+            ? `Acceptée le ${enDateAnnee(charte.signeeLe)} — version ${charte.version}.`
+            : "Pas encore acceptée."}{" "}
+          <Link href="/charte" className="text-framboise-deep underline underline-offset-[3px]">
+            La relire
+          </Link>
+        </p>
+
+        <form action={changerAutorisationImage} className="flex flex-col gap-4 border-t border-sable pt-4">
+          <ChoixImage valeur={charte.autorisationImage} legende="Mon image" />
+          {charte.imageDecideeLe && (
+            <p className="text-[13px] text-plume-deep">
+              Ton choix actuel date du {enDateAnnee(charte.imageDecideeLe)}. Tu peux
+              en changer autant de fois que tu veux.
+            </p>
+          )}
+          <button
+            type="submit"
+            className="self-start cursor-pointer rounded-sm border border-sable-deep bg-white px-[18px] py-3 text-sm font-semibold text-encre transition-colors hover:bg-sable sm:py-2.5"
+          >
+            J&apos;enregistre ce choix
           </button>
         </form>
       </section>

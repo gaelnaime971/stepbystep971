@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AvertissementJuridique } from "@/components/AvertissementJuridique";
 
 export const metadata: Metadata = {
   title: "Conditions générales de vente — Step by Step Coaching",
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 export default function PageCgv() {
   return (
     <>
+      <AvertissementJuridique />
       <h1>Conditions générales de vente</h1>
       <span className="maj">Dernière mise à jour : septembre 2026</span>
 

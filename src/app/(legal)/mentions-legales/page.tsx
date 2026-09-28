@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AvertissementJuridique } from "@/components/AvertissementJuridique";
 
 export const metadata: Metadata = {
   title: "Mentions légales — Step by Step Coaching",
@@ -8,6 +9,7 @@ export const metadata: Metadata = {
 export default function PageMentionsLegales() {
   return (
     <>
+      <AvertissementJuridique />
       <h1>Mentions légales</h1>
       <span className="maj">Dernière mise à jour : septembre 2026</span>
 

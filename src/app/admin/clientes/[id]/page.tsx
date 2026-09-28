@@ -7,6 +7,7 @@ import { FormulaireRemboursement } from "@/components/admin/FormulaireRemboursem
 import { Pastille } from "@/components/Pastille";
 import { anonymiser, desinscrireDepuisFiche, enregistrerNotes } from "@/lib/admin/actions";
 import { ficheCliente } from "@/lib/admin/lecture";
+import { etatCharte } from "@/lib/charte/lecture";
 import { clientServeur } from "@/lib/supabase/server";
 import { enCreneau, enDate, enDateAnnee, enJourLong, joursRestants } from "@/lib/dates";
 import { prixLisible } from "@/lib/formules/format";
@@ -55,6 +56,7 @@ export default async function PageFicheCliente({
   if (!fiche) notFound();
 
   const { profil, lots, reservations, achats, abonnements, emails, soldeActif } = fiche;
+  const charte = await etatCharte(profil.id);
 
   // admin_notes n'est lisible par aucun SELECT : le GRANT de colonne l'exclut.
   // Ce RPC est le seul chemin.
@@ -279,6 +281,43 @@ export default async function PageFicheCliente({
                 </div>
               ))}
             </dl>
+          </Bloc>
+
+          <Bloc titre="Sa charte">
+            <dl className="flex flex-col gap-3 text-[15px]">
+              <div className="flex justify-between gap-3">
+                <dt className="text-plume-deep">Acceptée le</dt>
+                <dd className="text-right">
+                  {charte.signeeLe ? enDateAnnee(charte.signeeLe) : "pas encore"}
+                </dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-plume-deep">Version signée</dt>
+                <dd className="text-right">{charte.version ?? "—"}</dd>
+              </div>
+              <div className="flex items-baseline justify-between gap-3">
+                <dt className="text-plume-deep">Son image</dt>
+                <dd className="text-right">
+                  {charte.autorisationImage === null ? (
+                    "pas encore répondu"
+                  ) : charte.autorisationImage ? (
+                    <Pastille ton="dispo">Autorise</Pastille>
+                  ) : (
+                    <Pastille ton="complet">Refuse</Pastille>
+                  )}
+                </dd>
+              </div>
+              {charte.imageDecideeLe && charte.imageDecideeLe !== charte.signeeLe && (
+                <p className="text-[13px] text-plume-deep">
+                  Elle a changé d&apos;avis le {enDateAnnee(charte.imageDecideeLe)}.
+                </p>
+              )}
+            </dl>
+            {charte.autorisationImage === false && (
+              <p className="mt-3 rounded-sm border-l-[3px] border-ambre bg-ambre-wash px-3.5 py-2.5 text-[13px] text-ambre-texte">
+                Ne la publie pas. Ni photo, ni story, ni vidéo où on la reconnaît.
+              </p>
+            )}
           </Bloc>
 
           <Bloc titre="Sa formule">

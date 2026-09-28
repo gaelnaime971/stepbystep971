@@ -19,6 +19,7 @@ dans l'ordre de leur numéro.
 | `0008` | 2 | 3 contrôles `ok`, les envois déjà tracés inchangés |
 | `0009` | 3 | 6 contrôles `ok`, `authenticated` seul sur la fonction, grand livre équilibré |
 | `0010` | 6 | 9 contrôles `ok`, écriture directe refusée aux clientes, données intactes |
+| `0011` | 2 | 4 contrôles `ok`, aucune IP résiduelle sur un compte anonymisé |
 
 Les fichiers `1_…` et `2_…` rendent un verdict par ligne : tout doit dire `ok`,
 et le tri met les problèmes en tête. Les fichiers suivants sont du détail à
