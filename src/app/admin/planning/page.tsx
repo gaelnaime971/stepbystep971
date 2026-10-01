@@ -10,6 +10,7 @@ import {
   aujourdHui, dateLocale, grilleMois, JOURS_COURTS, moisDe, moisLisible, moisSuivant, semaineDe,
 } from "@/lib/planning/dates";
 import type { CoursAdmin } from "@/lib/planning/types";
+import { tonBandeau } from "@/lib/planning/chevauchement";
 
 export const metadata: Metadata = { title: "Planning des cours — Step by Step" };
 
@@ -49,7 +50,7 @@ export default async function PagePlanning({
   // la grille affiche pour completer ses semaines.
   const duMoisSeul = duMois
     .filter((c) => dateLocale(c.starts_at).slice(0, 7) === mois)
-    .sort((a, b) => a.starts_at.localeCompare(b.starts_at));
+    .sort((a, b) => a.starts_at.localeCompare(b.starts_at) || a.id.localeCompare(b.id));
   const moisCourant = mois === moisDe(jour);
 
   // Sur telephone, le mois en cours s'ouvre a aujourd'hui. Le 28 du mois, faire
@@ -87,7 +88,7 @@ export default async function PagePlanning({
 
       {message && (
         <div className="mb-6">
-          <Bandeau ton={ton === "erreur" ? "erreur" : "succes"}>{message}</Bandeau>
+          <Bandeau ton={tonBandeau(ton)}>{message}</Bandeau>
         </div>
       )}
 

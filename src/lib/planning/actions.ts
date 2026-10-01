@@ -14,6 +14,7 @@ import { messagePlanning } from "./erreurs";
 import type { EtatPlanning } from "./etat";
 import { COLONNES_COURS_ADMIN, type CoursAdmin } from "./types";
 import type { Niveau } from "@/lib/niveaux";
+import { chevauchements, phraseConflits, type Conflit } from "./chevauchement";
 
 const REPETITIONS = new Map([["1", 1], ["4", 4], ["12", 12]]);
 const NIVEAUX_VALIDES: Niveau[] = ["debutante", "intermediaire", "tous_niveaux"];
@@ -34,7 +35,19 @@ async function exigerAdmin(): Promise<void> {
   if (!profil || profil.role !== "admin") redirect("/connexion?suite=/admin/planning");
 }
 
-function retour(chemin: string, message: string, ton: "succes" | "erreur"): never {
+/** Les noms des lieux cités dans un avertissement de chevauchement. */
+async function nomsDesLieux(
+  supabase: Awaited<ReturnType<typeof clientServeur>>,
+  ids: string[],
+): Promise<Map<string, string>> {
+  if (ids.length === 0) return new Map();
+  const { data } = await supabase
+    .from("locations").select("id, name").in("id", [...new Set(ids)])
+    .returns<{ id: string; name: string }[]>();
+  return new Map((data ?? []).map((l) => [l.id, l.name]));
+}
+
+function retour(chemin: string, message: string, ton: "succes" | "erreur" | "attention"): never {
   revalidatePath("/admin/planning", "layout");
   redirect(`${chemin}?message=${encodeURIComponent(message)}&ton=${ton}`);
 }
@@ -86,10 +99,11 @@ export async function creerCours(
 
   const supabase = await clientServeur();
 
-  // Pre-controle du chevauchement. La contrainte courses_no_overlap reste le
-  // juge, mais elle ne sait pas dire QUELLE date pose probleme dans une
-  // repetition de douze semaines — et c'est exactement ce qu'Oriane a besoin
-  // de savoir pour corriger.
+  // Pre-controle du chevauchement. Il N'INTERDIT PLUS RIEN : deux cours au
+  // meme creneau sont une decision d'Oriane — une remplacante, deux salles, ou
+  // la correction d'un horaire sans supprimer l'ancien d'abord. Il sert a le
+  // lui DIRE, et a nommer les dates concernees dans une repetition de douze
+  // semaines, ce qu'un refus de la base ne savait pas faire.
   const { data: existants } = await supabase
     .from("courses")
     .select(COLONNES_COURS_ADMIN)
@@ -98,27 +112,14 @@ export async function creerCours(
     .lte("starts_at", instantGuadeloupe(ajouterJours(occurrences.at(-1)!.jour, 1), "00:00"))
     .returns<CoursAdmin[]>();
 
-  const conflits = occurrences.filter((o) =>
-    (existants ?? []).some((e) => e.starts_at < o.ends_at && e.ends_at > o.starts_at),
-  );
-
-  if (conflits.length > 0) {
-    const dates = conflits.map((c) => enDate(c.starts_at)).join(", ");
-    return echec(
-      conflits.length === 1
-        ? `Tu as déjà un cours le ${dates} à cette heure-là.`
-        : `Tu as déjà un cours à cette heure-là sur ${conflits.length} de ces dates : ${dates}.`,
-      nombre > 1
-        ? "Rien n'a été créé. Décale l'horaire, ou crée les séances une par une en sautant les dates occupées."
-        : "Tu ne peux pas être à deux endroits en même temps.",
-    );
-  }
+  const conflits = chevauchements(occurrences, existants ?? []);
 
   const groupe = nombre > 1 ? randomUUID() : null;
   const profil = await profilCourant();
 
-  // Un seul INSERT pour toutes les occurrences : la contrainte d'exclusion
-  // s'applique a l'ensemble, donc ou les douze seances existent, ou aucune.
+  // Un seul INSERT pour toutes les occurrences : ou les douze seances
+  // existent, ou aucune. Ce n'est plus la contrainte d'exclusion qui le
+  // garantit — elle a ete retiree en 0012 — mais l'atomicite de l'ordre.
   const { error } = await supabase.from("courses").insert(
     occurrences.map((o) => ({
       location_id: lieuId,
@@ -133,13 +134,15 @@ export async function creerCours(
 
   if (error) return echec(messagePlanning(error));
 
-  retour(
-    "/admin/planning",
+  const cree =
     nombre === 1
       ? `Cours créé le ${enDate(occurrences[0].starts_at)} à ${enHeure(occurrences[0].starts_at)}.`
-      : `${nombre} cours créés, du ${enDate(occurrences[0].starts_at)} au ${enDate(occurrences.at(-1)!.starts_at)}.`,
-    "succes",
-  );
+      : `${nombre} cours créés, du ${enDate(occurrences[0].starts_at)} au ${enDate(occurrences.at(-1)!.starts_at)}.`;
+
+  if (conflits.length === 0) retour("/admin/planning", cree, "succes");
+
+  const nomLieu = await nomsDesLieux(supabase, conflits.map((c) => c.existant.location_id));
+  retour("/admin/planning", `${cree} ${phraseConflits(conflits, nomLieu)}`, "attention");
 }
 
 // ---------------------------------------------------------------------------
@@ -187,7 +190,11 @@ export async function modifierCours(
   const starts_at = instantGuadeloupe(date, debut);
   const ends_at = instantGuadeloupe(date, fin);
 
-  const { data: chevauchants } = await supabase
+  // Comme a la creation : on previent, on n'interdit pas. La comparaison est
+  // faite par Postgres sur de vrais `timestamptz`, donc sans le piege des
+  // chaines — mais on passe par le meme helper pour que les deux chemins
+  // disent la meme chose de la meme facon.
+  const { data: voisins } = await supabase
     .from("courses")
     .select(COLONNES_COURS_ADMIN)
     .eq("status", "scheduled")
@@ -196,12 +203,7 @@ export async function modifierCours(
     .gt("ends_at", starts_at)
     .returns<CoursAdmin[]>();
 
-  if (chevauchants?.length) {
-    return echec(
-      "Tu as déjà un cours sur ce créneau.",
-      "Tu ne peux pas être à deux endroits en même temps : choisis un autre horaire.",
-    );
-  }
+  const conflits: Conflit[] = chevauchements([{ starts_at, ends_at }], voisins ?? []);
 
   const { error } = await supabase
     .from("courses")
@@ -210,7 +212,14 @@ export async function modifierCours(
 
   if (error) return echec(messagePlanning(error, { inscrites: cours.seats_taken }));
 
-  retour(`/admin/planning/${id}`, "Le cours est à jour.", "succes");
+  if (conflits.length === 0) retour(`/admin/planning/${id}`, "Le cours est à jour.", "succes");
+
+  const nomLieu = await nomsDesLieux(supabase, conflits.map((c) => c.existant.location_id));
+  retour(
+    `/admin/planning/${id}`,
+    `Le cours est à jour. ${phraseConflits(conflits, nomLieu)}`,
+    "attention",
+  );
 }
 
 // ---------------------------------------------------------------------------

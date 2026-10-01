@@ -11,6 +11,9 @@ export async function coursEntre(debut: string, fin: string): Promise<CoursAdmin
     .gte("starts_at", instantGuadeloupe(debut, "00:00"))
     .lt("starts_at", instantGuadeloupe(ajouterJours(fin, 1), "00:00"))
     .order("starts_at", { ascending: true })
+    // Second critere depuis 0012 : deux cours peuvent partager le meme instant,
+    // et un tri sur la seule date les ferait permuter d'un affichage a l'autre.
+    .order("id", { ascending: true })
     .returns<CoursAdmin[]>();
 
   return data ?? [];

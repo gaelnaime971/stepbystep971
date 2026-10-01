@@ -3,13 +3,15 @@ import type { PostgrestError } from "@supabase/supabase-js";
 /**
  * Traduction des refus de la base.
  *
- * Deux d'entre eux ne doivent JAMAIS atteindre Oriane en brut, et ce sont
- * justement les deux qu'elle rencontrera le plus :
+ * Celui-ci ne doit JAMAIS atteindre Oriane en brut, et c'est le plus frequent :
  *
- *   * 23P01 sur courses_no_overlap — la contrainte d'exclusion. Son nom est
- *     l'interface : c'est pour ca qu'elle est nommee dans 0002.
  *   * SB013 — le trigger courses_guard_capacity, qui refuse de descendre la
  *     capacite sous le nombre d'inscrites.
+ *
+ * La traduction du 23P01 reste, bien qu'aucune contrainte d'exclusion ne
+ * subsiste depuis 0012. Elle ne coute rien et couvre le cas ou la base d'un
+ * environnement n'aurait pas encore recu la migration : mieux vaut une phrase
+ * francaise que l'exception Postgres brute.
  */
 export function messagePlanning(
   erreur: PostgrestError | { code?: string; message?: string } | null,
@@ -20,7 +22,7 @@ export function messagePlanning(
   const message = erreur.message ?? "";
 
   if (code === "23P01" || /courses_no_overlap/.test(message)) {
-    return "Tu as déjà un cours sur ce créneau. Tu ne peux pas être à deux endroits en même temps : choisis un autre horaire.";
+    return "Cette base refuse encore deux cours sur le même créneau. La migration 0012 n'y est pas passée : préviens Gaël.";
   }
 
   if (code === "SB013") {

@@ -55,6 +55,19 @@ Les trois familles de formules ne changent que la façon de recharger ce solde.
 9. **Pas de pointage de présence.** Oriane voit qui est inscrit, c'est tout.
 10. **Prix immuables.** On ne modifie jamais le prix d'une formule existante : on en crée une nouvelle et on archive l'ancienne. Les abonnées en cours ne migrent pas.
 
+### Deux cours peuvent se tenir en même temps
+
+Ce n'est pas un oubli, c'est une décision. Une contrainte d'exclusion `courses_no_overlap` l'interdisait jusqu'à la migration 0012 : elle partait de l'évidence « une seule intervenante, donc un seul cours à la fois ». L'évidence a tenu jusqu'à ce qu'Oriane ait besoin d'une remplaçante, de deux salles ouvertes le même soir, ou simplement de corriger un créneau sans supprimer l'ancien d'abord.
+
+Le chevauchement est désormais un **avertissement**, pas un refus. `src/lib/planning/chevauchement.ts` dit quel cours existe déjà et à quelle heure, en ambre, après création — et sur une répétition il nomme les dates concernées, ce qu'un refus de la base ne savait pas faire. Oriane valide, puis décide.
+
+Deux pièges à connaître avant d'y toucher :
+
+- **Les bornes sont semi-ouvertes `[début, fin)`.** 18h–19h et 19h–20h ne se chevauchent pas : un cours ne dure pas sa dernière seconde.
+- **Ne compare jamais deux instants sous forme de chaînes.** PostgREST rend `…T23:00:00+00:00`, `toISOString()` rend `…T23:00:00.000Z` : le même instant, deux textes, et le `+` (43) passe avant le `.` (46). Une borne égale paraissait donc strictement inférieure, et deux cours qui se suivaient étaient déclarés en conflit. Le bug a bloqué Oriane pendant des semaines. On compare des nombres, `new Date(x).getTime()`.
+
+Rien dans les réservations ne dépend de l'unicité d'un créneau : `book_course` ne regarde que la capacité et l'expiration du solde. Deux cours simultanés s'affichent empilés partout, et les requêtes trient sur `starts_at` **puis sur `id`** — sans ce second critère, ils permuteraient d'un affichage à l'autre.
+
 ### Pouvoirs d'Oriane sur une fiche cliente
 
 Ajouter ou retirer une séance à la main, désinscrire une cliente d'un cours, consulter l'historique. Ce sont des gestes de rattrapage, ils doivent être tracés.

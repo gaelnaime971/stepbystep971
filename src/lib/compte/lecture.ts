@@ -68,6 +68,7 @@ export async function coursAVenir(limite = 40): Promise<Cours[]> {
     .eq("status", "scheduled")
     .gt("starts_at", new Date().toISOString())
     .order("starts_at", { ascending: true })
+    .order("id", { ascending: true })
     .limit(limite)
     .returns<Cours[]>();
 

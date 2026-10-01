@@ -10,6 +10,7 @@ import { annulerCours, desinscrire } from "@/lib/planning/actions";
 import { coursParId, inscritesDuCours, tousLesLieux } from "@/lib/planning/lecture";
 import { dateLocale } from "@/lib/planning/dates";
 import { FormulaireModification } from "./formulaire";
+import { tonBandeau } from "@/lib/planning/chevauchement";
 
 export const metadata: Metadata = { title: "Cours — Step by Step" };
 
@@ -77,7 +78,7 @@ export default async function PageCours({
 
       {message && (
         <div className="mb-6">
-          <Bandeau ton={ton === "erreur" ? "erreur" : "succes"}>{message}</Bandeau>
+          <Bandeau ton={tonBandeau(ton)}>{message}</Bandeau>
         </div>
       )}
 
