@@ -21,6 +21,8 @@ dans l'ordre de leur numéro.
 | `0010` | 6 | 9 contrôles `ok`, écriture directe refusée aux clientes, données intactes |
 | `0011` | 2 | 4 contrôles `ok`, aucune IP résiduelle sur un compte anonymisé |
 | `0012` | 3 | 5 contrôles `ok`, deux cours simultanés acceptés, données intactes |
+| `0013` | 3 | 6 contrôles `ok`, abonnement gratuit refusé, pack gratuit accepté |
+| `0014` | 5 | 8 contrôles `ok`, un achat payant reste `order`, une formule payante refusée au RPC gratuit |
 
 Les fichiers `1_…` et `2_…` rendent un verdict par ligne : tout doit dire `ok`,
 et le tri met les problèmes en tête. Les fichiers suivants sont du détail à

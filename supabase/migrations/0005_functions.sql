@@ -28,6 +28,8 @@
 --   SB011  commande non payee
 --   SB012  formule deja vendue, prix immuable (regle 10)
 --   SB013  capacite reduite sous le nombre d'inscrites
+--   SB014  formule non gratuite, ou abonnement a zero (0014)
+--   SB015  formule offerte deja prise par cette cliente (0014)
 -- =============================================================================
 
 
