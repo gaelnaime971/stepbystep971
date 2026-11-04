@@ -1,0 +1,14 @@
+-- =============================================================================
+-- REVERT 0015 — IMPOSSIBLE PROPREMENT, ET SANS INTERET
+-- =============================================================================
+--
+-- Postgres ne sait pas retirer une valeur d'un enum. La defaire demanderait de
+-- reconstruire le type et de reecrire `email_log`, qui est la trace d'envoi de
+-- tous les messages deja partis.
+--
+-- Une valeur d'enum inutilisee ne coute rien. Si le bloc « formule offerte »
+-- etait abandonne, laisser `free_confirmation` en place est le bon choix : les
+-- emails deja traces sous ce modele resteraient lisibles.
+--
+-- Le seul geste qui ait du sens, si vraiment il fallait revenir en arriere,
+-- est de repointer le code vers `purchase_confirmation`. Aucune migration.

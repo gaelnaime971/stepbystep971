@@ -94,7 +94,7 @@ async function previenir(
     });
 
     await envoyer({
-      modele: "purchase_confirmation",
+      modele: "free_confirmation",
       userId: profil.id,
       destinataire: profil.email,
       objet,

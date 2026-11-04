@@ -17,12 +17,23 @@ import {
 
 export const metadata: Metadata = { title: "Fiche cliente — Step by Step" };
 
+/**
+ * Ce qu'Oriane lit dans « Ce qu'elle a reçu ».
+ *
+ * Un modele absent de cette table s'affiche sous son nom technique, sans
+ * erreur — et c'est exactement ce qui trompe : « purchase_confirmation » sur
+ * une seance offerte envoie Oriane chercher une commande payee qui n'existe
+ * pas. Toute valeur de l'enum `email_template` doit figurer ici.
+ */
 const MODELES: Record<string, string> = {
   purchase_confirmation: "Confirmation d'achat",
+  free_confirmation: "Séances offertes",
   booking_confirmation: "Confirmation de réservation",
   course_canceled: "Cours annulé",
   expiry_warning: "Alerte de fin de validité",
   payment_failed: "Échec de paiement",
+  subscription_ended: "Fin d'abonnement",
+  refund_processed: "Remboursement",
 };
 
 const ORIGINES: Record<string, string> = {
