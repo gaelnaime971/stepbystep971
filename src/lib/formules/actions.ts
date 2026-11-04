@@ -82,8 +82,27 @@ export async function creerFormule(
     return echec("Le nombre de séances doit être un entier supérieur à zéro.");
   }
   const centimes = eurosEnCentimes(prix);
-  if (centimes === null || centimes < 1) {
+  if (centimes === null) {
     return echec("Le prix n'est pas un montant valide. Écris-le en euros, par exemple 15 ou 70,50.");
+  }
+
+  // Une formule gratuite ne passe par Stripe a AUCUN moment : Checkout refuse
+  // une session a zero. Elle n'aura donc ni produit, ni prix, ni
+  // `stripe_price_id` — et c'est `estAchetable()` qui sait que ce n'est pas
+  // un defaut de publication mais un etat a part entiere.
+  const gratuite = centimes === 0;
+
+  if (gratuite && type === "subscription") {
+    return echec(
+      "Un abonnement ne peut pas être gratuit.",
+      "Sans prélèvement, le solde ne se rechargerait jamais — et la cliente ne s'en apercevrait qu'au bout de 4 semaines. Choisis « à la carte » ou « pack ».",
+    );
+  }
+  if (gratuite && prixBarre) {
+    return echec(
+      "Une formule gratuite ne peut pas avoir de prix barré.",
+      "Le prix barré sert à montrer une économie sur un achat. Ici il n'y a pas d'achat.",
+    );
   }
   const centimesBarres = prixBarre ? eurosEnCentimes(prixBarre) : null;
   if (prixBarre && centimesBarres === null) {
@@ -135,14 +154,18 @@ export async function creerFormule(
   // --- Stripe d'abord -----------------------------------------------------
   // Aucune ligne n'est ecrite tant que Stripe n'a pas rendu ses identifiants :
   // une formule sans price_id ne serait pas achetable.
-  let refs;
-  try {
-    refs = await creerProduitEtPrix({
-      slug, name: nom, tagline: argumentaire || null, kind: type,
-      sessions_count: seances, price_cents: centimes, currency: "EUR",
-    });
-  } catch (erreur) {
-    return echec(messageStripe(erreur), "Aucune formule n'a été créée. Tu peux réessayer.");
+  // Une formule gratuite saute tout ce bloc : rien a creer chez Stripe, donc
+  // rien a compenser si la base echoue ensuite.
+  let refs: { productId: string; priceId: string } | null = null;
+  if (!gratuite) {
+    try {
+      refs = await creerProduitEtPrix({
+        slug, name: nom, tagline: argumentaire || null, kind: type,
+        sessions_count: seances, price_cents: centimes, currency: "EUR",
+      });
+    } catch (erreur) {
+      return echec(messageStripe(erreur), "Aucune formule n'a été créée. Tu peux réessayer.");
+    }
   }
 
   // --- Puis la base -------------------------------------------------------
@@ -151,15 +174,16 @@ export async function creerFormule(
     sessions_count: seances, validity_interval: validite,
     price_cents: centimes, compare_at_price_cents: centimesBarres,
     currency: "EUR",
-    stripe_product_id: refs.productId, stripe_price_id: refs.priceId,
+    stripe_product_id: refs?.productId ?? null, stripe_price_id: refs?.priceId ?? null,
     cancellation_deadline_hours: delai, is_active: true,
     is_highlighted: miseEnAvant, features: puces, sort_order: ordre,
   });
 
   if (error) {
     // Stripe a reussi, la base a echoue : on annule le produit pour ne pas
-    // laisser un produit fantome dans le tableau de bord Stripe.
-    await archiverProduit(refs.productId, refs.priceId).catch(() => {});
+    // laisser un produit fantome dans le tableau de bord Stripe. Rien a
+    // compenser pour une formule gratuite, qui n'y est jamais passee.
+    if (refs) await archiverProduit(refs.productId, refs.priceId).catch(() => {});
 
     if (error.code === "23505") {
       return echec(
@@ -392,6 +416,19 @@ export async function corrigerTarif(
   const centimes = eurosEnCentimes(prix);
   if (centimes === null || centimes < 1) {
     return { erreur: "Le prix n'est pas un montant valide. Écris-le en euros, par exemple 15 ou 70,50." };
+  }
+
+  // Ce formulaire corrige un TARIF, il ne fait pas franchir la frontiere entre
+  // payant et gratuit. La franchir voudrait dire creer un produit Stripe de
+  // toutes pieces, ou archiver celui qui existe — deux chemins a part, pour un
+  // geste qui n'arrive qu'une fois. Oriane cree une nouvelle formule, c'est
+  // plus clair et ca ne casse rien.
+  if (f.price_cents === 0) {
+    return {
+      erreur: "Cette formule est gratuite : son tarif ne se corrige pas ici.",
+      detail:
+        "Une formule gratuite n'existe pas chez Stripe. Pour la rendre payante, crée une nouvelle formule et archive celle-ci.",
+    };
   }
   const centimesBarres = prixBarre ? eurosEnCentimes(prixBarre) : null;
   if (prixBarre && centimesBarres === null) {

@@ -70,9 +70,21 @@ export function FormulaireFormule({ valeursInitiales }: { valeursInitiales?: Val
         )}
       </div>
 
+      {/* L'avertissement est permanent plutot que conditionnel : sans
+          JavaScript, rien ne peut reagir a la saisie, et une formule offerte
+          creee par megarde se decouvrirait trop tard. */}
+      <div className="rounded-sm border-l-[3px] border-ambre bg-ambre-wash px-4 py-3 text-[15px] leading-[1.55] text-ambre-texte">
+        <strong>À 0 €, la formule devient offerte.</strong> Aucun paiement n&apos;est
+        demandé : la cliente clique, ses séances sont créditées tout de suite, et
+        elle reçoit un mail de confirmation. Une seule fois par personne. Rien
+        n&apos;est créé chez Stripe, et le bouton « Publier sur Stripe » ne
+        s&apos;affichera pas — c&apos;est normal. Un abonnement ne peut pas être
+        gratuit.
+      </div>
+
       <div className="grid grid-cols-2 gap-4">
         <Champ nom="prix" clavier="decimal" libelle="Prix en euros" valeurParDefaut={v.prix}
-          aide="Par exemple 70 ou 70,50." />
+          aide="Par exemple 70 ou 70,50. Mets 0 pour une formule offerte." />
         <Champ nom="prixBarre" clavier="decimal" libelle="Prix barré" requis={false}
           valeurParDefaut={v.prixBarre}
           aide="Le tarif d'avant, affiché rayé. Laisse vide s'il n'y a pas de remise." />

@@ -216,3 +216,38 @@ export function remboursementEffectue(a: {
     },
   };
 }
+
+/**
+ * La confirmation d'une formule OFFERTE.
+ *
+ * Ni montant, ni facture : il n'y a pas eu de paiement, et faire figurer
+ * « 0,00 € » sonnerait comme une transaction qui n'a pas eu lieu. Le reste est
+ * identique a un achat — ce sont les memes seances, avec la meme echeance, et
+ * c'est l'echeance qui compte.
+ */
+export function confirmationFormuleOfferte(a: {
+  prenom: string;
+  formule: string;
+  seances: number;
+  expire: string;
+}): { objet: string; contenu: Contenu } {
+  const s = a.seances > 1 ? "s" : "";
+  return {
+    objet: `C'est offert — ${a.seances} séance${s} pour toi`,
+    contenu: {
+      titre: "Bienvenue, c'est offert",
+      paragraphes: [
+        `Salut ${a.prenom},`,
+        `Tu as ${a.seances} séance${s} offerte${s}, à placer où tu veux dans le planning. Rien à payer.`,
+      ],
+      lignes: [
+        ["Formule", a.formule],
+        ["Séances", String(a.seances)],
+        ["À utiliser avant le", enDate(a.expire)],
+      ],
+      encadre:
+        "Les séances non utilisées à cette date sont perdues. Place-les dès que le planning te convient.",
+      bouton: { libelle: "Choisir mon cours", chemin: "/compte" },
+    },
+  };
+}

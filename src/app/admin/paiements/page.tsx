@@ -180,6 +180,12 @@ export default async function PagePaiements() {
                         {c.kind === "subscription_cycle" && (
                           <span className="block text-[13px]">prélèvement</span>
                         )}
+                        {/* Une inscription offerte n'a rien encaissé, mais
+                            Oriane a besoin de la voir : c'est son compteur de
+                            portes ouvertes. */}
+                        {c.kind === "free" && (
+                          <span className="block text-[13px]">offerte</span>
+                        )}
                       </td>
                       <td className="border-b border-sable px-2 py-3 text-[15px] font-medium whitespace-nowrap tabular-nums">
                         {prixLisible(c.amount_cents)}

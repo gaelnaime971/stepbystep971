@@ -11,7 +11,7 @@ import { accueilSelonRole, profilCourant } from "@/lib/auth/session";
 import { coursAVenir, lieux } from "@/lib/compte/lecture";
 import { enCreneau, enDate, enJourCourt } from "@/lib/dates";
 import { prixLisible, validiteLisible } from "@/lib/formules/format";
-import { COLONNES_FORMULE, estAchetable, type Formule } from "@/lib/formules/types";
+import { COLONNES_FORMULE, estAchetable, estGratuite, type Formule } from "@/lib/formules/types";
 import { libelleNiveau } from "@/lib/niveaux";
 import { clientServeur } from "@/lib/supabase/server";
 
@@ -216,8 +216,15 @@ export default async function PageAccueil() {
 
                 <div className="mt-auto">
                   <BoutonAchat slug={f.slug}
+                    gratuite={estGratuite(f)}
                     variante={f.is_highlighted ? "plein" : "ligne"}
-                    libelle={f.kind === "subscription" ? "M'abonner" : "Je prends"} />
+                    libelle={
+                      estGratuite(f)
+                        ? "J'en profite"
+                        : f.kind === "subscription"
+                          ? "M'abonner"
+                          : "Je prends"
+                    } />
                   <PedagogieFormule
                     kind={f.kind}
                     seances={f.sessions_count}

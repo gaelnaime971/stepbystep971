@@ -20,6 +20,9 @@ function EtatFormule({ formule }: { formule: Formule }) {
   switch (etatPublication(formule)) {
     case "publiee":
       return <Pastille ton="dispo">Achetable</Pastille>;
+    case "gratuite":
+      // Pas de « Publier sur Stripe » a attendre : elle n'y passera jamais.
+      return <Pastille ton="dispo">Gratuite, achetable sans paiement</Pastille>;
     case "non_publiee":
       return <Pastille ton="bientot">Pas achetable</Pastille>;
     case "desactivee":
@@ -176,7 +179,7 @@ export default async function PageFormules({
                           Publier sur Stripe
                         </BoutonAction>
                       )}
-                      {etat === "publiee" && (
+                      {(etat === "publiee" || etat === "gratuite") && (
                         <BoutonAction action={desactiverFormule} id={f.id}>
                           Retirer de la vente
                         </BoutonAction>

@@ -70,7 +70,12 @@ export async function pointsDAttention(): Promise<Attention[]> {
   const liste: Attention[] = [];
 
   const [formules, echecs, webhooks, lots, complets, vides] = await Promise.all([
-    supabase.from("plans").select("id").eq("is_active", true).is("stripe_price_id", null)
+    // `gt("price_cents", 0)` : une formule gratuite n'aura JAMAIS de
+    // stripe_price_id, et n'en a pas besoin. Sans ce filtre, la vue
+    // d'ensemble reclamerait a Oriane de publier sur Stripe une formule qui
+    // n'a rien a y faire, et l'alerte ne partirait jamais.
+    supabase.from("plans").select("id").eq("is_active", true)
+      .is("stripe_price_id", null).gt("price_cents", 0)
       .returns<{ id: string }[]>(),
     supabase.from("subscriptions").select("id").not("dunning_exhausted_at", "is", null)
       .in("status", ["past_due", "unpaid", "active"]).returns<{ id: string }[]>(),

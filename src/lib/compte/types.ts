@@ -39,7 +39,7 @@ export type Abonnement = {
 
 export type Achat = {
   id: string;
-  kind: "purchase" | "subscription_cycle";
+  kind: "purchase" | "subscription_cycle" | "free";
   status: string;
   amount_cents: number;
   paid_at: string | null;

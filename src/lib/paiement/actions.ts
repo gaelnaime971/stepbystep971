@@ -11,7 +11,7 @@ import { detailTechnique } from "@/lib/erreur-technique";
 import { telephonePourStripe } from "@/lib/telephone";
 import { COLONNES_FORMULE, type Formule } from "@/lib/formules/types";
 import { validiteLisible } from "@/lib/formules/format";
-import { estAchetable } from "@/lib/formules/types";
+import { estAchetable, estGratuite } from "@/lib/formules/types";
 
 function texte(d: FormData, champ: string): string {
   const v = d.get(champ);
@@ -129,6 +129,14 @@ export async function demarrerPaiement(donnees: FormData): Promise<void> {
   if (!formule) versFormule("Cette formule n'existe pas.");
   if (!estAchetable(formule)) {
     versFormule("Cette formule n'est pas disponible à l'achat pour l'instant.");
+  }
+
+  // Le second verrou du chemin gratuit. Le bouton route deja ailleurs, mais un
+  // routage d'interface n'est pas une protection : un formulaire rejoue
+  // arriverait ici. Stripe Checkout refuse une session a zero — on ne l'appelle
+  // meme pas.
+  if (estGratuite(formule)) {
+    redirect(`/compte/offerte/${encodeURIComponent(formule.slug)}`);
   }
 
   let paiement: { url: string; clientACreer: string | null };

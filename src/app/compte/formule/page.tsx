@@ -11,6 +11,7 @@ import {
 import type { Abonnement } from "@/lib/compte/types";
 import { enDate, enDateAnnee } from "@/lib/dates";
 import { prixLisible } from "@/lib/formules/format";
+import { estGratuite } from "@/lib/formules/types";
 
 // Le paiement part d'ici : la Server Action s'execute dans cette route.
 // Sans plafond explicite, c'est le defaut du plan qui s'applique et une
@@ -199,6 +200,7 @@ export default async function PageMaFormule({
                     <p className="text-sm text-plume-deep">
                       {a.paid_at ? enDateAnnee(a.paid_at) : enDateAnnee(a.created_at)}
                       {a.kind === "subscription_cycle" && " · prélèvement"}
+                      {a.kind === "free" && " · offert"}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
@@ -235,8 +237,15 @@ export default async function PageMaFormule({
                 </div>
                 <BoutonAchat
                   slug={f.slug}
+                  gratuite={estGratuite(f)}
                   variante="ligne"
-                  libelle={f.kind === "subscription" ? "Je m'abonne" : "Je prends"}
+                  libelle={
+                    estGratuite(f)
+                      ? "J'en profite"
+                      : f.kind === "subscription"
+                        ? "Je m'abonne"
+                        : "Je prends"
+                  }
                 />
               </div>
             ))

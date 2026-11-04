@@ -32,19 +32,37 @@ export const COLONNES_FORMULE =
   "stripe_price_id, cancellation_deadline_hours, is_active, is_highlighted, " +
   "features, sort_order, archived_at";
 
-export type EtatPublication = "publiee" | "non_publiee" | "desactivee" | "archivee";
+export type EtatPublication =
+  | "publiee"
+  | "gratuite"
+  | "non_publiee"
+  | "desactivee"
+  | "archivee";
+
+/** Une formule a 0 EUR. Elle ne passe par Stripe a aucun moment. */
+export function estGratuite(f: Pick<Formule, "price_cents">): boolean {
+  return f.price_cents === 0;
+}
 
 /**
  * Une formule active sans stripe_price_id n'est PAS achetable : le paiement
  * n'aurait aucun prix a presenter. C'est le seul etat qui demande une action,
  * et il doit se voir avant qu'une cliente le decouvre.
+ *
+ * SAUF SI ELLE EST GRATUITE. Stripe Checkout refuse une session a zero : une
+ * formule offerte n'a donc ni produit, ni prix, ni session — et n'aura jamais
+ * de `stripe_price_id`. Sans ce cas, elle serait rangee « non publiee », donc
+ * non achetable, donc INVISIBLE SUR LA VITRINE — sans le moindre message.
+ * Oriane aurait cru a une panne.
  */
 export function etatPublication(f: Formule): EtatPublication {
   if (f.archived_at) return "archivee";
   if (!f.is_active) return "desactivee";
+  if (estGratuite(f)) return "gratuite";
   return f.stripe_price_id ? "publiee" : "non_publiee";
 }
 
 export function estAchetable(f: Formule): boolean {
-  return etatPublication(f) === "publiee";
+  const etat = etatPublication(f);
+  return etat === "publiee" || etat === "gratuite";
 }

@@ -27,6 +27,7 @@ const MODELES: Record<string, string> = {
 
 const ORIGINES: Record<string, string> = {
   order: "achat",
+  offert: "offert",
   subscription_cycle: "abonnement",
   admin_grant: "ajouté par toi",
 };
@@ -222,6 +223,7 @@ export default async function PageFicheCliente({
                       <p className="text-[13px] text-plume-deep">
                         {enDateAnnee(a.date)}
                         {a.type === "subscription_cycle" && " · prélèvement"}
+                      {a.type === "free" && " · offert"}
                       </p>
                     </div>
                     <div className="flex items-center gap-3">

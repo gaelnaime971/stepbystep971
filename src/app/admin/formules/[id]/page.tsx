@@ -35,6 +35,9 @@ export default async function PageFormule({
         <h2>{formule.name}</h2>
         {etat === "publiee" && <Pastille ton="dispo">Achetable</Pastille>}
         {etat === "non_publiee" && <Pastille ton="bientot">Pas achetable</Pastille>}
+        {etat === "gratuite" && (
+          <Pastille ton="dispo">Gratuite, achetable sans paiement</Pastille>
+        )}
         {etat === "desactivee" && <Pastille ton="complet">Retirée de la vente</Pastille>}
         {etat === "archivee" && <Pastille ton="complet">Archivée</Pastille>}
       </div>
